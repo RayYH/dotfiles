@@ -1,0 +1,1 @@
+This `config.json` file is for people living in the mainland of china.
