@@ -13,12 +13,14 @@ alias e="cd ~/Code/Env"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias p="cd ~/Code/Projects"
+alias t="cd ~/Thoughts"
 alias g="git"
 
 # project shortcurs
 alias pphp="cd ~/Code/Projects/PHP"
 alias pjava="cd ~/Code/Projects/Java"
 alias pjs="cd ~/Code/Projects/JavaScript"
+alias pshell="cd ~/Code/Projects/Shell"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
