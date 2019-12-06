@@ -9,18 +9,18 @@ alias ~="cd ~" # `cd` is probably faster to type though
 alias -- -="cd -"
 
 # Shortcuts
-alias e="cd ~/Code/Env"
+alias e="cd ~/Code/env"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
-alias p="cd ~/Code/Projects"
+alias p="cd ~/Code/projects"
 alias t="cd ~/Thoughts"
 alias g="git"
 
 # project shortcurs
-alias pphp="cd ~/Code/Projects/PHP"
-alias pjava="cd ~/Code/Projects/Java"
-alias pjs="cd ~/Code/Projects/JavaScript"
-alias pshell="cd ~/Code/Projects/Shell"
+alias pphp="cd ~/Code/projects/php"
+alias pjava="cd ~/Code/projects/java"
+alias pjs="cd ~/Code/projects/javascript"
+alias pshell="cd ~/Code/projects/shell"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
