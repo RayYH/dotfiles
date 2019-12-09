@@ -20,7 +20,7 @@ function reset_brew_mirror() {
 	cd "${pw_d}" || return
 }
 
-# php packgist
+# php packagist
 # see https://developer.aliyun.com/composer
 function set_composer_mirror() {
 	composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
