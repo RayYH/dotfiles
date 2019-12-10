@@ -1,6 +1,6 @@
 [user]
 
-	name = ray
+	name = rayyh
 	email = rayyounghong@gmail.com
 
 [alias]
@@ -196,4 +196,5 @@
 	insteadOf = "gist:"
 
  [credential]
+
      helper = store
