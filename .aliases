@@ -13,11 +13,12 @@ alias e="cd ~/Code/env"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias p="cd ~/Code/projects"
-alias t="cd ~/Thoughts"
+alias one="cd ~/OneDrive"
 alias g="git"
 
 # project shortcurs
 alias pphp="cd ~/Code/projects/php"
+alias ppython="cd ~/Code/projects/python"
 alias pjava="cd ~/Code/projects/java"
 alias pjs="cd ~/Code/projects/javascript"
 alias pshell="cd ~/Code/projects/shell"
@@ -60,7 +61,7 @@ alias sudo='sudo '
 alias week='date +%V'
 
 # update installed Homebrew, npm, and their installed packages
-alias update='brew update; brew upgrade; brew cleanup; npm install npm -g; npm update -g;'
+alias update="npm install npm -g; npm update -g; composer global update;"
 
 # Google Chrome
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'

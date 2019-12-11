@@ -4,6 +4,7 @@
 # You just need to run below functions once.
 
 # see https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
+# CONFIG BREW MIRROR IS NOT RECOMMENDED!
 function set_brew_mirror() {
 	pw_d=$(pwd)
 	git -C "$(brew --repo)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
@@ -31,6 +32,7 @@ function reset_composer_mirror() {
 }
 
 # see https://npm.taobao.org/
+# npm mirror
 function set_npm_mirror() {
 	npm config set registry=https://registry.npm.taobao.org
 }
@@ -39,6 +41,7 @@ function reset_npm_mirror() {
 	npm config delete registry
 }
 
+# yarn mirror
 function set_yarn_mirror() {
 	yarn config set registry https://registry.npm.taobao.org
 }
@@ -65,6 +68,22 @@ function unusep() {
     unset ftp_proxy;
     unset http_proxy;
     unset https_proxy;
+}
+
+# update brew
+function updateBrew() {
+	brew update;
+	brew upgrade;
+	brew cleanup;
+}
+
+# update packages - npm/composer/pip
+function update() {
+	npm install npm -g;
+	npm update -g;
+	composer global update;
+	# use tsinghua mirror
+	pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple
 }
 
 # Create a new directory and enter it
