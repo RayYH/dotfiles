@@ -18,3 +18,6 @@ export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
 
 # gnu-sed
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+# mysal-client
+export PATH="/usr/local/opt/mysql-client/bin:$PATH"
