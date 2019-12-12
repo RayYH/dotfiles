@@ -11,7 +11,6 @@ brew upgrade
 # Save Homebrew’s installed location.
 BREW_PREFIX=$(brew --prefix)
 
-
 # To get the homepage of a formula, visit https://formulae.brew.sh/formula/{formula-name}
 
 # Install GNU core utilities (those that come with macOS are outdated).
@@ -52,11 +51,7 @@ brew install screen
 brew install php
 brew install gmp
 
-# Install font tools.
-brew tap bramstein/webfonttools
-brew install sfnt2woff
-brew install sfnt2woff-zopfli
-brew install woff2
+
 
 # Install some CTF tools; see https://github.com/ctfs/write-ups.
 brew install aircrack-ng

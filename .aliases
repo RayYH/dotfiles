@@ -18,6 +18,7 @@ alias g="git"
 alias cl="clear"
 
 # project shortcurs
+alias pc="cd ~/Code/projects/c"
 alias pphp="cd ~/Code/projects/php"
 alias ppython="cd ~/Code/projects/python"
 alias pjava="cd ~/Code/projects/java"
