@@ -10,6 +10,8 @@ function set_brew_mirror() {
 	git -C "$(brew --repo)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
 	git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
 	git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
+	# use homebrew_bottle mirror
+	export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 	cd "${pw_d}" || return
 }
 
@@ -18,6 +20,7 @@ function reset_brew_mirror() {
 	git -C "$(brew --repo)" remote set-url origin https://github.com/Homebrew/brew.git
 	git -C "$(brew --repo homebrew/core)" remote set-url origin https://github.com/Homebrew/homebrew-core.git
 	git -C "$(brew --repo homebrew/cask)" remote set-url origin https://github.com/Homebrew/homebrew-cask.git
+	unset HOMEBREW_BOTTLE_DOMAIN
 	cd "${pw_d}" || return
 }
 
