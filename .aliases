@@ -15,6 +15,7 @@ alias dt="cd ~/Desktop"
 alias p="cd ~/Code/projects"
 alias one="cd ~/OneDrive"
 alias g="git"
+alias cl="clear"
 
 # project shortcurs
 alias pphp="cd ~/Code/projects/php"
@@ -59,9 +60,6 @@ alias sudo='sudo '
 
 # Get week number
 alias week='date +%V'
-
-# update installed Homebrew, npm, and their installed packages
-alias update="npm install npm -g; npm update -g; composer global update;"
 
 # Google Chrome
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
