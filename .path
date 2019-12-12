@@ -1,3 +1,20 @@
 #!/usr/bin/env bash
 
+# You can get paths via:
+# $(brew --prefix)
+# $(brew --prefix formula)
+
+# brew
 export PATH="/usr/local/bin:$PATH"
+
+# coreutils
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
+# moreutils
+export PATH="/usr/local/opt/moreutils/libexec/bin:$PATH"
+
+# findutils
+export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+
+# gnu-sed
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
