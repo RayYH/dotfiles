@@ -6,6 +6,7 @@
 
 # brew
 export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
 
 # coreutils
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
@@ -21,3 +22,9 @@ export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 # mysal-client
 export PATH="/usr/local/opt/mysql-client/bin:$PATH"
+
+# curl
+export PATH="/usr/local/opt/curl/bin:$PATH"
+
+# qt
+export PATH="/usr/local/opt/qt/bin:$PATH"

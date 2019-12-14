@@ -51,8 +51,6 @@ brew install screen
 brew install php
 brew install gmp
 
-
-
 # Install some CTF tools; see https://github.com/ctfs/write-ups.
 brew install aircrack-ng
 brew install bfg
