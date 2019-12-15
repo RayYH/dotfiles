@@ -4,7 +4,16 @@ My dotfiles are based on [mathiasbynens/dotfiles](https://github.com/mathiasbyne
 
 ## Usgae
 
-Clone this repo, run `source bootstrap.sh`.
+Clone this repo, modify `.gitconfig`:
+
+```
+[user]
+
+	name = your_name
+	email = your_email
+```
+
+Then run `source bootstrap.sh`.
 
 ## Notification
 
@@ -14,7 +23,7 @@ Many thanks to below projects:
 
 ## Default Mirrors
 
-Due to some reason, I configured default mirror of composer, pip, see [.composer/config.json](.composer/config.json) and [.pip/pip.conf](.pip/pip.conf).
+Due to some reason, I configured the default mirror of composer and pip, see [.composer/config.json](.composer/config.json) and [.pip/pip.conf](.pip/pip.conf).
 
 ## License
 
