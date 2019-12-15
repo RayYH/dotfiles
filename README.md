@@ -1,5 +1,11 @@
 # dotfiles
 
+My dotfiles are based on [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles), feel free to fork or reuse these dotfiles.
+
+## Usgae
+
+Clone this repo, run `source bootstrap.sh`.
+
 ## Notification
 
 Many thanks to below projects:

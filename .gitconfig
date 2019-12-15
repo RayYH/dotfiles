@@ -195,6 +195,6 @@
 
 	insteadOf = "gist:"
 
- [credential]
+[credential]
 
      helper = store
