@@ -20,6 +20,7 @@ Then run `source bootstrap.sh`.
 Many thanks to below projects:
 
 - [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) - [LICENSE](licenses/mathiasbynens_dotfiles_mit)
+- [natelandau/.bash_profile](https://gist.github.com/natelandau/10654137)
 
 ## Default Mirrors
 
