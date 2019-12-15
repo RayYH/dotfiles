@@ -15,9 +15,7 @@ Clone this repo, modify `.gitconfig`:
 
 Then run `source bootstrap.sh`.
 
-## Notification
-
-Many thanks to below projects:
+## Thanks to
 
 - [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) - [LICENSE](licenses/mathiasbynens_dotfiles_mit)
 - [natelandau/.bash_profile](https://gist.github.com/natelandau/10654137)
