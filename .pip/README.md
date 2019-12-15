@@ -1,11 +1,11 @@
 # pip mirror
 
-see [https://stackoverflow.com/questions/50100576/find-default-pip-index-url](https://stackoverflow.com/questions/50100576/find-default-pip-index-url)
+See [https://stackoverflow.com/questions/50100576/find-default-pip-index-url](https://stackoverflow.com/questions/50100576/find-default-pip-index-url) to get more information of pip mirror.
 
 ## More
 
 ```bash
-# Install Python3
+# Install Python3 and pip
 brew install python3
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python3 get-pip.py

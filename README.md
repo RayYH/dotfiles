@@ -1,8 +1,8 @@
 # dotfiles
 
-## Related Repos
+## Notification
 
-This repo is based on below repos:
+Many thanks to below projects:
 
 - [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) - [LICENSE](licenses/mathiasbynens_dotfiles_mit)
 
