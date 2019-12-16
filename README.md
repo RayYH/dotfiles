@@ -2,9 +2,11 @@
 
 My dotfiles are based on [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles), feel free to fork or reuse these dotfiles.
 
-## Usgae
+## Installation
 
-Clone this repo, modify `.gitconfig`:
+Warning: Use at your own risk!
+
+Fork this repo and clone the repo your forked to your machine, modify `.gitconfig`:
 
 ```
 [user]
