@@ -26,11 +26,11 @@ alias spoton="sudo mdutil -a -i on"                                             
 ###############################################################
 # 检查 `ls` 类别，gnu 或者 macos
 if ls --color >/dev/null 2>&1; then # GNU
-    export colorflag="--color"
-    export LS_COLORS='no=00:fi=00:di=01;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:*.tar=36:*.tgz=36:*.arj=36:*.taz=36:*.lzh=36:*.zip=36:*.z=36:*.Z=36:*.gz=36:*.bz2=36:*.deb=36:*.rpm=36:*.jar=36:*.jpg=32:*.jpeg=32:*.gif=32:*.bmp=32:*.pbm=32:*.pgm=32:*.ppm=32:*.tga=32:*.xbm=32:*.xpm=32:*.tif=32:*.tiff=32:*.png=32:*.mov=32:*.mpg=32:*.mpeg=32:*.avi=32:*.fli=32:*.gl=32:*.dl=32:*.xcf=32:*.xwd=32:*.ogg=32:*.mp3=32:*.wav=32:'
+	export colorflag="--color"
+	export LS_COLORS='no=00:fi=00:di=01;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:*.tar=36:*.tgz=36:*.arj=36:*.taz=36:*.lzh=36:*.zip=36:*.z=36:*.Z=36:*.gz=36:*.bz2=36:*.deb=36:*.rpm=36:*.jar=36:*.jpg=32:*.jpeg=32:*.gif=32:*.bmp=32:*.pbm=32:*.pgm=32:*.ppm=32:*.tga=32:*.xbm=32:*.xpm=32:*.tif=32:*.tiff=32:*.png=32:*.mov=32:*.mpg=32:*.mpeg=32:*.avi=32:*.fli=32:*.gl=32:*.dl=32:*.xcf=32:*.xwd=32:*.ogg=32:*.mp3=32:*.wav=32:'
 else # macOS
-    export colorflag="-G"
-    export LSCOLORS='Gxfxcxdxbxegedabagacad'
+	export colorflag="-G"
+	export LSCOLORS='Gxfxcxdxbxegedabagacad'
 fi
 ###############################################################
 
@@ -76,8 +76,8 @@ alias mv='mv -iv'                                             # 同上
 alias mkdir='mkdir -p'                                        # p 递归创建目录
 alias less='less -FSRXc'                                      # F 单屏幕展示全部内容则退出 less，S 行过长时不自动换行，自行搜索更多 less 用法
 alias ls='command ls ${colorflag}'                            # 带颜色的 ls
-alias l='ls -lF ${colorflag}'                                 # 以 long 风格列出所有文件并以颜色加以区分
-alias la='ls -lAF ${colorflag}'                               # 同上，不包含 . 和 ..
+alias l='ls -lF ${colorflag}'                                 # 以 long 风格列出所有可见文件并以颜色加以区分
+alias la='ls -lAF ${colorflag}'                               # 以 long 风格列出所有文件并以颜色加以区分
 alias lsd='ls -lF ${colorflag} | grep --color=never "^d"'     # 只列出文件夹
 alias grep='grep --color=auto'                                # grep 添加颜色
 alias fgrep='fgrep --color=auto'                              # 同上
