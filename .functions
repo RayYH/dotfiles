@@ -134,7 +134,6 @@ function ff () { find . -name "$@" ; }      # ff:       Find file under the curr
 function ffs () { find . -name "$@"'*' ; }  # ffs:      Find file whose name starts with a given string
 function ffe () { find . -name '*'"$@" ; }  # ffe:      Find file whose name ends with a given string
 
-
 # Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
 function targz() {
 	local tmpFile="${@%/}.tar";

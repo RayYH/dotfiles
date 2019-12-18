@@ -1,191 +1,131 @@
 #!/usr/bin/env bash
 
-# Easier navigation: .., ..., ...., ....., ~ and -
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
-alias .3='cd ../../../'                     # Go back 3 directory levels
-alias .4='cd ../../../../'                  # Go back 4 directory levels
-alias .5='cd ../../../../../'               # Go back 5 directory levels
-alias .6='cd ../../../../../../'            # Go back 6 directory levels
-alias ~="cd ~" # `cd` is probably faster to type though
-alias -- -="cd -"
+# <======================================================================================= Long aliases ======================================================================================> #
+alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"                                                                                           # 锁屏
+alias chromekill="ps ux | grep '[C]hrome Helper (Renderer) --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"                                              # 关闭所有 Chrome 的标签页，释放内存时特别有用
+alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'                                                                                                             # 合并 PDF，用法 mergepdf input{1,2,3}.pdf
+alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'                                                                                                       # URLEncode
+alias emptytrash="sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"                           # 清理垃圾，注意这里并没有倾倒垃圾箱
+alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'                                                                                                                   # 打开 Chrome 浏览器
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"                                  # 列出所有配置的 ip
+alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"                                                                                                               # 列出激活的网络接口
+alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"                                                                                                                             # 清除文件缓存
+alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder" # 清除 launchServices 从而删除 “打开方式” 菜单中的重复项
+# <======================================================================================= Long aliases ======================================================================================> #
 
-# Shortcuts
-alias e="cd ~/Code/env"
-alias dl="cd ~/Downloads"
-alias dt="cd ~/Desktop"
-alias p="cd ~/Code/projects"
-alias one="cd ~/OneDrive"
-alias g="git"
-alias cl="clear"
+# <=================================== Macos configurations ==================================> #
+alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"     # 在 Finder 中显示隐藏文件
+alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"    # 不 Finder 中不显示隐藏文件
+alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder" # 隐藏桌面图标
+alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"  # 显示桌面图标
+alias spotoff="sudo mdutil -a -i off"                                                           # 禁用 Spotlight
+alias spoton="sudo mdutil -a -i on"                                                             # 开启 Spotlight
+# <=================================== Macos configurations ==================================> #
 
-# project shortcurs
-alias pc="cd ~/Code/projects/c"
-alias pphp="cd ~/Code/projects/php"
-alias ppython="cd ~/Code/projects/python"
-alias pjava="cd ~/Code/projects/java"
-alias pjs="cd ~/Code/projects/javascript"
-alias pshell="cd ~/Code/projects/shell"
-
-# basic command alias
-alias cp='cp -iv'                           # Preferred 'cp' implementation
-alias mv='mv -iv'                           # Preferred 'mv' implementation
-alias mkdir='mkdir -pv'                     # Preferred 'mkdir' implementation
-alias less='less -FSRXc'                    # Preferred 'less' implementation
-
-# open in finder
-alias f='open -a Finder ./'                 # f: Opens current directory in MacOS Finder
-
-# quick find
-alias qfind="find . -name "                 # qfind:    Quickly search for file
-
-# edit hosts
-alias editHosts='sudo edit /etc/hosts'
-
-# network alias
-alias myip='curl https://ip.cn'                    # myip:         Public facing IP Address
-alias netCons='lsof -i'                             # netCons:      Show all open TCP/IP sockets
-alias flushDNS='dscacheutil -flushcache'            # flushDNS:     Flush out the DNS Cache
-alias lsock='sudo /usr/sbin/lsof -i -P'             # lsock:        Display open sockets
-alias lsockU='sudo /usr/sbin/lsof -nP | grep UDP'   # lsockU:       Display only open UDP sockets
-alias lsockT='sudo /usr/sbin/lsof -nP | grep TCP'   # lsockT:       Display only open TCP sockets
-alias ipInfo0='ipconfig getpacket en0'              # ipInfo0:      Get info on connections for en0
-alias ipInfo1='ipconfig getpacket en1'              # ipInfo1:      Get info on connections for en1
-alias openPorts='sudo lsof -i | grep LISTEN'        # openPorts:    All listening connections
-alias showBlocked='sudo ipfw list'                  # showBlocked:  All ipfw rules inc/ blocked IPs
-
-# Detect which `ls` flavor is in use
-if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"
-	export LS_COLORS='no=00:fi=00:di=01;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:*.tar=36:*.tgz=36:*.arj=36:*.taz=36:*.lzh=36:*.zip=36:*.z=36:*.Z=36:*.gz=36:*.bz2=36:*.deb=36:*.rpm=36:*.jar=36:*.jpg=32:*.jpeg=32:*.gif=32:*.bmp=32:*.pbm=32:*.pgm=32:*.ppm=32:*.tga=32:*.xbm=32:*.xpm=32:*.tif=32:*.tiff=32:*.png=32:*.mov=32:*.mpg=32:*.mpeg=32:*.avi=32:*.fli=32:*.gl=32:*.dl=32:*.xcf=32:*.xwd=32:*.ogg=32:*.mp3=32:*.wav=32:'
-else # macOS `ls`
-	colorflag="-G"
-	export LSCOLORS='Gxfxcxdxbxegedabagacad' # copied from oh-my-zsh agnoster theme
+# <====================== Preparation ======================> #
+###############################################################
+# 检查 `ls` 类别，gnu 或者 macos
+if ls --color >/dev/null 2>&1; then # GNU
+    export colorflag="--color"
+    export LS_COLORS='no=00:fi=00:di=01;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:*.tar=36:*.tgz=36:*.arj=36:*.taz=36:*.lzh=36:*.zip=36:*.z=36:*.Z=36:*.gz=36:*.bz2=36:*.deb=36:*.rpm=36:*.jar=36:*.jpg=32:*.jpeg=32:*.gif=32:*.bmp=32:*.pbm=32:*.pgm=32:*.ppm=32:*.tga=32:*.xbm=32:*.xpm=32:*.tif=32:*.tiff=32:*.png=32:*.mov=32:*.mpg=32:*.mpeg=32:*.avi=32:*.fli=32:*.gl=32:*.dl=32:*.xcf=32:*.xwd=32:*.ogg=32:*.mp3=32:*.wav=32:'
+else # macOS
+    export colorflag="-G"
+    export LSCOLORS='Gxfxcxdxbxegedabagacad'
 fi
+###############################################################
 
-# List all files colorized in long format
-# shellcheck disable=SC2139
-alias l="ls -lF ${colorflag}"
+# <=============== Common Folder Navigation ================> #
+###############################################################
+alias ..="cd .."                                              # 上级目录
+alias ...="cd ../.."                                          # 返回上两级目录
+alias .3='cd ../../../'                                       # 返回上三级目录
+alias .4='cd ../../../../'                                    # 返回上四级目录
+alias .5='cd ../../../../../'                                 # 返回上五级目录
+alias .6='cd ../../../../../../'                              # 返回上六级目录
+alias ~="cd ~"                                                # 返回 home 目录，等价于 `cd`，有时候 `cd` 可能更快，取决于个人习惯
+alias -- -="cd -"                                             # 返回上一次目录
+###############################################################
 
-# List all files colorized in long format, excluding . and ..
-# shellcheck disable=SC2139
-alias la="ls -lAF ${colorflag}"
+# <=================== Folder Navigation ===================> #
+###############################################################
+alias e="cd ~/Code/env"                                       # 开发环境配置目录 [Docker/Vagrant 配置]
+alias dl="cd ~/Downloads"                                     # 下载文件
+alias dt="cd ~/Desktop"                                       # 桌面
+alias one="cd ~/OneDrive"                                     # OneDrive
+alias p="cd ~/Code/projects"                                  # 项目
+alias pc="cd ~/Code/projects/c"                               # C 项目
+alias pphp="cd ~/Code/projects/php"                           # PHP 项目
+alias ppython="cd ~/Code/projects/python"                     # Python 项目
+alias pjava="cd ~/Code/projects/java"                         # Java 项目
+alias pjs="cd ~/Code/projects/javascript"                     # JavaScript 项目
+alias pshell="cd ~/Code/projects/shell"                       # Shell 项目
+###############################################################
+# <=========================================================> #
 
-# List only directories
-# shellcheck disable=SC2139
-alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"
+# <===================== Short Command =====================> #
+###############################################################
+alias g="git"                                                 # git
+alias cl="clear"                                              # clear
+alias plistbuddy="/usr/libexec/PlistBuddy"                    # plistbuddy
+###############################################################
 
-# Always use color output for `ls`
-# shellcheck disable=SC2139
-alias ls="command ls ${colorflag}"
+# <=================== Preferred Commands ==================> #
+###############################################################
+alias cp='cp -iv'                                             # i 用于重名文件提示是否覆盖，v 用于展示直观的记录信息
+alias mv='mv -iv'                                             # 同上
+alias mkdir='mkdir -p'                                        # p 递归创建目录
+alias less='less -FSRXc'                                      # F 单屏幕展示全部内容则退出 less，S 行过长时不自动换行，自行搜索更多 less 用法
+alias ls='command ls ${colorflag}'                            # 带颜色的 ls
+alias l='ls -lF ${colorflag}'                                 # 以 long 风格列出所有文件并以颜色加以区分
+alias la='ls -lAF ${colorflag}'                               # 同上，不包含 . 和 ..
+alias lsd='ls -lF ${colorflag} | grep --color=never "^d"'     # 只列出文件夹
+alias grep='grep --color=auto'                                # grep 添加颜色
+alias fgrep='fgrep --color=auto'                              # 同上
+alias egrep='egrep --color=auto'                              # 同上
+###############################################################
 
-# Always enable colored `grep` output
-# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# <==================== Useful Commands ====================> #
+###############################################################
+alias editHosts='sudo vim /etc/hosts'                         # 快速编辑 hosts
+alias qfind="find . -name "                                   # 快速查找指定文件是否存在
+alias sudo='sudo '                                            # 使得可以对 aliases 运用 sudo
+alias week='date +%V'                                         # 获取一年的第几周
+alias c="tr -d '\n' | pbcopy"                                 # 去除换行符并复制到剪贴板: cat filename | c
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete" # 递归删除 .DS_Store 文件
+alias path='echo -e ${PATH//:/\\n}'                           # 逐行打印 path 路径值
+alias reload='exec ${SHELL} -l'                               # 重新加载 shell，在你更改 profile 时特别有用
+alias map="xargs -n1"                                         # map 扫描，比如列出包含指定文件的文件夹：find . -name .gitattributes | map dirname
+###############################################################
 
-# Enable aliases to be sudo’ed
-alias sudo='sudo '
+# <======================= Check sum =======================> #
+###############################################################
+command -v hd >/dev/null || alias hd="hexdump -C"             # hd
+command -v md5sum >/dev/null || alias md5sum="md5"            # md5
+command -v sha1sum >/dev/null || alias sha1sum="shasum"       # shasum
+###############################################################
 
-# Get week number
-alias week='date +%V'
+# <=================== Network Resources ===================> #
+###############################################################
+alias GET="lwp-request -m 'GET'"                              # GET
+alias HEAD="lwp-request -m 'HEAD'"                            # HEAD
+alias POST="lwp-request -m 'POST'"                            # POST
+alias PUT="lwp-request -m 'PUT'"                              # PUT
+alias DELETE="lwp-request -m 'DELETE'"                        # DELETE
+alias TRACE="lwp-request -m 'TRACE'"                          # TRACE
+alias OPTIONS="lwp-request -m 'OPTIONS'"                      # OPTIONS
+###############################################################
 
-# Google Chrome
-alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
-
-# IP addresses
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ipconfig getifaddr en0"
-alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-
-# Show active network interfaces
-alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
-
-# Flush Directory Service cache
-alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
-
-# Clean up LaunchServices to remove duplicates in the “Open With” menu
-alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
-
-# Canonical hex dump; some systems have this symlinked
-command -v hd > /dev/null || alias hd="hexdump -C"
-
-# macOS has no `md5sum`, so use `md5` as a fallback
-command -v md5sum > /dev/null || alias md5sum="md5"
-
-# macOS has no `sha1sum`, so use `shasum` as a fallback
-command -v sha1sum > /dev/null || alias sha1sum="shasum"
-
-# JavaScriptCore REPL
-jscbin="/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources/jsc";
-[ -e "${jscbin}" ] && alias jsc="${jscbin}";
-unset jscbin;
-
-# Trim new lines and copy to clipboard
-# usage: cat filename | c
-alias c="tr -d '\n' | pbcopy"
-
-# Recursively delete `.DS_Store` files
-alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
-
-# Empty the Trash on all mounted volumes and the main HDD.
-# Also, clear Apple’s System Logs to improve shell startup speed.
-# Finally, clear download history from quarantine. https://mths.be/bum
-# 10.15.2 version failed to clean Trash
-alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes/*; sudo rm -rfv ~/.Trash/*; sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"
-
-# Show/hide hidden files in Finder
-alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
-alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
-
-# Hide/show all desktop icons (useful when presenting)
-alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
-alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
-
-# URL-encode strings
-alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
-
-# Merge PDF files, preserving hyperlinks
-# Usage: `mergepdf input{1,2,3}.pdf`
-alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'
-
-# Disable Spotlight
-alias spotoff="sudo mdutil -a -i off"
-# Enable Spotlight
-alias spoton="sudo mdutil -a -i on"
-
-# PlistBuddy alias, because sometimes `defaults` just doesn’t cut it
-alias plistbuddy="/usr/libexec/PlistBuddy"
-
-# Airport CLI alias
-alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport'
-
-# Intuitive map function
-# For example, to list all directories that contain a certain file:
-# find . -name .gitattributes | map dirname
-alias map="xargs -n1"
-
-# One of @janmoesen’s ProTip™s
-for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
-	alias "${method}"="lwp-request -m '${method}'"
-done
-
-# Stuff I never really use but cannot delete either because of http://xkcd.com/530/
-alias stfu="osascript -e 'set volume output muted true'"
-alias pumpitup="osascript -e 'set volume output volume 100'"
-
-# Kill all the tabs in Chrome to free up memory
-# [C] explained: http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
-alias chromekill="ps ux | grep '[C]hrome Helper (Renderer) --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
-
-# Lock the screen (when going AFK)
-alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
-
-# Reload the shell (i.e. invoke as a login shell)
-alias reload="exec ${SHELL} -l"
-
-# Print each PATH entry on a separate line
-alias path='echo -e ${PATH//:/\\n}'
+# <==================== Network Commands ===================> #
+###############################################################
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com" # ip:           展示公网 IP
+alias myip='curl https://ip.cn'                               # myip:         展示公网 IP 详细信息
+alias netCons='lsof -i'                                       # netCons:      展示所有打开的的 TCP/IP 套接字
+alias flushDNS='dscacheutil -flushcache'                      # flushDNS:     清除 DNS 缓存
+alias lsock='sudo /usr/sbin/lsof -i -P'                       # lsock:        展示打开的 sockets
+alias lsockU='sudo /usr/sbin/lsof -i -n -P | grep UDP'        # lsockU:       展示打开的 UDP sockets
+alias lsockT='sudo /usr/sbin/lsof -i -n -P | grep TCP'        # lsockT:       展示打开的 TCP sockets
+alias localip="ipconfig getifaddr en0"                        # localip:      展示本地 ip，同下
+alias ipInfo0='ipconfig getpacket en0'                        # ipInfo0:      en0 信息
+alias ipInfo1='ipconfig getpacket en1'                        # ipInfo1:      en1 信息
+alias openPorts='sudo lsof -i | grep LISTEN'                  # openPorts:    所有监听的连接
+###############################################################
