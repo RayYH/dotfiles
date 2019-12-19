@@ -4,32 +4,76 @@
 
 ## 安装
 
-注意：**所有风险自行承担**。
+注意：稳妥的做法是先 Fork 本仓库，然后查看源码确保你已了解每个文件中每行代码的真正含义，并根据自己需要添加或移除相关代码，**所有风险自行承担**。
+
+### 使用 Git 和 `bootstrap.sh` 脚本
+
+你可以克隆此仓库到任意位置 (我喜欢把该库放在 `~/Code/projects/shell/dotfiles`，然后建立一个符号链接 `~/dotfiles`)。初始化脚本会自动拉取最新的代码并且复制所有相关文件到你的 Home 目录。
+
+```bash
+git clone https://github.com/mathiasbynens/dotfiles.git && cd dotfiles && source bootstrap.sh
+```
+
+更新，进入 `dotfiles` 所在的仓库，然后执行：
 
 ```bash
 source bootstrap.sh
 ```
 
+如果想忽略任何提示信息，可以输入：
+
+```bash
+set -- -f; source bootstrap.sh
+```
+
+### 不使用 Git 安装
+
+```bash
+cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses/,brew.sh,resources/}
+```
+
+### 使用 `.path` 文件来扩展路径变量
+
+你可以通过 `~/.path` 文件来定义你的路径变量，下面是一个示例：
+
+```bash
+export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
+```
+
+### 在不 Fork 的情况下添加自定义命令
+
+你可以在 `~/.extra` 文件中添加自定义命令，比如 Git 的用户配置信息：下面是我的 `.extra` 示例
+
+```bash
+# Git 凭证，不包含在此仓库中，防止有人用我的名字提交更新
+GIT_AUTHOR_NAME="rayyh"
+GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+git config --global user.name "$GIT_AUTHOR_NAME"
+GIT_AUTHOR_EMAIL="rayyounghong@gmail.com"
+GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+git config --global user.email "$GIT_AUTHOR_EMAIL"
+```
+
+### 默认镜像
+
+众所周知，在国内通过 composer/npm/yarn 安装依赖时直接使用默认源会很慢，极其降低开发效率。因此本库提供了默认的配置文件，如果不需要配置国内源，可以通过 `.functions` 文件中定义的重置方法进行重置。
+
+```bash
+set_brew_mirror
+set_composer_mirror
+set_npm_mirror
+set_yarn_mirror
+```
+
+### 代理端口
+
+`usep` 方法用于在终端配置代理相关的 `ftp_proxy/http_proxy/https_proxy` 环境变量，默认的端口给的是 1087，你可以在 `.extra` 文件中重新此方法。
+
 ## 致谢
 
 - [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) - [LICENSE](licenses/mathiasbynens_dotfiles_mit)
 - [natelandau/.bash_profile](https://gist.github.com/natelandau/10654137)
-
-## 默认镜像
-
-众所周知，在国内通过 composer/npm/yarn 安装依赖时直接使用默认源会很慢，极其降低开发效率。因此本库提供了默认的配置文件，如果不需要配置国内源，可以通过 `.functions` 文件中定义的重置方法进行重置。
-
-### pip 源
-
-如果你想查看当前 pip 使用的源，参考 [https://stackoverflow.com/questions/50100576/find-default-pip-index-url](https://stackoverflow.com/questions/50100576/find-default-pip-index-url)。
-
-```bash
-# Mac 安装 Python3 和 pip
-brew install python3
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python3 get-pip.py
-rm get-pip.py
-```
 
 ## License
 

@@ -117,8 +117,8 @@ alias OPTIONS="lwp-request -m 'OPTIONS'"                      # OPTIONS
 
 # <==================== Network Commands ===================> #
 ###############################################################
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com" # ip:           展示公网 IP
-alias myip='curl https://ip.cn'                               # myip:         展示公网 IP 详细信息
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com" # ip:           展示代理前的公网 IP
+alias myip='curl https://ip.cn'                               # myip:         展示代理后的公网 IP 详细信息
 alias netCons='lsof -i'                                       # netCons:      展示所有打开的的 TCP/IP 套接字
 alias flushDNS='dscacheutil -flushcache'                      # flushDNS:     清除 DNS 缓存
 alias lsock='sudo /usr/sbin/lsof -i -P'                       # lsock:        展示打开的 sockets

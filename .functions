@@ -44,9 +44,10 @@ function reset_yarn_mirror() {
 
 # 设置代理终端命令
 function usep() {
-	export ftp_proxy=http://127.0.0.1:1087
-	export http_proxy=http://127.0.0.1:1087
-	export https_proxy=http://127.0.0.1:1087
+	local port=1087
+	export ftp_proxy=http://127.0.0.1:${port}
+	export http_proxy=http://127.0.0.1:${port}
+	export https_proxy=http://127.0.0.1:${port}
 }
 function unusep() {
 	unset ftp_proxy
