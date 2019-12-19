@@ -1,187 +1,187 @@
 [alias]
 
-	# 查看最近 20 次提交记录的短 Sha 码，描述，以及历史 graph
-	l = log --pretty=oneline -n 20 --graph --abbrev-commit
+    # 查看最近 20 次提交记录的短 Sha 码，描述，以及历史 graph
+    l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
-	# 使用短风格查看当前工作树的状态
-	s = status -s
+    # 使用短风格查看当前工作树的状态
+    s = status -s
 
-	# 展示最近一次提交和当前状态的差异
-	d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+    # 展示最近一次提交和当前状态的差异
+    d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
 
-	# `git di $number` 展示最近 `$number` 次提交和当前状态的差异
-	di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+    # `git di $number` 展示最近 `$number` 次提交和当前状态的差异
+    di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
 
-	# 从远程库中拉取当前存储库及其所有子模块的更改
-	p = git pull --recurse-submodules
+    # 从远程库中拉取当前存储库及其所有子模块的更改
+    p = git pull --recurse-submodules
 
-	# 克隆包括子模块在内的仓库
-	c = clone --recursive
+    # 克隆包括子模块在内的仓库
+    c = clone --recursive
 
-	# 提交所有更改记录
-	ca = !git add -A && git commit -av
+    # 提交所有更改记录
+    ca = !git add -A && git commit -av
 
-	# 切换指定分支，不存在则创建
-	go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+    # 切换指定分支，不存在则创建
+    go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
 
-	# 为 tags, branches 和 remotes 创建可视化输出
-	tags = tag -l
-	branches = branch -a
-	remotes = remote -v
+    # 为 tags, branches 和 remotes 创建可视化输出
+    tags = tag -l
+    branches = branch -a
+    remotes = remote -v
 
-	# 展示所有别名
-	aliases = config --get-regexp alias
+    # 展示所有别名
+    aliases = config --get-regexp alias
 
-	# 将当前暂存的文件修改到最新的提交中
-	amend = commit --amend --reuse-message=HEAD
+    # 将当前暂存的文件修改到最新的提交中
+    amend = commit --amend --reuse-message=HEAD
 
-	# 为最近一次的提交添加作者信息 g credit ray rayyounghong@gmail.com
-	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+    # 为最近一次的提交添加作者信息 g credit ray rayyounghong@gmail.com
+    credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 
-	# Interactive rebase with the given number of latest commits
-	reb = "!r() { git rebase -i HEAD~$1; }; r"
+    # Interactive rebase with the given number of latest commits
+    reb = "!r() { git rebase -i HEAD~$1; }; r"
 
-	# 移除旧有的标签并用最新的提交记录重新打一次标签
-	retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+    # 移除旧有的标签并用最新的提交记录重新打一次标签
+    retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
 
-	# 查找包含提交记录的分支
-	fb = "!f() { git branch -a --contains $1; }; f"
+    # 查找包含提交记录的分支
+    fb = "!f() { git branch -a --contains $1; }; f"
 
-	# 查找包含指定 sha 码的标签
-	ft = "!f() { git describe --always --contains $1; }; f"
+    # 查找包含指定 sha 码的标签
+    ft = "!f() { git describe --always --contains $1; }; f"
 
-	# 通过源代码查找提交记录
-	fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+    # 通过源代码查找提交记录
+    fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
 
-	# 通过提交信息查找提交记录
-	fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+    # 通过提交信息查找提交记录
+    fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
 
-	# 删除代码已经合并到主分支的分支 a.k.a. ‘delete merged’
-	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+    # 删除代码已经合并到主分支的分支 a.k.a. ‘delete merged’
+    dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
-	# 按 commit 顺序列出 contributors
-	contributors = shortlog --summary --numbered
+    # 按 commit 顺序列出 contributors
+    contributors = shortlog --summary --numbered
 
-	# 合并 GitHub 的 PR，基于当前分支或指定的分支
-	mpr = "!f() { \
-		declare currentBranch=\"$(git symbolic-ref --short HEAD)\"; \
-		declare branch=\"${2:-$currentBranch}\"; \
-		if [ $(printf \"%s\" \"$1\" | grep '^[0-9]\\+$' > /dev/null; printf $?) -eq 0 ]; then \
-			git fetch origin refs/pull/$1/head:pr/$1 && \
-			git checkout -B $branch && \
-			git rebase $branch pr/$1 && \
-			git checkout -B $branch && \
-			git merge pr/$1 && \
-			git branch -D pr/$1 && \
-			git commit --amend -m \"$(git log -1 --pretty=%B)\n\nCloses #$1.\"; \
-		fi \
-	}; f"
+    # 合并 GitHub 的 PR，基于当前分支或指定的分支
+    mpr = "!f() { \
+    declare currentBranch=\"$(git symbolic-ref --short HEAD)\"; \
+    declare branch=\"${2:-$currentBranch}\"; \
+    if [ $(printf \"%s\" \"$1\" | grep '^[0-9]\\+$' > /dev/null; printf $?) -eq 0 ]; then \
+    git fetch origin refs/pull/$1/head:pr/$1 && \
+    git checkout -B $branch && \
+    git rebase $branch pr/$1 && \
+    git checkout -B $branch && \
+    git merge pr/$1 && \
+    git branch -D pr/$1 && \
+    git commit --amend -m \"$(git log -1 --pretty=%B)\n\nCloses #$1.\"; \
+    fi \
+    }; f"
 
 [apply]
 
-	# 检测空格错误
-	whitespace = fix
+    # 检测空格错误
+    whitespace = fix
 
 [core]
 
-	# 使用自定义的 `.gitignore` 和 `.gitattributes`
-	excludesfile = ~/.gitignore
-	attributesfile = ~/.gitattributes
+    # 使用自定义的 `.gitignore` 和 `.gitattributes`
+    excludesfile = ~/.gitignore
+    attributesfile = ~/.gitattributes
 
-	# 将制表符前的空格和各种尾随空格视为错误
-	# [默认] trailing-space: 在行尾查找空格
-	# [默认] space-before-tab: 在一行开头的制表符前查找空格
-	whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+    # 将制表符前的空格和各种尾随空格视为错误
+    # [默认] trailing-space: 在行尾查找空格
+    # [默认] space-before-tab: 在一行开头的制表符前查找空格
+    whitespace = space-before-tab,-indent-with-non-tab,trailing-space
 
-	# 使得 `git rebase` 在 MacOS 上使用更加安全
-	# 更多信息: http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/
-	trustctime = false
+    # 使得 `git rebase` 在 MacOS 上使用更加安全
+    # 更多信息: http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/
+    trustctime = false
 
-	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
-	precomposeunicode = false
+    # http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
+    precomposeunicode = false
 
-	# https://git-scm.com/docs/git-update-index#_untracked_cache
-	untrackedCache = true
+    # https://git-scm.com/docs/git-update-index#_untracked_cache
+    untrackedCache = true
 
     # 编辑器
     editor = vim
 
 [color]
 
-	# 带颜色输出，默认配置
-	ui = auto
+    # 带颜色输出，默认配置
+    ui = auto
 
 [color "branch"]
 
-	current = cyan reverse
-	local = cyan
-	remote = green
+    current = cyan reverse
+    local = cyan
+    remote = green
 
 [color "diff"]
 
-	meta = cyan bold
-	frag = magenta bold # 行信息
-	old = red           # 删除记录
-	new = green         # 添加记录
+    meta = cyan bold
+    frag = magenta bold # 行信息
+    old = red           # 删除记录
+    new = green         # 添加记录
 
 [color "status"]
 
-	added = cyan
-	changed = green
-	untracked = yellow
+    added = cyan
+    changed = green
+    untracked = yellow
 
 [commit]
 
-	# 如果你开启 gpg 签名，请查看 https://help.github.com/articles/signing-commits-using-gpg/ 获取更多信息
-	gpgsign = false
+    # 如果你开启 gpg 签名，请查看 https://help.github.com/articles/signing-commits-using-gpg/ 获取更多信息
+    gpgsign = false
 
 [diff]
 
-	# 检测重命名和拷贝文件
-	renames = copies
+    # 检测重命名和拷贝文件
+    renames = copies
 
 [diff "bin"]
 
-	# 使用 `hexdump` 比较二进制文件的差异
-	textconv = hexdump -v -C
+    # 使用 `hexdump` 比较二进制文件的差异
+    textconv = hexdump -v -C
 
 [help]
 
-	# 自动纠正并执行错误的 git 命令
-	autocorrect = 1
+    # 自动纠正并执行错误的 git 命令
+    autocorrect = 1
 
 [merge]
 
-	# 在新创建的合并提交消息中包含合并提交的摘要
-	log = true
+    # 在新创建的合并提交消息中包含合并提交的摘要
+    log = true
 
 [push]
 
-	# https://git-scm.com/docs/git-config#git-config-pushdefault
-	default = simple
-	# 使用 `git push` 推送分支时顺便推送附带的标签
-	followTags = true
+    # https://git-scm.com/docs/git-config#git-config-pushdefault
+    default = simple
+    # 使用 `git push` 推送分支时顺便推送附带的标签
+    followTags = true
 
 [url "git@github.com:"]
 
-	insteadOf = "gh:"
-	pushInsteadOf = "github:"
-	pushInsteadOf = "git://github.com/"
+    insteadOf = "gh:"
+    pushInsteadOf = "github:"
+    pushInsteadOf = "git://github.com/"
 
 [url "git://github.com/"]
 
-	insteadOf = "github:"
+    insteadOf = "github:"
 
 [url "git@gist.github.com:"]
 
-	insteadOf = "gst:"
-	pushInsteadOf = "gist:"
-	pushInsteadOf = "git://gist.github.com/"
+    insteadOf = "gst:"
+    pushInsteadOf = "gist:"
+    pushInsteadOf = "git://gist.github.com/"
 
 [url "git://gist.github.com/"]
 
-	insteadOf = "gist:"
+    insteadOf = "gist:"
 
 [credential]
-	# 避免频繁询问密码
+    # 避免频繁询问密码
     helper = store
