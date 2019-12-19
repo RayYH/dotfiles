@@ -9,7 +9,7 @@ function doIt() {
         --exclude "licenses/" \
         --exclude "resources/" \
         --exclude ".DS_Store" \
-        --exclude ".osx" \
+        --exclude ".zshrc" \
         --exclude "bootstrap.sh" \
         --exclude "README.md" \
         --exclude "LICENSE" \

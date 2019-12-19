@@ -1,5 +1,7 @@
 # dotfiles
 
+![](resources/bash.png)
+
 我的 dotfiles，以 [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) 为基础，添加了中文注释并进行了必要的排版，主要适配我的 **MacOS** 开发环境。如果你想以此为基础配置属于你自己的 dotfiles，可以直接 Fork 本仓库并进行修改。
 
 ## 安装
@@ -29,7 +31,7 @@ set -- -f; source bootstrap.sh
 ### 不使用 Git 安装
 
 ```bash
-cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses/,brew.sh,resources/,macos.sh}
+cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses/,brew.sh,resources/,macos.sh,.zshrc}
 ```
 
 ### 使用 `.path` 文件来扩展路径变量
@@ -86,6 +88,12 @@ pip install --user requests
 # python3
 pip3 install --user requests
 ```
+
+### `.zshrc` ?
+
+虽然因为我要学习 Bash 而不得不将日常的终端环境切换到了 Bash，但本库还是保留了一份我之前使用的 `.zshrc` 供有缘人参考。
+
+![](resources/zsh.png)
 
 ## 致谢
 
