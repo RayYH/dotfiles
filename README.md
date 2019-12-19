@@ -64,6 +64,10 @@ set_brew_mirror
 set_composer_mirror
 set_npm_mirror
 set_yarn_mirror
+reset_brew_mirror
+reset_composer_mirror
+reset_npm_mirror
+reset_yarn_mirror
 ```
 
 ### 代理端口
