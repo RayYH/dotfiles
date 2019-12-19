@@ -81,10 +81,10 @@ reset_yarn_mirror
 ```bash
 # python2
 sudo easy_install pip
-sudo pip install requests
+pip install --user requests
 
 # python3
-pip3 install requests
+pip3 install --user requests
 ```
 
 ## 致谢
