@@ -91,7 +91,7 @@ pip3 install --user requests
 
 ### `.zshrc` ?
 
-虽然因为我要学习 Bash 而不得不将日常的终端环境切换到了 Bash，但本库还是保留了一份我之前使用的 `.zshrc` 供有缘人参考。
+虽然我已经将日常的终端环境完全切换到了 Bash，但本库还是保留了一份我之前使用的 `.zshrc`，毕竟在 iTerm2 中配置多个 Profile 是极其简单的事情。
 
 ![](resources/zsh.png)
 
