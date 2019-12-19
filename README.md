@@ -29,7 +29,7 @@ set -- -f; source bootstrap.sh
 ### 不使用 Git 安装
 
 ```bash
-cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses/,brew.sh,resources/}
+cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses/,brew.sh,resources/,macos.sh}
 ```
 
 ### 使用 `.path` 文件来扩展路径变量
@@ -79,8 +79,12 @@ reset_yarn_mirror
 我使用 [amix/vimrc](https://github.com/amix/vimrc)，并且做了部分修改。你可以使用 `updateVimrc` 更新仓库，如果报丢失 `requests` 库，尝试如下命令：
 
 ```bash
+# python2
 sudo easy_install pip
 sudo pip install requests
+
+# python3
+pip3 install requests
 ```
 
 ## 致谢

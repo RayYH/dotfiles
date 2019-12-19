@@ -66,7 +66,11 @@ function updateBrew() {
 function updateVimrc() {
 	cd ~/.vim_runtime || exit
 	git pull --rebase
-	python update_plugins.py
+	if command -v python3 &>/dev/null; then
+		python3 update_plugins.py
+	else
+		python update_plugins.py
+	fi
 	cd - || exit
 }
 

@@ -14,7 +14,7 @@ function doIt() {
 		--exclude "README.md" \
 		--exclude "LICENSE" \
 		--exclude "brew.sh" \
-		--exclude "config.sh" \
+		--exclude "macos.sh" \
 		-avh --no-perms . ~
 	source ~/.bash_profile
 }
