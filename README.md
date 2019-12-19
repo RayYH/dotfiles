@@ -11,7 +11,7 @@
 你可以克隆此仓库到任意位置 (我喜欢把该库放在 `~/Code/projects/shell/dotfiles`，然后建立一个符号链接 `~/dotfiles`)。初始化脚本会自动拉取最新的代码并且复制所有相关文件到你的 Home 目录。
 
 ```bash
-git clone https://github.com/mathiasbynens/dotfiles.git && cd dotfiles && source bootstrap.sh
+git clone https://github.com/rayyh/dotfiles.git && cd dotfiles && source bootstrap.sh
 ```
 
 更新，进入 `dotfiles` 所在的仓库，然后执行：
