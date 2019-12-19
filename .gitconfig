@@ -181,7 +181,3 @@
 [url "git://gist.github.com/"]
 
     insteadOf = "gist:"
-
-[credential]
-    # 避免频繁询问密码
-    helper = store
