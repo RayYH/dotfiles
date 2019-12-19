@@ -70,6 +70,15 @@ set_yarn_mirror
 
 `usep` 方法用于在终端配置代理相关的 `ftp_proxy/http_proxy/https_proxy` 环境变量，默认的端口给的是 1087，你可以在 `.extra` 文件中重新此方法。
 
+### `.vimrc` ?
+
+我使用 [amix/vimrc](https://github.com/amix/vimrc)，并且做了部分修改。你可以使用 `updateVimrc` 更新仓库，如果报丢失 `requests` 库，尝试如下命令：
+
+```bash
+sudo easy_install pip
+sudo pip install requests
+```
+
 ## 致谢
 
 - [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) - [LICENSE](licenses/mathiasbynens_dotfiles_mit)

@@ -62,6 +62,14 @@ function updateBrew() {
 	brew cleanup
 }
 
+# 更新 vimrc，查看 https://github.com/amix/vimrc
+function updateVimrc() {
+	cd ~/.vim_runtime || exit
+	git pull --rebase
+	python update_plugins.py
+	cd - || exit
+}
+
 # 更新其他包 - npm/composer/pip
 function update() {
 	npm install npm -g
