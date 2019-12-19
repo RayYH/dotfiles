@@ -1,75 +1,68 @@
-[user]
-
-	name = rayyh
-	email = rayyounghong@gmail.com
-
 [alias]
 
-	# View abbreviated SHA, description, and history graph of the latest 20 commits
+	# 查看最近 20 次提交记录的短 Sha 码，描述，以及历史 graph
 	l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
-	# View the current working tree status using the short format
+	# 使用短风格查看当前工作树的状态
 	s = status -s
 
-	# Show the diff between the latest commit and the current state
+	# 展示最近一次提交和当前状态的差异
 	d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
 
-	# `git di $number` shows the diff between the state `$number` revisions ago and the current state
+	# `git di $number` 展示最近 `$number` 次提交和当前状态的差异
 	di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
 
-	# Pull in remote changes for the current repository and all its submodules
+	# 从远程库中拉取当前存储库及其所有子模块的更改
 	p = git pull --recurse-submodules
 
-	# Clone a repository including all submodules
+	# 克隆包括子模块在内的仓库
 	c = clone --recursive
 
-	# Commit all changes
+	# 提交所有更改记录
 	ca = !git add -A && git commit -av
 
-	# Switch to a branch, creating it if necessary
+	# 切换指定分支，不存在则创建
 	go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
 
-	# Show verbose output about tags, branches or remotes
+	# 为 tags, branches 和 remotes 创建可视化输出
 	tags = tag -l
 	branches = branch -a
 	remotes = remote -v
 
-	# List aliases
+	# 展示所有别名
 	aliases = config --get-regexp alias
 
-	# Amend the currently staged files to the latest commit
+	# 将当前暂存的文件修改到最新的提交中
 	amend = commit --amend --reuse-message=HEAD
 
-	# Credit an author on the latest commit
+	# 为最近一次的提交添加作者信息 g credit ray rayyounghong@gmail.com
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 
 	# Interactive rebase with the given number of latest commits
 	reb = "!r() { git rebase -i HEAD~$1; }; r"
 
-	# Remove the old tag with this name and tag the latest commit with it.
+	# 移除旧有的标签并用最新的提交记录重新打一次标签
 	retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
 
-	# Find branches containing commit
+	# 查找包含提交记录的分支
 	fb = "!f() { git branch -a --contains $1; }; f"
 
-	# Find tags containing commit
+	# 查找包含指定 sha 码的标签
 	ft = "!f() { git describe --always --contains $1; }; f"
 
-	# Find commits by source code
+	# 通过源代码查找提交记录
 	fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
 
-	# Find commits by commit message
+	# 通过提交信息查找提交记录
 	fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
 
-	# Remove branches that have already been merged with master
-	# a.k.a. ‘delete merged’
+	# 删除代码已经合并到主分支的分支 a.k.a. ‘delete merged’
 	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
-	# List contributors with number of commits
+	# 按 commit 顺序列出 contributors
 	contributors = shortlog --summary --numbered
 
-	# Merge GitHub pull request on top of the current branch or,
-	# if a branch name is specified, on top of the specified branch
+	# 合并 GitHub 的 PR，基于当前分支或指定的分支
 	mpr = "!f() { \
 		declare currentBranch=\"$(git symbolic-ref --short HEAD)\"; \
 		declare branch=\"${2:-$currentBranch}\"; \
@@ -86,94 +79,88 @@
 
 [apply]
 
-	# Detect whitespace errors when applying a patch
+	# 检测空格错误
 	whitespace = fix
 
 [core]
 
-	# Use custom `.gitignore` and `.gitattributes`
+	# 使用自定义的 `.gitignore` 和 `.gitattributes`
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
 
-	# Treat spaces before tabs and all kinds of trailing whitespace as an error
-	# [default] trailing-space: looks for spaces at the end of a line
-	# [default] space-before-tab: looks for spaces before tabs at the beginning of a line
+	# 将制表符前的空格和各种尾随空格视为错误
+	# [默认] trailing-space: 在行尾查找空格
+	# [默认] space-before-tab: 在一行开头的制表符前查找空格
 	whitespace = space-before-tab,-indent-with-non-tab,trailing-space
 
-	# Make `git rebase` safer on macOS
-	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+	# 使得 `git rebase` 在 MacOS 上使用更加安全
+	# 更多信息: http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/
 	trustctime = false
 
-	# Prevent showing files whose names contain non-ASCII symbols as unversioned.
 	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
 	precomposeunicode = false
 
-	# Speed up commands involving untracked files such as `git status`.
 	# https://git-scm.com/docs/git-update-index#_untracked_cache
 	untrackedCache = true
 
-    # editor
+    # 编辑器
     editor = vim
 
 [color]
 
-	# Use colors in Git commands that are capable of colored output when
-	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
+	# 带颜色输出，默认配置
 	ui = auto
 
 [color "branch"]
 
-	current = yellow reverse
-	local = yellow
+	current = cyan reverse
+	local = cyan
 	remote = green
 
 [color "diff"]
 
-	meta = yellow bold
-	frag = magenta bold # line info
-	old = red # deletions
-	new = green # additions
+	meta = cyan bold
+	frag = magenta bold # 行信息
+	old = red           # 删除记录
+	new = green         # 添加记录
 
 [color "status"]
 
-	added = yellow
+	added = cyan
 	changed = green
-	untracked = cyan
+	untracked = yellow
 
 [commit]
 
-	# if you set true, please visit https://help.github.com/articles/signing-commits-using-gpg/
-	# to get more info
+	# 如果你开启 gpg 签名，请查看 https://help.github.com/articles/signing-commits-using-gpg/ 获取更多信息
 	gpgsign = false
 
 [diff]
 
-	# Detect copies as well as renames
+	# 检测重命名和拷贝文件
 	renames = copies
 
 [diff "bin"]
 
-	# Use `hexdump` to diff binary files
+	# 使用 `hexdump` 比较二进制文件的差异
 	textconv = hexdump -v -C
 
 [help]
 
-	# Automatically correct and execute mistyped commands
+	# 自动纠正并执行错误的 git 命令
 	autocorrect = 1
 
 [merge]
 
-	# Include summaries of merged commits in newly created merge commit messages
+	# 在新创建的合并提交消息中包含合并提交的摘要
 	log = true
 
 [push]
 
 	# https://git-scm.com/docs/git-config#git-config-pushdefault
 	default = simple
-	# Make `git push` push relevant annotated tags when pushing branches out.
+	# 使用 `git push` 推送分支时顺便推送附带的标签
 	followTags = true
-
-# URL shorthands
 
 [url "git@github.com:"]
 
@@ -196,5 +183,5 @@
 	insteadOf = "gist:"
 
 [credential]
-
-     helper = store
+	# 避免频繁询问密码
+    helper = store
