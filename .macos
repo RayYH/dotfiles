@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# MacOS 设置项： . ~/.macos
+
+# 关闭所有的系统偏好设置变慢，防止它们重写了我们将要设置的选项
+osascript -e 'tell application "System Preferences" to quit'
+
+# 获取管理员授权
+sudo -v
+
+# 更新管理员授权时间，直到我们执行完毕 `.macos`
+while true; do
+    sudo -n true
+    sleep 60
+    kill -0 "$$" || exit
+done 2>/dev/null &
+
+sudo nvram SystemAudioVolume=" "                                                       # 禁用启动音效
+defaults write NSGlobalDomain AppleHighlightColor -string "0.764700 0.976500 0.568600" # 设置高亮颜色为绿色
+
+# Set sidebar icon size to medium
+defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
+
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE

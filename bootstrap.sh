@@ -6,15 +6,15 @@ git pull origin master
 
 function doIt() {
     rsync --exclude ".git/" \
-        --exclude "licenses/" \
-        --exclude "resources/" \
+        --exclude "licenses" \
+        --exclude "resources" \
         --exclude ".DS_Store" \
         --exclude ".zshrc" \
         --exclude "bootstrap.sh" \
         --exclude "README.md" \
         --exclude "LICENSE" \
         --exclude "brew.sh" \
-        --exclude "macos.sh" \
+        --exclude ".macos" \
         -avh --no-perms . ~
     source ~/.bash_profile
 }

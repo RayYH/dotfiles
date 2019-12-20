@@ -31,7 +31,7 @@ set -- -f; source bootstrap.sh
 ### 不使用 Git 安装
 
 ```bash
-cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses/,brew.sh,resources/,macos.sh,.zshrc}
+cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,.osx,LICENSE,licenses,brew.sh,resources,.macos,.zshrc}
 ```
 
 ### 使用 `.path` 文件来扩展路径变量
