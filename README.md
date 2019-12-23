@@ -1,16 +1,18 @@
 # dotfiles
 
-![](resources/bash.png)
+![with-bash](resources/bash.png)
 
-我的 dotfiles，以 [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) 为基础，添加了中文注释并进行了必要的排版，主要适配我的 **MacOS** 开发环境。如果你想以此为基础配置属于你自己的 dotfiles，可以直接 Fork 本仓库并进行修改。
+我的 dotfiles，以 [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) 为基础，主要适配我个人的 **MacOS** 开发环境。如果你想以此为基础配置你自己的 dotfiles，可以直接 Fork 本仓库并进行修改。如果你想直接使用本仓库的 dotfiles，参考下文的 **安装** 一节。
 
 ## 安装
 
-注意：稳妥的做法是先 Fork 本仓库，然后查看源码确保你已了解每个文件中每行代码的真正含义，并根据自己需要添加或移除相关代码，**所有风险自行承担**。
+注意：稳妥的做法是 Fork 本仓库，查看源码并确保你已了解每个文件中每行代码的真正含义，然后根据自己需要添加或移除相关代码。
+
+> **所有风险自行承担**。
 
 ### 使用 Git 和 `bootstrap.sh` 脚本
 
-你可以克隆此仓库到任意位置 (我喜欢把该库放在 `~/Code/projects/shell/dotfiles`，然后建立一个符号链接 `~/dotfiles`)。初始化脚本会自动拉取最新的代码并且复制所有相关文件到你的 Home 目录。
+你可以克隆此仓库到任意位置 (我把该库放在 `~/Code/projects/shell/dotfiles`，然后建立了一个符号链接 `~/dotfiles`)。初始化脚本会自动拉取最新的代码并且复制所有相关文件到你的 Home 目录。
 
 ```bash
 git clone https://github.com/rayyh/dotfiles.git && cd dotfiles && source bootstrap.sh
@@ -59,22 +61,26 @@ git config --global user.email "$GIT_AUTHOR_EMAIL"
 
 ### 默认镜像
 
-众所周知，在国内通过 composer/npm/yarn 安装依赖时直接使用默认源会很慢，极其降低开发效率。因此本库提供了默认的配置文件，如果不需要配置国内源，可以通过 `.functions` 文件中定义的重置方法进行重置。
+众所周知，在国内通过 composer/npm/yarn 安装依赖时会使用默认源，其下载速度往往只有几十 K/s。因此本库提供了国内源默认的配置文件，如果不需要配置国内源，可以通过 `.functions` 文件中定义的重置方法进行重置。
 
 ```bash
+# 设置源
 set_brew_mirror
 set_composer_mirror
 set_npm_mirror
 set_yarn_mirror
+# 重置源
 reset_brew_mirror
 reset_composer_mirror
 reset_npm_mirror
 reset_yarn_mirror
 ```
 
+> 注意：`pip` 源写在 `.pip/pip.conf` 文件中，重置 `pip` 源，直接删除该配置文件即可。
+
 ### 代理端口
 
-`usep` 方法用于在终端配置代理相关的 `ftp_proxy/http_proxy/https_proxy` 环境变量，默认的端口给的是 1087，你可以在 `.extra` 文件中重新此方法。
+`usep` 方法用于在终端配置代理相关的 `ftp_proxy/http_proxy/https_proxy` 环境变量，默认的端口给的是 1087，你可以在 `.extra` 文件中重写此方法。
 
 ### `.vimrc` ?
 
@@ -93,7 +99,7 @@ pip3 install --user requests
 
 虽然我已经将日常的终端环境完全切换到了 Bash，但本库还是保留了一份我之前使用的 `.zshrc`，毕竟在 iTerm2 中配置多个 Profile 是极其简单的事情。
 
-![](resources/zsh.png)
+![with-zsh](resources/zsh.png)
 
 ## 致谢
 
