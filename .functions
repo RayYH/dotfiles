@@ -173,6 +173,22 @@ function targz() {
     echo "${tmpFile}.gz ($((zippedSize / 1000)) kB) created successfully."
 }
 
+# 使用 maven 快速构建一个原型项目
+function mvnag() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Usage: mvnag [groupId] [artifactId]";
+    else
+        mvn archetype:generate \
+        -DgroupId="$1" \
+        -DartifactId="$2" \
+        -DarchetypeGroupId=org.apache.maven.archetypes \
+        -DarchetypeArtifactId=maven-archetype-quickstart \
+        -DarchetypeVersion=1.4 \
+        -DinteractiveMode=false \
+        && cd "$2" || return
+    fi
+}
+
 # 确定文件或目录的大小
 function fs() {
     if du -b /dev/null >/dev/null 2>&1; then
