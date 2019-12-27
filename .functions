@@ -116,46 +116,7 @@ function extract() {
 
 # 清理 yarn 缓存
 function cleanYarn() {
-    YARN_CACHE_DIR=$(yarn config current | grep cacheFolder | sed "s/\"cacheFolder\": \"\(.*\)\",*/\1/" | xargs)
-    YARN_TEMP_DIR=$(yarn config current | grep tempFolder | sed "s/\"tempFolder\": \"\(.*\)\",*/\1/" | xargs)
-    case $1 in
-    "--show" | "-s")
-        du -sh "$YARN_TEMP_DIR"
-        du -sh "$YARN_CACHE_DIR"
-        ;;
-    "--clean" | "-c")
-        case $2 in
-        "" | "t" | "T")
-            if [[ -d "$YARN_TEMP_DIR" ]]; then
-                echo -e "Start clean: \e[32m$YARN_TEMP_DIR\e[0m"
-                rm -rf "$YARN_TEMP_DIR"
-                mkdir "$YARN_TEMP_DIR"
-                echo -e "\e[32mDone.\e[0m"
-            else
-                echo -e "$YARN_TEMP_DIR not exists"
-            fi
-            ;;
-        "c" | "C")
-            if [[ -d "$YARN_CACHE_DIR" ]]; then
-                echo -e "Start clean: \e[32m$YARN_CACHE_DIR\e[0m"
-                rm -rf "$YARN_CACHE_DIR"
-                mkdir "$YARN_CACHE_DIR"
-                mkdir "$YARN_TEMP_DIR"
-                echo -e "\e[32mDone.\e[0m"
-            else
-                echo -e "$YARN_CACHE_DIR not exists"
-            fi
-            ;;
-        esac
-        ;;
-    *)
-        printf "\n"
-        echo -e "\e[32m-s, --show\e[0m           show cache and temp foloder of yarn"
-        echo -e "\e[32m-c, --clean [c | t]\e[0m  clean all cache or temp files, c means cache, t means temp, default is temp"
-        echo -e "\e[32m-h, --help\e[0m           display help message"
-        printf "\n"
-        ;;
-    esac
+    yarn cache clean
 }
 
 # 移动文件到废纸篓
