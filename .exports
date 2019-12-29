@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# shellcheck disable=SC2154
 export EDITOR='vim'                                                                 # 默认编辑器
 export NODE_REPL_HISTORY=~/.node_history                                            # 查看 https://nodejs.org/api/repl.html 获取更多信息
 export NODE_REPL_HISTORY_SIZE='32768'                                               # 扩充至 32³ 个条目，默认值是 1000

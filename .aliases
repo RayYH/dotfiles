@@ -3,9 +3,9 @@
 # <======================================================================================= Long aliases ======================================================================================> #
 alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"                                                                                           # 锁屏
 alias chromekill="ps ux | grep '[C]hrome Helper (Renderer) --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"                                              # 关闭所有 Chrome 的标签页，释放内存时特别有用
-alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'                                                                                                             # 合并 PDF，用法 mergepdf input{1,2,3}.pdf
+alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'                                                                                                             # 合并 PDF，mergepdf input{1,2,3}.pdf
 alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'                                                                                                       # URLEncode
-alias emptytrash="sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"                           # 清理垃圾，注意这里并没有倾倒垃圾箱
+alias emptytrash="sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"                           # 清理垃圾，注意这里并没有倾倒垃圾桶
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'                                                                                                                   # 打开 Chrome 浏览器
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"                                  # 列出所有配置的 ip
 alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"                                                                                                               # 列出激活的网络接口

@@ -114,8 +114,8 @@ function extract() {
     fi
 }
 
-# 清理 yarn 缓存
-function cleanYarn() {
+# 清理缓存
+function cleanCache() {
     yarn cache clean
 }
 
@@ -136,6 +136,7 @@ function ff() {
 
 # 在当前目录下查找以指定字符串开始的文件
 function ffs() {
+    echo "$@"'*'
     find . -name "$@"'*'
 }
 
