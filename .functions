@@ -95,7 +95,12 @@ function update() {
     npm install npm -g
     npm update -g
     composer global update
-    pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple
+    if command -v pip3 &>/dev/null; then
+        pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U -i https://pypi.tuna.tsinghua.edu.cn/simple
+    fi
+    if command -v pip &>/dev/null; then
+        pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple
+    fi
 }
 
 # 创建并进入一个新目录
