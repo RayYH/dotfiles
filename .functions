@@ -42,6 +42,22 @@ function reset_yarn_mirror() {
     yarn config delete registry
 }
 
+# 设置所有可用 mirror
+function set_mirror() {
+    set_brew_mirror
+    set_composer_mirror
+    set_npm_mirror
+    set_yarn_mirror
+}
+
+# 取消设置 mirror
+function reset_mirror() {
+    reset_brew_mirror
+    reset_composer_mirror
+    reset_npm_mirror
+    reset_yarn_mirror
+}
+
 # 设置代理终端命令
 function usep() {
     local port=1087
