@@ -81,6 +81,7 @@ function updateBrew() {
 # 更新 vimrc，查看 https://github.com/amix/vimrc
 function updateVimrc() {
     cd ~/.vim_runtime || exit
+    git checkout .
     git pull --rebase
     if command -v python3 &>/dev/null; then
         python3 update_plugins.py
