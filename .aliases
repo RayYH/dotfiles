@@ -64,8 +64,9 @@ alias pshell="cd ~/Code/projects/shell && clear"              # Shell 项目
 
 # <===================== Short Command =====================> #
 ###############################################################
-alias g="git"                                                 # git
-alias cl="clear"                                              # clear
+# 禁用下面的别名，因为习惯了 cl 和 g 可能在突然切换终端环境后不能适应
+# alias g="git"                                               # git
+# alias cl="clear"                                            # clear
 alias plistbuddy="/usr/libexec/PlistBuddy"                    # plistbuddy
 ###############################################################
 
