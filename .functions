@@ -319,7 +319,7 @@ function tre() {
     tree -aC -I '.git|node_modules|bower_components|vendor' --dirsfirst "$@" | less -FRNX
 }
 
-# chrome 使用 proxy
+# chrome 使用 proxy - 推荐使用 SwitchyOmega 插件
 function chromep() {
     if [ -z "${1}" ]; then
         echo "ERROR: No socks port specified."
