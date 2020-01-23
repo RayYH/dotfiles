@@ -59,6 +59,7 @@ alias ppython="cd ~/Code/projects/python && clear"            # Python 项目
 alias pjava="cd ~/Code/projects/java && clear"                # Java 项目
 alias pjs="cd ~/Code/projects/javascript && clear"            # JavaScript 项目
 alias pshell="cd ~/Code/projects/shell && clear"              # Shell 项目
+alias pgo="cd ~/Code/projects/go && clear"                    # go 项目
 alias ic="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs" # icloud
 ###############################################################
 # <=========================================================> #
