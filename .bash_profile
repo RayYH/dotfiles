@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# 添加 .bin 目录到路径变量之中
-export PATH="$HOME/.bin:$PATH"
+# 添加 Bin 目录到路径变量之中
+export PATH="$HOME/Bin:$PATH"
 
 # 加载 dotfiles
 # * ~/.path 用于扩展 `$PATH`
