@@ -334,3 +334,8 @@ function chromep() {
         return 1
     fi
 }
+
+# used for laravel homestead
+function homestead() {
+    ( cd ~/Homestead && vagrant $* )
+}
