@@ -337,5 +337,5 @@ function chromep() {
 
 # used for laravel homestead
 function homestead() {
-    ( cd ~/Homestead && vagrant $* )
+    ( cd ~/Code/env/Homestead && vagrant $* )
 }
