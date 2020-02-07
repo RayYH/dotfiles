@@ -15,3 +15,6 @@ Thumbs.db
 
 # JetBrains
 .idea/
+
+# personal file
+.extra
