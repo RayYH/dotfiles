@@ -76,7 +76,7 @@ reset_npm_mirror
 reset_yarn_mirror
 ```
 
-> 注意：`pip` 源写在 `.pip/pip.conf` 文件中，重置 `pip` 源，直接删除该配置文件即可。
+> 注意：`pypi` 源写在 `.pip/pip.conf` 文件中，重置 `pypi` 源，直接删除该配置文件即可。
 
 ### 代理端口
 
