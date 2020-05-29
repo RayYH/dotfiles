@@ -13,4 +13,5 @@ export LC_ALL='en_US.UTF-8'                                                     
 export LESS_TERMCAP_md="${cyan}"                                                    # 高亮 manual 页面中的标题
 export MANPAGER='less -X'                                                           # 退出 manual 页面后不清空屏幕
 GPG_TTY="$(tty)" && export GPG_TTY                                                  # 避免使用 homebrew 安装 `gpg` 带来的问题：https://stackoverflow.com/a/42265848/96656
-export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles # 配置 homebrew 国内源
+# homebrew 默认不使用国内源
+# export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles # 配置 homebrew 国内源

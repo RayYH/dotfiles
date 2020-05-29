@@ -335,12 +335,7 @@ function chromep() {
     fi
 }
 
-# used for laravel homestead
-function homestead() {
-    ( cd ~/Code/env/Homestead && vagrant $* )
-}
-
-# 有时想看一下我有多少缓存
+# 清理缓存使用上面的 clearCache 即可
 function yarnHelper() {
     YARN_CACHE_DIR=$(yarn config current | grep cacheFolder | sed "s/\"cacheFolder\": \"\(.*\)\",*/\1/" | xargs)
     YARN_TEMP_DIR=$(yarn config current | grep tempFolder | sed "s/\"tempFolder\": \"\(.*\)\",*/\1/" | xargs)
