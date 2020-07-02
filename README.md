@@ -61,7 +61,9 @@ git config --global user.email "$GIT_AUTHOR_EMAIL"
 
 ### 默认镜像
 
-众所周知，在国内通过 composer/npm/yarn 安装依赖时，默认源的速度太过 slow，因此本库提供了一些国内源默认的配置文件。如果不需要配置国内源，可以通过 `.functions` 文件中定义的重置方法进行重置。
+众所周知，在国内通过 composer/npm/yarn 安装依赖时下载速度特别慢，因此本库提供了一些国内源默认的配置文件。如果不需要配置国内源，可以通过 `.functions` 文件中定义的重置方法进行重置。
+
+> 可以从 [Mirrors](https://github.com/RayYH/cheatsheets/blob/master/src/mirrors.md) 中获取更多关于国内镜像的信息。
 
 ```bash
 # 设置源
