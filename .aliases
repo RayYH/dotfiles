@@ -54,6 +54,7 @@ alias dt="cd ~/Desktop && clear"                              # 桌面
 alias one="cd ~/OneDrive && clear"                            # OneDrive
 alias p="cd ~/Code/projects && clear"                         # 项目
 alias pc="cd ~/Code/projects/c && clear"                      # C 项目
+alias pc="cd ~/Code/projects/cpp && clear"                    # CPP 项目
 alias pphp="cd ~/Code/projects/php && clear"                  # PHP 项目
 alias ppython="cd ~/Code/projects/python && clear"            # Python 项目
 alias pjava="cd ~/Code/projects/java && clear"                # Java 项目
