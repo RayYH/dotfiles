@@ -232,8 +232,7 @@ function fs() {
 }
 
 # 使用 git 的 diff 命令来比较两个文件的差异
-hash git &>/dev/null
-if [ $? -eq 0 ]; then
+if [ ! "$(hash git &>/dev/null)" ]; then
     function diff() {
         git diff --no-index --color-words "$@"
     }
@@ -241,7 +240,8 @@ fi
 
 # 从给定文件创建一个 dataurl
 function dataurl() {
-    local mimeType=$(file -b --mime-type "$1")
+    local mimeType
+    mimeType=$(file -b --mime-type "$1")
     if [[ $mimeType == text/* ]]; then
         mimeType="${mimeType};charset=utf-8"
     fi
@@ -255,9 +255,12 @@ function server() {
 
 # 展示使用 gzip 对文件进行压缩的压缩比
 function gz() {
-    local origsize=$(wc -c <"$1")
-    local gzipsize=$(gzip -c "$1" | wc -c)
-    local ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
+    local origsize
+    origsize=$(wc -c <"$1")
+    local gzipsize
+    gzipsize=$(gzip -c "$1" | wc -c)
+    local ratio
+    ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
     printf "orig: %d bytes\n" "$origsize"
     printf "gzip: %d bytes (%2.2f%%)\n" "$gzipsize" "$ratio"
 }
@@ -273,11 +276,13 @@ function getcertnames() {
     echo "Testing ${domain}…"
     echo "" # newline
 
-    local tmp=$(echo -e "GET / HTTP/1.0\nEOT" |
+    local tmp
+    tmp=$(echo -e "GET / HTTP/1.0\nEOT" |
         openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1)
 
     if [[ "${tmp}" == *"-----BEGIN CERTIFICATE-----"* ]]; then
-        local certText=$(echo "${tmp}" |
+        local certText
+        certText=$(echo "${tmp}" |
             openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
 			no_serial, no_sigdump, no_signame, no_validity, no_version")
         echo "Common Name:"
@@ -296,7 +301,7 @@ function getcertnames() {
 }
 
 # 跨平台使用的 open 命令
-if [ ! $(uname -s) = 'Darwin' ]; then
+if [ ! "$(uname -s)" = 'Darwin' ]; then
     if grep -q Microsoft /proc/version; then
         # Ubuntu on Windows using the Linux subsystem
         alias open='explorer.exe'
@@ -327,8 +332,8 @@ function chromep() {
     fi
     if lsof -i ":$1" >/dev/null 2>&1; then
         "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-        --user-data-dir="$HOME/.cache/chrome/proxy-profile" \
-        --proxy-server="socks5://localhost:$1"
+            --user-data-dir="$HOME/.cache/chrome/proxy-profile" \
+            --proxy-server="socks5://localhost:$1"
     else
         echo "ERROR: invalid socks port."
         return 1
