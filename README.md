@@ -3,8 +3,7 @@
 ![with-bash](resources/bash.png)
 
 ---
-
-我的 dotfiles，以 [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) 为基础，主要适配我个人的 **MacOS** 开发环境。如果你想基于此库配置你自己的 dotfiles，可以直接 fork 本仓库并进行修改。如果你想直接使用本仓库的 dotfiles，参考下文的 **安装** 一节。
+我的 dotfiles，以基于 [LICENSE](LICENSE-MIT.txt) 的 [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) 为基础，主要适配我个人的 **MacOS** 开发环境。如果你想基于此库配置你自己的 dotfiles，可以直接 fork 本仓库并进行修改。如果你想直接使用本仓库的 dotfiles，参考下文的 **安装** 一节。
 
 ## 安装
 
