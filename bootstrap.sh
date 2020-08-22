@@ -12,6 +12,7 @@ function syncFiles() {
         --exclude "bootstrap.sh" \
         --exclude "README.md" \
         --exclude "LICENSE" \
+        --exclude "LICENSE-MIT.txt" \
         --exclude "brew.sh" \
         -avh --no-perms . ~
     # shellcheck disable=SC1090

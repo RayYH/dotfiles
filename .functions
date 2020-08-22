@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# 设置 brew 镜像，详见 https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
+# setting brew mirror, see https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
+# use brew mirror is not suggested, pleas use proxy
 function set_brew_mirror() {
     pw_d=$(pwd)
     git -C "$(brew --repo)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
@@ -18,7 +19,7 @@ function reset_brew_mirror() {
     cd "${pw_d}" || return
 }
 
-# 设置 Composer 镜像，详见 https://developer.aliyun.com/composer
+# setting Composer mirror, see https://developer.aliyun.com/composer
 function set_composer_mirror() {
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 }
@@ -26,7 +27,7 @@ function reset_composer_mirror() {
     composer config -g --unset repos.packagist
 }
 
-# 设置 npm 源，详见 https://npm.taobao.org/
+# setting npm mirror, see https://npm.taobao.org/
 function set_npm_mirror() {
     npm config set registry=https://registry.npm.taobao.org
 }
@@ -34,7 +35,7 @@ function reset_npm_mirror() {
     npm config delete registry
 }
 
-# 设置 yarn 源
+# setting yarn mirror
 function set_yarn_mirror() {
     yarn config set registry https://registry.npm.taobao.org
 }
@@ -42,7 +43,7 @@ function reset_yarn_mirror() {
     yarn config delete registry
 }
 
-# 设置所有可用 mirror
+# setting all mirrors
 function set_mirror() {
     set_brew_mirror
     set_composer_mirror
@@ -50,7 +51,7 @@ function set_mirror() {
     set_yarn_mirror
 }
 
-# 取消设置 mirror
+# reset all mirrors
 function reset_mirror() {
     reset_brew_mirror
     reset_composer_mirror
@@ -58,7 +59,7 @@ function reset_mirror() {
     reset_yarn_mirror
 }
 
-# 设置代理终端命令
+# proxy export and unset
 function usep() {
     local port=1087
     export ftp_proxy=http://127.0.0.1:${port}
@@ -71,17 +72,18 @@ function unusep() {
     unset https_proxy
 }
 
-# 更新 brew 包
+# update brew packages
 function updateBrew() {
     brew update
     brew upgrade
     brew cleanup
 }
 
-# 更新 vimrc，查看 https://github.com/amix/vimrc
+# update see https://github.com/amix/vimrc
 function updateVimrc() {
     cd ~/.vim_runtime || exit
-    git checkout .
+    git reset --hard
+    git clean -xdf
     git pull --rebase
     if command -v python3 &>/dev/null; then
         python3 update_plugins.py
@@ -91,7 +93,7 @@ function updateVimrc() {
     cd - || exit
 }
 
-# 更新其他包 - npm/composer/pip
+# update some packages - npm/composer/pip
 function update() {
     npm install npm -g
     npm update -g
@@ -104,17 +106,17 @@ function update() {
     fi
 }
 
-# 创建并进入一个新目录
+# mkdir then cd in
 function mkd() {
     mkdir -p "$@" && cd "$_" || return
 }
 
-# 在终端进入 Finder 中打开的文件夹
+# change dir to the folder opend in Finder
 function cdf() {
     cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')" || return
 }
 
-# 解压文件
+# extract file: extract *.tgz
 function extract() {
     if [ -f "$1" ]; then
         case $1 in
@@ -136,38 +138,38 @@ function extract() {
     fi
 }
 
-# 清理缓存
+# clean some cache
 function cleanCache() {
     yarn cache clean
 }
 
-# 移动文件到废纸篓
+# move file to Trash bin
 function trash() {
     command mv "$@" ~/.Trash
 }
 
-# 使用 macOS 默认的快速预览打开指定文件
+# quick look file via default Perfiew program provided by macos
 function ql() {
     qlmanage -p "$*" >&/dev/null
 }
 
-# 在当前目录根据文件名查找指定文件
+# find file in current folder whose name matched provided string
 function ff() {
     find . -name "$@"
 }
 
-# 在当前目录下查找以指定字符串开始的文件
+# find file in current folder whose name starts with provided string
 function ffs() {
     echo "$@"'*'
     find . -name "$@"'*'
 }
 
-# 在当前目录下查找以指定字符串结尾的文件
+# find file in current folder whose name ends with provided string
 function ffe() {
     find . -name '*'"$@"
 }
 
-# 创建一个 `.tar.gz` 归档包
+# create a `.tar.gz` archive
 function targz() {
     local tmpFile="${@%/}.tar"
     tar -cvf "${tmpFile}" --exclude=".DS_Store" "${@}" || return 1
@@ -201,7 +203,7 @@ function targz() {
     echo "${tmpFile}.gz ($((zippedSize / 1000)) kB) created successfully."
 }
 
-# 使用 maven 快速构建一个原型项目
+# create a maven project
 function mvnag() {
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo "Usage: mvnag [groupId] [artifactId]"
@@ -217,7 +219,7 @@ function mvnag() {
     fi
 }
 
-# 确定文件或目录的大小
+# determine the size of file or folder
 function fs() {
     if du -b /dev/null >/dev/null 2>&1; then
         local arg=-sbh
@@ -231,14 +233,14 @@ function fs() {
     fi
 }
 
-# 使用 git 的 diff 命令来比较两个文件的差异
+# use git diff to diff files/folders
 if [ ! "$(hash git &>/dev/null)" ]; then
     function diff() {
         git diff --no-index --color-words "$@"
     }
 fi
 
-# 从给定文件创建一个 dataurl
+# create a dataurl of given file
 function dataurl() {
     local mimeType
     mimeType=$(file -b --mime-type "$1")
@@ -248,12 +250,14 @@ function dataurl() {
     echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
 }
 
-# 创建一个 HTTP Server，通过 npm 的 http-server 包: npm i http-server -g
+# start a HTTP Server via npm's http-server package: you shulld run npm i http-server -g first
 function server() {
-    http-server -p "${1:-8000}" || return
+    if command -v http-server &>/dev/null; then
+        http-server -p "${1:-8000}" || return
+    fi
 }
 
-# 展示使用 gzip 对文件进行压缩的压缩比
+# show the compression ratio
 function gz() {
     local origsize
     origsize=$(wc -c <"$1")
@@ -265,7 +269,7 @@ function gz() {
     printf "gzip: %d bytes (%2.2f%%)\n" "$gzipsize" "$ratio"
 }
 
-# 获取所有子域名，例如 getcertnames baidu.com
+# get all subdomains, e.g. getcertnames baidu.com
 function getcertnames() {
     if [ -z "${1}" ]; then
         echo "ERROR: No domain specified."
@@ -300,7 +304,7 @@ function getcertnames() {
     fi
 }
 
-# 跨平台使用的 open 命令
+# cross-platform open command
 if [ ! "$(uname -s)" = 'Darwin' ]; then
     if grep -q Microsoft /proc/version; then
         # Ubuntu on Windows using the Linux subsystem
@@ -310,7 +314,7 @@ if [ ! "$(uname -s)" = 'Darwin' ]; then
     fi
 fi
 
-# 不带任何参数则打开当前目录，否则打开指定目录
+# open folder
 function o() {
     if [ $# -eq 0 ]; then
         open .
@@ -319,12 +323,12 @@ function o() {
     fi
 }
 
-# tre 是 tree 命令的优化，忽略了部分目录： brew install tree
+# optimized tree command，omit some folder: please run brew install tree first
 function tre() {
     tree -aC -I '.git|node_modules|bower_components|vendor' --dirsfirst "$@" | less -FRNX
 }
 
-# chrome 使用 proxy - 推荐使用 SwitchyOmega 插件
+# open a chrome window behind a proxy - suggested using SwitchOmega plugin
 function chromep() {
     if [ -z "${1}" ]; then
         echo "ERROR: No socks port specified."
@@ -340,8 +344,8 @@ function chromep() {
     fi
 }
 
-# 清理缓存使用上面的 clearCache 即可
-function yarnHelper() {
+# simple yarn helper command
+function yarnh() {
     YARN_CACHE_DIR=$(yarn config current | grep cacheFolder | sed "s/\"cacheFolder\": \"\(.*\)\",*/\1/" | xargs)
     YARN_TEMP_DIR=$(yarn config current | grep tempFolder | sed "s/\"tempFolder\": \"\(.*\)\",*/\1/" | xargs)
     case $1 in

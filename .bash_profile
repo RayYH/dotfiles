@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# 添加 Bin 目录到路径变量之中
+# Add `~/Bin` to the `$PATH`
 export PATH="$HOME/Bin:$PATH"
 
-# 加载 dotfiles
-# * ~/.path 用于扩展 `$PATH`
-# * ~/.extra 用于包含一些额外的配置
+# Load the shell dotfiles, and then some:
+# ~/.path can be used to extend `$PATH`.
+# ~/.extra can be used for other settings you don’t want to commit.
 for file in ~/.{path,bash_prompt,exports,aliases,functions,extra}; do
     # shellcheck disable=SC1090
     [ -r "$file" ] && [ -f "$file" ] && source "$file"
@@ -14,24 +14,26 @@ done
 unset file
 
 # -s (set) -u (unset)
-# 查看 http://www.hep.by/gnu/bash/The-Shopt-Builtin.html#The-Shopt-Builtin 获取更多选项
-# 以不区分大小写的方式匹配扩展文件名
+# http://www.hep.by/gnu/bash/The-Shopt-Builtin.html#The-Shopt-Builtin
+# Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
-# 追加到 HISTFILE 而不是覆盖它
+# Append to the Bash history file, rather than overwriting it
 shopt -s histappend
 
-# 自动纠正 cd 时的输入
+# Autocorrect typos in path names when using `cd`
 shopt -s cdspell
 
-# 开启 Bash 4 的一些特性
+# Enable some Bash 4 features when possible:
+# `autocd`, e.g. `**/qux` will enter `./foo/bar/baz/qux`
+# Recursive globbing, e.g. `echo **/*.txt`
 for option in autocd globstar; do
     shopt -s "$option" 2>/dev/null
 done
 
-# bash 命令补全
+# Add tab completion for many Bash commands
 if command -v brew &>/dev/null && [ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]; then
-    # 确保现有的 Homebrew v1 补全仍能正常工作
+    # Ensure existing Homebrew v1 completions continue to work
     BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
     export BASH_COMPLETION_COMPAT_DIR
     # shellcheck disable=SC1090
@@ -41,10 +43,13 @@ elif [ -f /etc/bash_completion ]; then
     source /etc/bash_completion
 fi
 
-# 对 `g` 命令使用补全时，标记 `g` 为 `git`
-if type _git &>/dev/null; then
-    complete -o default -o nospace -F _git g
-fi
-
-# 添加基于 ~/.ssh/config 的命令补全，查看 https://dev.to/ahmedmusallam/how-to-autocomplete-ssh-hosts-1hob
+# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
+# https://dev.to/ahmedmusallam/how-to-autocomplete-ssh-hosts-1hob
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh
+
+# Add tab completion for `defaults read|write NSGlobalDomain`
+# You could just use `-g` instead, but I like being explicit
+complete -W "NSGlobalDomain" defaults;
+
+# Add `killall` tab completion for common apps
+complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall;

@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
-export EDITOR='vim'                                                                 # 默认编辑器
-export NODE_REPL_HISTORY=~/.node_history                                            # 查看 https://nodejs.org/api/repl.html 获取更多信息
-export NODE_REPL_HISTORY_SIZE='32768'                                               # 扩充至 32³ 个条目，默认值是 1000
-export NODE_REPL_MODE='sloppy'                                                      # 默认值，允许非严格模式运行，兼容 Web 浏览器
-export PYTHONIOENCODING='UTF-8'                                                     # 设置 Python 使用 UTF-8 编码用于向 stdin, stdout 和 stderr 输出
-export HISTSIZE='32768'                                                             # 添加 Bash 命令历史记录的存放空间，默认值是 500
-export HISTFILESIZE="${HISTSIZE}"                                                   # 同上
-export HISTCONTROL='ignoreboth'                                                     # 去除重复命令
-export LANG='en_US.UTF-8'                                                           # US English 和 UTF-8
-export LC_ALL='en_US.UTF-8'                                                         # US English 和 UTF-8
-export LESS_TERMCAP_md="${cyan}"                                                    # 高亮 manual 页面中的标题
-export MANPAGER='less -X'                                                           # 退出 manual 页面后不清空屏幕
-GPG_TTY="$(tty)" && export GPG_TTY                                                  # 避免使用 homebrew 安装 `gpg` 带来的问题：https://stackoverflow.com/a/42265848/96656
-# homebrew 默认不使用国内源
-# export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles # 配置 homebrew 国内源
+export EDITOR='vim'                                                                 # Make vim the default editor.
+export NODE_REPL_HISTORY=~/.node_history                                            # Enable persistent REPL history for `node`, see https://nodejs.org/api/repl.html
+export NODE_REPL_HISTORY_SIZE='32768'                                               # Allow 32³ entries; the default is 1000.
+export NODE_REPL_MODE='sloppy'                                                      # Use sloppy mode by default, matching web browsers.
+export PYTHONIOENCODING='UTF-8'                                                     # Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
+export HISTSIZE='32768'                                                             # Increase Bash history size.
+export HISTFILESIZE="${HISTSIZE}"                                                   # Increase Bash history size.
+export HISTCONTROL='ignoreboth'                                                     # Omit duplicates and commands that begin with a space from history.
+export LANG='en_US.UTF-8'                                                           # Prefer US English and use UTF-8.
+export LC_ALL='en_US.UTF-8'                                                         # Prefer US English and use UTF-8.
+export LESS_TERMCAP_md="${cyan}"                                                    # Highlight section titles in manual pages.
+export MANPAGER='less -X'                                                           # Don’t clear the screen after quitting a manual page.
+GPG_TTY="$(tty)" && export GPG_TTY                                                  # Avoid issues with `gpg` as installed via Homebrew, see https://stackoverflow.com/a/42265848/96656
