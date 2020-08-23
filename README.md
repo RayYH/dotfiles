@@ -4,7 +4,7 @@
 
 ---
 
-My dotfiles, based on [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) which is licensed under [MIT LICENSE](LICENSE-MIT.txt).
+My dotfiles, based on [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles) ([LICENSE](LICENSE-MIT.txt)).
 
 ## Installation
 
@@ -33,12 +33,12 @@ set -- -f; source bootstrap.sh
 ### Git-free install
 
 ```bash
-cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,LICENSE,licenses,brew.sh,resources,.zshrc}
+cd; curl -#L https://github.com/rayyh/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,LICENSE,LICENSE_MIT.txt,licenses,brew.sh,resources,.zshrc}
 ```
 
 ### Specify the `$PATH`
 
-If ~/.path exists, it will be sourced along with the other files, before any feature testing takes place.
+If `~/.path` exists, it will be sourced along with the other files, before any feature testing takes place.
 
 ```bash
 export PATH="/usr/local/bin:$PATH"
@@ -47,9 +47,9 @@ export PATH="/usr/local/sbin:$PATH"
 
 ### Add custom commands without creating a new fork
 
-f ~/.extra exists, it will be sourced along with the other files. You can use this to add a few custom commands without the need to fork this entire repository, or to add commands you don’t want to commit to a public repository.
+f `~/.extra` exists, it will be sourced along with the other files. You can use this to add a few custom commands without the need to fork this entire repository, or to add commands you don’t want to commit to a public repository.
 
-My ~/.extra looks something like this:
+My `~/.extra` looks something like this:
 
 ```bash
 # Git credentials
@@ -61,9 +61,7 @@ GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 git config --global user.email "$GIT_AUTHOR_EMAIL"
 ```
 
-### Default mirrors
-
-**ONLY FOR developers living in china's mainland**.
+### Default mirrors - for developers living in china's mainland
 
 > More info: [Mirrors](https://github.com/RayYH/cheatsheets/blob/master/src/mirrors.md).
 
@@ -80,11 +78,11 @@ reset_npm_mirror
 reset_yarn_mirror
 ```
 
-> Notification: `pypi` mirror was configured in `.pip/pip.conf` file, if you want to reset `pypi` mirror, just delete whole `.pip` folder.
+> Note: `pypi` mirror was configured in `.pip/pip.conf` file, if you want to reset `pypi` mirror, just delete the whole `.pip` folder.
 
 ### Use proxy
 
-`usep` method can set `ftp_proxy/http_proxy/https_proxy` environment variables, the default host is `127.0.0.1` and default port is `1087`, you can override this method in `.extra` file.
+`usep` method can set `ftp_proxy/http_proxy/https_proxy` environment variables, the configured host is `127.0.0.1` and port is `1087`, you can override this method in `.extra` file if you want to use another proxy url.
 
 ### `.vimrc` ?
 
