@@ -63,8 +63,6 @@ git config --global user.email "$GIT_AUTHOR_EMAIL"
 
 ### Default mirrors - for developers living in china's mainland
 
-> More info: [Mirrors](https://github.com/RayYH/cheatsheets/blob/master/src/mirrors.md).
-
 ```bash
 # set mirrors
 set_brew_mirror
@@ -78,7 +76,7 @@ reset_npm_mirror
 reset_yarn_mirror
 ```
 
-> Note: `pypi` mirror was configured in `.pip/pip.conf` file, if you want to reset `pypi` mirror, just delete the whole `.pip` folder.
+> NOTE: `pypi` mirror was configured in `.pip/pip.conf` file, if you want to reset `pypi` mirror, just delete the whole `.pip` folder.
 
 ### Use proxy
 
@@ -88,7 +86,7 @@ reset_yarn_mirror
 
 I strongly suggest using [amix/vimrc](https://github.com/amix/vimrc). You can use `updateVimrc` to update this repo.
 
-To solve the lacking of `requests` package, try below commands.
+To solve the lacking of `requests` package problem, try below commands.
 
 ```bash
 # python2
@@ -106,4 +104,4 @@ pip3 install --user requests
 
 ## License
 
-[MIT](LICENSE).
+This repo was licensed under the [MIT LICENSE](LICENSE).
