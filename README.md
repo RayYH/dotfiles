@@ -78,10 +78,6 @@ reset_yarn_mirror
 
 > NOTE: `pypi` mirror was configured in `.pip/pip.conf` file, if you want to reset `pypi` mirror, just delete the whole `.pip` folder.
 
-### Use proxy
-
-`usep` method can set `ftp_proxy/http_proxy/https_proxy` environment variables, the configured host is `127.0.0.1` and port is `1087`, you can override this method in `.extra` file if you want to use another proxy url.
-
 ### `.vimrc` ?
 
 I strongly suggest using [amix/vimrc](https://github.com/amix/vimrc). You can use `updateVimrc` to update this repo.
