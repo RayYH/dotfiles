@@ -84,6 +84,7 @@ alias lsd='ls -lF ${colorflag} | grep --color=never "^d"'     # List only direct
 alias grep='grep --color=auto'                                # Always enable colored `grep` output
 alias fgrep='fgrep --color=auto'                              # Always enable colored `fgrep` output
 alias egrep='egrep --color=auto'                              # Always enable colored `egrep` output
+alias python3="PYTHONPATH=. python3"                          # Always append current dir to PYTHONPATH when exec python scripts
 ###############################################################
 
 # <==================== Useful Commands ====================> #
