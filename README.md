@@ -100,4 +100,4 @@ pip3 install --user requests
 
 ## License
 
-This repo was licensed under the [MIT LICENSE](LICENSE).
+This project is open-source software licensed under the [MIT LICENSE](LICENSE).
