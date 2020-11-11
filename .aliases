@@ -1,17 +1,29 @@
 #!/usr/bin/env bash
 
-# <======================================================================================= Long aliases ======================================================================================> #
-alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"                                                                                           # Lock the screen (when going AFK)
-alias chromekill="ps ux | grep '[C]hrome Helper (Renderer) --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"                                              # Kill all the tabs in Chrome to free up memory
-alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'                                                                                                             # Merge PDF files, preserving hyperlinks, Usage: `mergepdf input{1,2,3}.pdf`
-alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'                                                                                                       # URL-encode strings
-alias clearFiles="sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"                           # Clear Apple’s System Logs to improve shell startup speed, clear download history from quarantine.
-alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'                                                                                                                   # Ppen Google Chrome
-alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"                                  # Show IP addresses
-alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"                                                                                                               # Show active network interfaces
-alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"                                                                                                                             # Flush Directory Service cache
-alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder" # Clean up LaunchServices to remove duplicates in the “Open With” menu
-# <======================================================================================= Long aliases ======================================================================================> #
+# Lock the screen (when going AFK)
+alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
+# Kill all the tabs in Chrome to free up memory
+alias chromekill="ps ux | grep '[C]hrome Helper (Renderer) --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+# Merge PDF files, preserving hyperlinks, Usage: `mergepdf input{1,2,3}.pdf`
+alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'
+# URL-encode strings
+alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
+# Clear Apple’s System Logs to improve shell startup speed, clear download history from quarantine.
+alias clearFiles="sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"
+# Open Google Chrome
+if [ ! "$(uname -s)" = 'Darwin' ]; then
+    alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+else
+    alias chrome=google-chrome
+fi
+# Show IP addresses
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+# Show active network interfaces
+alias ifactive="ifconfig | pcregrep -M -o '^[^\t:]+:([^\n]|\n\t)*status: active'"
+# Flush Directory Service cache
+alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
+# Clean up LaunchServices to remove duplicates in the “Open With” menu
+alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
 
 # <=================================== Macos configurations ==================================> #
 alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"     # Show hidden files in Finder
@@ -34,18 +46,36 @@ else # macOS
 fi
 ###############################################################
 
-# <=============== Common Folder Navigation ================> #
-###############################################################
-alias ..="cd .."                                              # Go back 1 directory level (for fast typers)
-alias cd..="cd .."                                            # Go back 1 directory level
-alias ...="cd ../.."                                          # Go back 2 directory levels
-alias .3='cd ../../../'                                       # Go back 3 directory levels
-alias .4='cd ../../../../'                                    # Go back 4 directory levels
-alias .5='cd ../../../../../'                                 # Go back 5 directory levels
-alias .6='cd ../../../../../../'                              # Go back 6 directory levels
-alias ~="cd ~"                                                # Go Home
-alias -- -="cd -"                                             # Go back to previous folder
-###############################################################
+# <= Common Folder Navigation => #
+##################################
+alias ..="cd .."                 # Go back 1 directory level (for fast typers)
+alias cd..="cd .."               # Go back 1 directory level
+alias ...="cd ../.."             # Go back 2 directory levels
+alias .3='cd ../../../'          # Go back 3 directory levels
+alias .4='cd ../../../../'       # Go back 4 directory levels
+alias .5='cd ../../../../../'    # Go back 5 directory levels
+alias .6='cd ../../../../../../' # Go back 6 directory levels
+alias ~="cd ~"                   # Go Home
+alias -- -="cd -"                # Go back to previous folder
+##################################
+
+# <======== Network Resources =========> #
+##########################################
+alias GET="lwp-request -m 'GET'"         # GET
+alias HEAD="lwp-request -m 'HEAD'"       # HEAD
+alias POST="lwp-request -m 'POST'"       # POST
+alias PUT="lwp-request -m 'PUT'"         # PUT
+alias DELETE="lwp-request -m 'DELETE'"   # DELETE
+alias TRACE="lwp-request -m 'TRACE'"     # TRACE
+alias OPTIONS="lwp-request -m 'OPTIONS'" # OPTIONS
+##########################################
+
+# <=========== Other Commands ===========> #
+############################################
+alias plistbuddy="/usr/libexec/PlistBuddy" # plistbuddy
+alias now="date '+%Y-%m-%d %H:%I:%S'"      # current time
+alias nows="date '+%s'"                    # current timestamp
+############################################
 
 # <=================== Folder Navigation ===================> #
 ###############################################################
@@ -66,27 +96,22 @@ alias ic="cd ~/Library/Mobile\ Documents/com~apple~CloudDocs" # icloud
 ###############################################################
 # <=========================================================> #
 
-# <===================== Short Command =====================> #
-###############################################################
-alias plistbuddy="/usr/libexec/PlistBuddy"                    # plistbuddy
-###############################################################
-
-# <=================== Preferred Commands ==================> #
-###############################################################
-alias cp='cp -iv'                                             # Preferred 'cp' implementation
-alias mv='mv -iv'                                             # Preferred 'mv' implementation
-alias mkdir='mkdir -p'                                        # Preferred 'mkdir' implementation
-alias less='less -FSRXc'                                      # Preferred 'less' implementation
-alias ls='command ls ${colorflag}'                            # colorful ls
-alias l='ls -lF ${colorflag}'                                 # List all files colorized in long format
-alias la='ls -lAF ${colorflag}'                               # List all files colorized in long format, excluding . and ..
-alias lsd='ls -lF ${colorflag} | grep --color=never "^d"'     # List only directories
-alias grep='grep --color=auto'                                # Always enable colored `grep` output
-alias fgrep='fgrep --color=auto'                              # Always enable colored `fgrep` output
-alias egrep='egrep --color=auto'                              # Always enable colored `egrep` output
-alias python3="PYTHONPATH=. python3"                          # Always append current dir to PYTHONPATH when exec python scripts
-alias pdflatex='pdflatex -shell-escape'                       # Preferred 'pdflatex' implementation
-###############################################################
+# <=============== Preferred Commands ==================> #
+###########################################################
+alias cp='cp -iv'                                         # Preferred 'cp' implementation
+alias mv='mv -iv'                                         # Preferred 'mv' implementation
+alias mkdir='mkdir -p'                                    # Preferred 'mkdir' implementation
+alias less='less -FSRXc'                                  # Preferred 'less' implementation
+alias ls='command ls ${colorflag}'                        # colorful ls
+alias l='ls -lF ${colorflag}'                             # List all files colorized in long format
+alias la='ls -lAF ${colorflag}'                           # List all files colorized in long format, excluding . and ..
+alias lsd='ls -lF ${colorflag} | grep --color=never "^d"' # List only directories
+alias grep='grep --color=auto'                            # Always enable colored `grep` output
+alias fgrep='fgrep --color=auto'                          # Always enable colored `fgrep` output
+alias egrep='egrep --color=auto'                          # Always enable colored `egrep` output
+alias python3="PYTHONPATH=. python3"                      # Always append current dir to PYTHONPATH when exec python scripts
+alias pdflatex='pdflatex -shell-escape'                   # Preferred 'pdflatex' implementation
+###########################################################
 
 # <==================== Useful Commands ====================> #
 ###############################################################
@@ -103,25 +128,14 @@ alias map="xargs -n1"                                         # Intuitive map fu
 
 # <======================= Check sum =======================> #
 ###############################################################
-command -v hd >/dev/null || alias hd="hexdump -C"             # hd
-command -v md5sum >/dev/null || alias md5sum="md5"            # md5
-command -v sha1sum >/dev/null || alias sha1sum="shasum"       # shasum
-###############################################################
-
-# <=================== Network Resources ===================> #
-###############################################################
-alias GET="lwp-request -m 'GET'"                              # GET
-alias HEAD="lwp-request -m 'HEAD'"                            # HEAD
-alias POST="lwp-request -m 'POST'"                            # POST
-alias PUT="lwp-request -m 'PUT'"                              # PUT
-alias DELETE="lwp-request -m 'DELETE'"                        # DELETE
-alias TRACE="lwp-request -m 'TRACE'"                          # TRACE
-alias OPTIONS="lwp-request -m 'OPTIONS'"                      # OPTIONS
+command -v hd >/dev/null || alias hd="hexdump -C"       # hd
+command -v md5sum >/dev/null || alias md5sum="md5"      # md5
+command -v sha1sum >/dev/null || alias sha1sum="shasum" # shasum
 ###############################################################
 
 # <==================== Network Commands ===================> #
 ###############################################################
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com" # ip:           Public real IP 
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com" # ip:           Public real IP
 alias myip='curl https://api.myip.com'                        # myip:         Public Proxied IP
 alias netCons='lsof -i'                                       # netCons:      Show all TCP/IP sockets
 alias flushDNS='dscacheutil -flushcache'                      # flushDNS:     clear DNS cache
