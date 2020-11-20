@@ -150,7 +150,7 @@ function trash() {
     command mv "$@" ~/.Trash
 }
 
-# quick look file via default Perfiew program provided by macos
+# quick look file via default Preview program provided by macos
 function ql() {
     qlmanage -p "$*" >&/dev/null
 }
@@ -162,13 +162,12 @@ function ff() {
 
 # find file in current folder whose name starts with provided string
 function ffs() {
-    echo "$@"'*'
-    find . -name "$@"'*'
+    find . -name "$@" '*'
 }
 
 # find file in current folder whose name ends with provided string
 function ffe() {
-    find . -name '*'"$@"
+    find . -name '*' "$@"
 }
 
 # create a `.tar.gz` archive
@@ -337,7 +336,7 @@ function chromep() {
         return 1
     fi
     if lsof -i ":$1" >/dev/null 2>&1; then
-            chrome --user-data-dir="$HOME/.cache/chrome/proxy-profile" \
+        chrome --user-data-dir="$HOME/.cache/chrome/proxy-profile" \
             --proxy-server="socks5://localhost:$1"
     else
         echo "ERROR: invalid socks port."

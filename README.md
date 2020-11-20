@@ -1,5 +1,7 @@
 # dotfiles
 
+**WARNING**: This project is not supported nor maintained anymore, Please refer to [rayyh/setup](https://github.com/rayyh/setup) which is a new version of my dotfiles.
+
 ![with-bash](resources/bash.png)
 
 ---

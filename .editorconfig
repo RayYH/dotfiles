@@ -11,8 +11,12 @@ trim_trailing_whitespace = true
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{yml,yaml,js,json}]
+[*.{yml, yaml, js, json}]
 indent_size = 2
 
+# Makefiles
 [{M, m}akefile]
+indent_style = tab
+
+[*.go]
 indent_style = tab
