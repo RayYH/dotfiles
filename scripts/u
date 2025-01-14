@@ -1,0 +1,20 @@
+#/usr/bin/env bash
+
+echo "Upgrading Vineflower"
+VERSION=$(curl -s https://api.github.com/repos/Vineflower/vineflower/releases/latest | jq -r .tag_name)
+CURRENT_VERSION=$(java -jar ${HOME}/Bin/vineflower.jar --help | grep -oP 'Vineflower Decompiler \K\d+\.\d+\.\d+')
+if [ "$VERSION" = "$CURRENT_VERSION" ]; then
+    echo "Vineflower is already up to date"
+else
+    echo "Upgrading Vineflower to ${VERSION}"
+    wget -q "https://github.com/Vineflower/vineflower/releases/download/${VERSION}/vineflower-${VERSION}.jar" -O ${HOME}/Bin/vineflower.jar
+    echo "Vineflower upgraded to ${VERSION}"
+fi
+
+echo "Upgrading brew..."
+
+brew update
+brew upgrade
+
+echo "Upgrading flutter..."
+flutter upgrade

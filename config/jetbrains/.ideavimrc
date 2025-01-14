@@ -1,0 +1,111 @@
+let mapleader=" "
+let maplocalleader = " "
+
+" Set netrw_liststyle
+let g:netrw_liststyle = 3
+
+" Set options
+set backup
+set backupdir^=.
+set breakindent
+set clipboard=unnamedplus
+set cmdheight=0
+set completeopt=menuone,longest,preview
+set confirm
+set expandtab
+set exrc
+set fillchars+=eob:\
+set ignorecase
+set inccommand=split
+set linebreak
+set list
+set listchars=tab:▸\ ,trail:·,nbsp:␣
+set mouse=a
+set mousemoveevent
+set number
+set redrawtime=10000
+set relativenumber
+set scrolloff=8
+set secure
+set shiftwidth=4
+set shortmess+=I
+set showmode=false
+set sidescrolloff=8
+set signcolumn=yes:2
+set smartcase
+set smartindent
+set softtabstop=4
+set spell
+set splitbelow
+set splitright
+set tabstop=4
+set termguicolors
+set title
+set titlestring=%f\ //\ nvim
+set undofile
+set updatetime=200
+set wildmode=longest:full,full
+set nowrap
+
+
+" Clear search highlighting.
+nnoremap <Esc> :nohlsearch<CR>
+
+" Open the current file in the default program.
+nnoremap <leader>o :!open %<CR><CR>
+
+" Diagnostics.
+nnoremap [d :lua vim.diagnostic.goto_prev()<CR>
+nnoremap ]d :lua vim.diagnostic.goto_next()<CR>
+
+" Allow gf to open non-existent files.
+nnoremap gf :edit <cfile><CR>
+
+" Reselect visual selection after indenting.
+vnoremap < <gv
+vnoremap > >gv
+
+" Maintain the cursor position when yanking a visual selection.
+vnoremap y myy`y
+vnoremap Y myY`y
+
+" When text is wrapped, move by terminal rows, not lines, unless a count is provided.
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+
+" Paste replace visual selection without copying it.
+vnoremap p "_dP
+
+" Reselect pasted text.
+nnoremap p p`[v`]
+
+" Easy insertion of a trailing ; or , from insert mode.
+inoremap ;; <Esc>A;<Esc>
+inoremap ,, <Esc>A,<Esc>
+
+" Disable annoying command line thing.
+nnoremap q: :q<CR>
+
+" Move text up and down.
+inoremap <A-j> <Esc>:move .+1<CR>==gi
+inoremap <A-k> <Esc>:move .-2<CR>==gi
+nnoremap <A-j> :move .+1<CR>==
+nnoremap <A-k> :move .-2<CR>==
+vnoremap <A-j> :move '>+1<CR>gv=gv
+vnoremap <A-k> :move '<-2<CR>gv=gv
+
+" Disable arrow keys.
+nnoremap <Up> <Nop>
+nnoremap <Down> <Nop>
+nnoremap <Left> <Nop>
+nnoremap <Right> <Nop>
+
+inoremap <Up> <Nop>
+inoremap <Down> <Nop>
+inoremap <Left> <Nop>
+inoremap <Right> <Nop>
+
+vnoremap <Up> <Nop>
+vnoremap <Down> <Nop>
+vnoremap <Left> <Nop>
+vnoremap <Right> <Nop>
