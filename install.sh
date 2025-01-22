@@ -15,8 +15,11 @@ fi
 if [ -f "$HOME/.setuprc" ]; then
     echo "$HOME/.setuprc already exists"
 else
-    cp "$HOME/.setup/.setuprc" "$HOME/"
+    cp "$DOTFILES/.setuprc" "$HOME/.setuprc"
 fi
+
+# make sure .config exists
+mkdir -p "$HOME/.config"
 
 # kitty
 rm -rf "$HOME/.config/kitty"
@@ -86,6 +89,6 @@ else
     # write empty line first
     echo >>"$BASH_PROFILE"
     # shellcheck disable=SC2016
-    echo 'test -e "$DOTFILES/setup.bash" && source "$DOTFILES/setup.bash"' >>"$BASH_PROFILE"
+    echo "test -e "$DOTFILES/setup.bash" && source "$DOTFILES/setup.bash"" >>"$BASH_PROFILE"
     echo "setup done, restart your terminal!!"
 fi

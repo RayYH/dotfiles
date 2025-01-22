@@ -1,0 +1,19 @@
+services:
+  dotfiles-ubuntu:
+    image: ubuntu:latest
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    environment:
+      - TZ=Etc/UTC
+      - LANG=en_US.UTF-8
+      - LANGUAGE=en_US:en
+      - LC_ALL=en_US.UTF-8
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
