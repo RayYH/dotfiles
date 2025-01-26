@@ -96,3 +96,11 @@ function __install_shell() {
     step=$((step + 1))
 }
 __install_shell
+
+function __fix_locales() {
+    __echo "Fixing locales..."
+    apt-get install locales
+    dpkg-reconfigure locales
+    __done "$step"
+}
+__fix_locales
