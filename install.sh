@@ -21,23 +21,42 @@ fi
 # make sure .config exists
 mkdir -p "$HOME/.config"
 
+# create backup folder based on current date
+BACKUP_FOLDER="$DOTFILES/backup/$(date +%Y%m%d%H%M%S)"
+mkdir -p "$BACKUP_FOLDER"
+
 # kitty
+if [ -d "$HOME/.config/kitty" ]; then
+    mv "$HOME/.config/kitty" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.config/kitty"
 ln -s "$DOTFILES/config/kitty" "$HOME/.config/kitty"
 
 # tmux
+if [ -f "$HOME/.tmux.conf" ]; then
+    mv "$HOME/.tmux.conf" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.tmux.conf"
 ln -s "$DOTFILES/config/tmux/tmux.conf" "$HOME/.tmux.conf"
 
 # nvim
+if [ -d "$HOME/.config/nvim" ]; then
+    mv "$HOME/.config/nvim" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.config/nvim"
 ln -s "$DOTFILES/config/nvim" "$HOME/.config/nvim"
 
 # alacritty
+if [ -d "$HOME/.config/alacritty" ]; then
+    mv "$HOME/.config/alacritty" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.config/alacritty"
 ln -s "$DOTFILES/config/alacritty" "$HOME/.config/alacritty"
 
 # starship
+if [ -f "$HOME/.config/starship.toml" ]; then
+    mv "$HOME/.config/starship.toml" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.config/starship.toml"
 ln -s "$DOTFILES/config/starship/starship.toml" "$HOME/.config/starship.toml"
 # if is ubuntu system, use $DOTFILES/config/starship/ubuntu/starship.toml
@@ -61,26 +80,44 @@ elif [[ "$OSTYPE" == "linux-musl" ]]; then
 fi
 
 # curl
+if [ -f "$HOME/.curlrc" ]; then
+    mv "$HOME/.curlrc" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.curlrc"
 ln -s "$DOTFILES/config/curl/.curlrc" "$HOME/.curlrc"
 
 # wget
+if [ -f "$HOME/.wgetrc" ]; then
+    mv "$HOME/.wgetrc" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.wgetrc"
 ln -s "$DOTFILES/config/wget/.wgetrc" "$HOME/.wgetrc"
 
 # shell check
+if [ -f "$HOME/.shellcheckrc" ]; then
+    mv "$HOME/.shellcheckrc" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.shellcheckrc"
 ln -s "$DOTFILES/config/shellcheck/.shellcheckrc" "$HOME/.shellcheckrc"
 
 # editorconfig
+if [ -f "$HOME/.editorconfig" ]; then
+    mv "$HOME/.editorconfig" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.editorconfig"
 ln -s "$DOTFILES/config/editorconfig/.editorconfig" "$HOME/.editorconfig"
 
 # conda
+if [ -f "$HOME/.condarc" ]; then
+    mv "$HOME/.condarc" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.condarc"
 ln -s "$DOTFILES/config/conda/.condarc" "$HOME/.condarc"
 
 # ideavimrc
+if [ -f "$HOME/.ideavimrc" ]; then
+    mv "$HOME/.ideavimrc" "$BACKUP_FOLDER"
+fi
 rm -rf "$HOME/.ideavimrc"
 ln -s "$DOTFILES/config/jetbrains/.ideavimrc" "$HOME/.ideavimrc"
 

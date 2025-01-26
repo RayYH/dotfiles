@@ -10,9 +10,11 @@ This is a collection of my `dotfiles`. I use these on my personal machines. If y
 ```bash
 # Clone the repository
 git clone https://github.com/rayyh/dotfiles
-
+yes | ./bootstrap.sh
 ./install.sh
 ```
+
+Reload your shell and you are good to go.
 
 ## Credits
 

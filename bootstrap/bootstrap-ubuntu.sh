@@ -3,10 +3,11 @@
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 SCRIPT_DIR=$(cd "$SCRIPT_DIR" && pwd)
 
+set -e
+
 source "$SCRIPT_DIR/helpers.sh"
 
 __echo "Setting up the system..."
-
 __confirm "Do you want to continue?" || exit 1
 
 # make sure this only works on Ubuntu
@@ -27,11 +28,9 @@ fi
 
 __logo
 
-__command_exists "apt" || __error "apt is not installed"
-
 __echo "Updating package lists..."
+__command_exists "apt" || __error "apt is not installed"
 apt update
-
 __echo "Upgrading packages..."
 apt upgrade -y
 
@@ -58,16 +57,19 @@ if ! sudo -nv &>/dev/null; then
     done 2>/dev/null &
 fi
 
-set -e
-
 step=1
 
 function __add_ppas() {
     __echo "Adding PPAs"
+    if ! __command_exists "add-apt-repository"; then
+        sudo apt install -y software-properties-common
+    fi
     sudo add-apt-repository -y ppa:neovim-ppa/unstable
+    sudo add-apt-repository -y ppa:longsleep/golang-backports
     __done "$step"
     step=$((step + 1))
 }
+__add_ppas
 
 function __install_essential_packages() {
     __echo "Installing essential packages..."
@@ -79,6 +81,8 @@ function __install_essential_packages() {
         jq \
         tmux \
         wget \
+        zip \
+        unzip \
         neovim
     __done "$step"
     step=$((step + 1))
@@ -110,19 +114,92 @@ function __install_starship() {
 }
 __install_starship
 
+function __install_go() {
+    __echo "Installing Go..."
+    if __command_exists "go"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    sudo apt install -y golang-go
+    __done "$step"
+}
+__install_go
+
+function __install_python3() {
+    __echo "Installing Python3..."
+    if __command_exists "python3"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    sudo apt install -y python3
+    __done "$step"
+}
+__install_python3
+
+function __install_rust() {
+    __echo "Installing Rust..."
+    if __command_exists "rustc"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    __done "$step"
+}
+__install_rust
+
+function __install_nvm_and_nodejs() {
+    __echo "Installing NVM and Node.js..."
+    if __command_exists "nvm"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm install 22
+    nvm use 22
+    __done "$step"
+    step=$((step + 1))
+}
+__install_nvm_and_nodejs
+
+function __install_npm_packages_global() {
+    __echo "Installing npm packages globally..."
+    if __command_exists "yarn"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    npm install -g \
+        yarn \
+        http-server
+    __done "$step"
+    step=$((step + 1))
+}
+__install_npm_packages_global
+
+function __install_deno() {
+    __echo "Installing Deno..."
+    if __command_exists "deno"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    # --no-modify-path
+    curl -fsSL https://deno.land/install.sh | sh -s -- -y
+    __done "$step"
+}
+__install_deno
+
 function __fix_locales() {
     __echo "Fixing locales..."
-    apt-get install locales
-    # use en_US.UTF-8 as default locale, and generate it
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata locales
     sudo locale-gen en_US.UTF-8
     sudo update-locale LANG=en_US.UTF-8
     __done "$step"
 }
 __fix_locales
-
-function __set_timezone() {
-    __echo "Setting timezone..."
-    sudo timedatectl set-timezone Asia/Shanghai
-    __done "$step"
-}
-__set_timezone
