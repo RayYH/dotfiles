@@ -62,6 +62,9 @@ complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes Syste
 # shellcheck disable=SC2015
 [ -f "${HOME}/.orbstack/shell/init.bash" ] && source "${HOME}/.orbstack/shell/init.bash" 2>/dev/null || :
 
+# Brave Browser
+export CHROME_EXECUTABLE="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+
 ###############################################################################
 # Functions
 ###############################################################################

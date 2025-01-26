@@ -1,4 +1,4 @@
-command_timeout = 3000
+command_timeout = 6000
 
 format = """
 [░▒▓](#a3aed2)\
