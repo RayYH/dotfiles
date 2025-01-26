@@ -121,6 +121,20 @@ fi
 rm -rf "$HOME/.ideavimrc"
 ln -s "$DOTFILES/config/jetbrains/.ideavimrc" "$HOME/.ideavimrc"
 
+# gitignore
+if [ -f "$HOME/.gitignore" ]; then
+    mv "$HOME/.gitignore" "$BACKUP_FOLDER"
+fi
+rm -rf "$HOME/.gitignore"
+ln -s "$DOTFILES/config/git/.gitignore" "$HOME/.gitignore"
+
+# gitconfig
+if [ -f "$HOME/.gitconfig" ]; then
+    mv "$HOME/.gitconfig" "$BACKUP_FOLDER"
+fi
+# copy gitconfig to home
+cp "$DOTFILES/config/git/.gitconfig" "$HOME/.gitconfig"
+
 # scripts
 mkdir -p "$HOME/.local/bin"
 

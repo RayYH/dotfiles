@@ -134,6 +134,7 @@ function __install_python3() {
         return
     fi
     sudo apt install -y python3
+    sudo apt install -y python3-venv
     __done "$step"
 }
 __install_python3
