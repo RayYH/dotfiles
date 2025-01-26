@@ -97,10 +97,32 @@ function __install_shell() {
 }
 __install_shell
 
+function __install_starship() {
+    __echo "Installing starship if missing..."
+    if __command_exists "starship"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+    __done "$step"
+    step=$((step + 1))
+}
+__install_starship
+
 function __fix_locales() {
     __echo "Fixing locales..."
     apt-get install locales
-    dpkg-reconfigure locales
+    # use en_US.UTF-8 as default locale, and generate it
+    sudo locale-gen en_US.UTF-8
+    sudo update-locale LANG=en_US.UTF-8
     __done "$step"
 }
 __fix_locales
+
+function __set_timezone() {
+    __echo "Setting timezone..."
+    sudo timedatectl set-timezone Asia/Shanghai
+    __done "$step"
+}
+__set_timezone

@@ -40,6 +40,25 @@ ln -s "$DOTFILES/config/alacritty" "$HOME/.config/alacritty"
 # starship
 rm -rf "$HOME/.config/starship.toml"
 ln -s "$DOTFILES/config/starship/starship.toml" "$HOME/.config/starship.toml"
+# if is ubuntu system, use $DOTFILES/config/starship/ubuntu/starship.toml
+# if is macos system, use $DOTFILES/config/starship/macos/starship.toml
+# if is arch system, use $DOTFILES/config/starship/arch/starship.toml
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [[ -f "$DOTFILES/config/starship/ubuntu/starship.toml" ]]; then
+        rm -rf "$HOME/.config/starship.toml"
+        ln -s "$DOTFILES/config/starship/ubuntu/starship.toml" "$HOME/.config/starship.toml"
+    fi
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ -f "$DOTFILES/config/starship/macos/starship.toml" ]]; then
+        rm -rf "$HOME/.config/starship.toml"
+        ln -s "$DOTFILES/config/starship/macos/starship.toml" "$HOME/.config/starship.toml"
+    fi
+elif [[ "$OSTYPE" == "linux-musl" ]]; then
+    if [[ -f "$DOTFILES/config/starship/arch/starship.toml" ]]; then
+        rm -rf "$HOME/.config/starship.toml"
+        ln -s "$DOTFILES/config/starship/arch/starship.toml" "$HOME/.config/starship.toml"
+    fi
+fi
 
 # curl
 rm -rf "$HOME/.curlrc"
