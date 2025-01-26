@@ -59,22 +59,15 @@ fi
 
 step=1
 
-function __add_ppas() {
-    __echo "Adding PPAs"
-    if ! __command_exists "add-apt-repository"; then
-        sudo apt install -y software-properties-common
-    fi
-    sudo add-apt-repository -y ppa:neovim-ppa/unstable
-    sudo add-apt-repository -y ppa:longsleep/golang-backports
-    __done "$step"
-    step=$((step + 1))
-}
-__add_ppas
-
 function __install_essential_packages() {
     __echo "Installing essential packages..."
     sudo apt install -y \
         build-essential \
+        lsb-release \
+        gnupg2 \
+        ca-certificates \
+        apt-transport-https \
+        software-properties-common \
         curl \
         git \
         htop \
@@ -88,6 +81,19 @@ function __install_essential_packages() {
     step=$((step + 1))
 }
 __install_essential_packages
+
+function __add_ppas() {
+    __echo "Adding PPAs"
+    if ! __command_exists "add-apt-repository"; then
+        sudo apt install -y software-properties-common
+    fi
+    sudo add-apt-repository -y ppa:neovim-ppa/unstable
+    sudo add-apt-repository -y ppa:longsleep/golang-backports
+    sudo add-apt-repository -y ppa:ondrej/php
+    __done "$step"
+    step=$((step + 1))
+}
+__add_ppas
 
 function __install_shell() {
     __echo "Installing shell..."
@@ -134,7 +140,7 @@ function __install_python3() {
         return
     fi
     sudo apt install -y python3
-    sudo apt install -y python3-venv
+    sudo apt install -y python3-venv python3-pip
     __done "$step"
 }
 __install_python3
@@ -195,6 +201,31 @@ function __install_deno() {
     __done "$step"
 }
 __install_deno
+
+function __install_php() {
+    __echo "Installing PHP..."
+    if __command_exists "php"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    sudo apt install -y php8.4-{common,readline,bcmath,fpm,xml,mysql,zip,intl,ldap,gd,cli,bz2,curl,mbstring,pgsql,opcache,soap,cgi,redis}
+    __done "$step"
+}
+__install_php
+
+function __install_composer() {
+    __echo "Installing Composer..."
+    if __command_exists "composer"; then
+        __done "$step"
+        step=$((step + 1))
+        return
+    fi
+    curl -sS https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+    __done "$step"
+}
+__install_composer
 
 function __fix_locales() {
     __echo "Fixing locales..."
