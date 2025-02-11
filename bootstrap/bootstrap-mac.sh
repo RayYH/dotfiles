@@ -222,26 +222,6 @@ function __bash_and_curl() {
 
 __bash_and_curl
 
-################################################################################
-# dotfiles
-################################################################################
-function __install_setup() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/rayyh/setup/master/install.sh)"
-}
-
-function __setup() {
-    __echo "Step $step: Install setup..."
-    __install_setup
-    if __command_exists "sync_set_up_configs"; then
-        yes | sync_set_up_configs
-    else
-        __echo "please run sync_set_up_configs command manually"
-    fi
-    __done "$((step++))"
-}
-
-[ -n "${S_ONLY_UPDATE+1}" ] || __setup
-
 #============================================================
 # tap 3rd repos
 #============================================================
@@ -409,7 +389,7 @@ __ql_plugins
 ################################################################################
 function __preferences() {
     __echo "Step $step: Setting macOS preferences..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/rayyh/setup/master/macos-defaults.sh)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/RayYH/dotfiles/refs/heads/main/bootstrap/mac-defaults.sh)"
     __done "$((step++))"
 }
 [ -n "${S_ONLY_UPDATE+1}" ] || __preferences

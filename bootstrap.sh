@@ -9,7 +9,7 @@ set -e
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     source "$SCRIPT_DIR/bootstrap/bootstrap-ubuntu.sh"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    source "$SCRIPT_DIR/bootstrap/bootstrap-macos.sh"
+    source "$SCRIPT_DIR/bootstrap/bootstrap-mac.sh"
 elif [[ "$OSTYPE" == "linux-musl" ]]; then
     source "$SCRIPT_DIR/bootstrap/bootstrap-arch.sh"
 else
