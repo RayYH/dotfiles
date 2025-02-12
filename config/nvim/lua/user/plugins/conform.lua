@@ -23,8 +23,8 @@ return {
                 liquid = { "prettier" },
                 lua = {
                     "stylua",
-                    "--config-path",
-                    vim.fn.expand("~/.config/nvim/.stylua.toml"),
+                    --- "--config-path",
+                    --- vim.fn.expand("~/.config/nvim/.stylua.toml"),
                 },
                 sql = { "sleek" },
                 python = { "black" },
@@ -36,7 +36,6 @@ return {
                 timeout_ms = 1000,
             },
         })
-
         vim.keymap.set({ "n", "v" }, "<leader>mp", function()
             conform.format({
                 lsp_fallback = true,
