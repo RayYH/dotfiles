@@ -7,10 +7,13 @@ return {
         "neovim/nvim-lspconfig",
         "b0o/schemastore.nvim",
         {
-            "jose-elias-alvarez/null-ls.nvim",
-            dependencies = "nvim-lua/plenary.nvim",
+            "nvimtools/none-ls.nvim",
+            dependencies = {
+                "nvimtools/none-ls-extras.nvim",
+            },
         },
-        "jayp0521/mason-null-ls.nvim",
+        --       "jayp0521/mason-null-ls.nvim",
+        "jay-babu/mason-null-ls.nvim",
     },
     config = function()
         require("mason").setup({
@@ -172,6 +175,13 @@ return {
 
         -- null-ls
         local null_ls = require("null-ls")
+        null_ls.setup({
+            sources = {
+                null_ls.builtins.formatting.stylua,
+                null_ls.builtins.completion.spell,
+                require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
+            },
+        })
         local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
         null_ls.setup({
             temp_dir = "/tmp",
