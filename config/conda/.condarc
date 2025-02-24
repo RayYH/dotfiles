@@ -1,4 +1,4 @@
 channels:
   - conda-forge
-  - defaults
+  - bioconda
 channel_priority: strict
