@@ -118,6 +118,7 @@ alias cls='clear'                                                               
 alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf' # Merge PDF files, preserving hyperlinks, Usage: `mergepdf input{1,2,3}.pdf`
 alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'                       # laravel sail
 alias python3="PYTHONPATH=. python3"                                                # Always append current dir to PYTHONPATH when exec python scripts
+alias python="PYTHONPATH=. python"                                                  # Always append current dir to PYTHONPATH when exec python scripts
 alias pdflatex='pdflatex -shell-escape'                                             # Preferred 'pdflatex' implementation
 alias setuprc='${EDITOR:=vi} ${HOME}/.setuprc'                                      # Quick access to the .setuprc file
 alias ee="echo -e"                                                                  # ee
