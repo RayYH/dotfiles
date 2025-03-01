@@ -3,8 +3,6 @@
 > [!CAUTION]
 > DO NOT BLINDLY USE MY DOTFILES. I STRONGLY RECOMMEND YOU TO READ THROUGH THE FILES AND UNDERSTAND WHAT YOU ARE DOING.
 
-This is a collection of my `dotfiles`. I use these on my personal machines. If you are not `rayyh`, you probably don't want to use this.
-
 ## Installation
 
 ```bash
