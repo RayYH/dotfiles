@@ -1,30 +1,12 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2059
 
-################################################################################
-# helper functions
-################################################################################
-function __echo() {
-    local fmt="$1"
-    shift
-    printf "\\n\\e[0;36m[INFO]\\e[0m $fmt\\n" "$@"
-}
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+SCRIPT_DIR=$(cd "$SCRIPT_DIR" && pwd)
 
-function __error() {
-    local fmt="$1"
-    shift
-    printf "\\n\\e[0;31m[ERROR]\\e[0m $fmt\\n" "$@"
-    exit 1
-}
+set -e
 
-function __done() {
-    __echo "Step $1 \\e[0;32m[✔]\\e[0m"
-}
-
-# determine if command exists
-function __command_exists() {
-    command -v "$1" &>/dev/null
-}
+source "$SCRIPT_DIR/helpers.sh"
 
 # install formula via brew
 function __install_formula() {
@@ -50,15 +32,6 @@ function __install_cask() {
     else
         brew install --cask "$1"
     fi
-}
-
-# Ask user for confirmation before proceeding
-function __confirm() {
-    read -r -p "$1 [y/N] " response
-    if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        return 0
-    fi
-    return 1
 }
 
 __confirm "Do you want to continue?" || exit 1
