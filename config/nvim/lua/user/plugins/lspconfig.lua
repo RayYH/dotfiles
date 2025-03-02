@@ -12,7 +12,6 @@ return {
                 "nvimtools/none-ls-extras.nvim",
             },
         },
-        --       "jayp0521/mason-null-ls.nvim",
         "jay-babu/mason-null-ls.nvim",
     },
     config = function()
@@ -179,28 +178,18 @@ return {
             sources = {
                 null_ls.builtins.formatting.stylua,
                 null_ls.builtins.completion.spell,
-                require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
+                require("none-ls.code_actions.eslint_d"),
+                require("none-ls.diagnostics.eslint_d"),
+                require("none-ls.formatting.eslint_d"),
+                require("none-ls.formatting.jq"),
             },
         })
         local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
         null_ls.setup({
             temp_dir = "/tmp",
             sources = {
-                null_ls.builtins.diagnostics.eslint_d.with({
-                    condition = function(utils)
-                        return utils.root_has_file({ ".eslintrc.js" })
-                    end,
-                }),
                 null_ls.builtins.diagnostics.trail_space.with({
                     disabled_filetypes = { "NvimTree" },
-                }),
-                null_ls.builtins.formatting.eslint_d.with({
-                    condition = function(utils)
-                        return utils.root_has_file({
-                            ".eslintrc.js",
-                            ".eslintrc.json",
-                        })
-                    end,
                 }),
                 null_ls.builtins.formatting.pint.with({
                     condition = function(utils)

@@ -239,6 +239,7 @@ function __formulas() {
         "imagemagick"       # https://imagemagick.org/index.php
         "jq"                # https://jqlang.github.io/jq/
         "lua"               # https://www.lua.org/
+        "luagit"            # https://luajit.org/luajit.html
         "kubectx"           # https://github.com/ahmetb/kubectx
         "loc"               # https://github.com/cgag/loc
         "make"              # https://www.gnu.org/software/make/
