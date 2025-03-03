@@ -127,6 +127,7 @@ alias lzd='lazydocker'                                                          
 alias javadecompile='java -jar ${HOME}/Bin/vineflower.jar'                          # Decompile Java class files
 
 if command -v zoxide &>/dev/null; then
+  export _ZO_DOCTOR=0
   eval "$(zoxide init bash)"
 fi
 
