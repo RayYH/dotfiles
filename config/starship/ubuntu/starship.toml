@@ -9,6 +9,8 @@ $directory\
 $git_branch\
 $git_status\
 [](fg:#394260 bg:#212736)\
+$container\
+$conda\
 $nodejs\
 $rust\
 $golang\
@@ -39,6 +41,19 @@ format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
 [git_status]
 style = "bg:#394260"
 format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+
+[conda]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($environment) ](fg:#769ff0 bg:#212736)]($style)'
+disabled = false
+ignore_base = false
+
+[container]
+symbol = "☸"
+style = "bg:#212736"
+format = '[[ $symbol ($name) ](fg:#769ff0 bg:#212736)]($style)'
+disabled = false
 
 [nodejs]
 symbol = ""
