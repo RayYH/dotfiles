@@ -6,8 +6,8 @@
 ## Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/rayyh/dotfiles
+cd dotfiles
 yes | ./bootstrap.sh
 ./install.sh
 ```

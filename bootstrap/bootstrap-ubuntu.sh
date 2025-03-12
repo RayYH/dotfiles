@@ -30,9 +30,9 @@ __logo
 
 __echo "Updating package lists..."
 __command_exists "apt" || __error "apt is not installed"
-apt update
+sudo apt update
 __echo "Upgrading packages..."
-apt upgrade -y
+sudo apt upgrade -y
 
 # if sudo not available, install it
 if ! __command_exists "sudo"; then
@@ -229,7 +229,7 @@ __install_composer
 
 function __fix_locales() {
     __echo "Fixing locales..."
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata locales
+    DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends tzdata locales
     sudo locale-gen en_US.UTF-8
     sudo update-locale LANG=en_US.UTF-8
     __done "$step"
