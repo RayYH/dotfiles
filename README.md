@@ -14,6 +14,11 @@ yes | ./bootstrap.sh
 
 Reload your shell and you are good to go.
 
+## Supported Platforms
+
+- macOS
+- Ubuntu
+
 ## Credits
 
 I've borrowed a lot of ideas from the following repositories:
