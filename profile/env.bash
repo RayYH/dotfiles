@@ -47,6 +47,8 @@ export PATH="$PNPM_HOME:$PATH"
 # cargo
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
+[ -x "$HOME/miniforge3/bin/conda" ] && eval "$("$HOME/miniforge3/bin/conda" shell.bash hook)"
+
 # avoid duplicate path
 PATH=$(printf "%s" "$PATH" | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')
 
