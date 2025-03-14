@@ -6,12 +6,12 @@ SCRIPT_DIR=$(cd "$WORKING_DIR" && pwd)
 set -e
 
 # determine the OS
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [ -f /etc/os-release ] && grep -qi "ubuntu" /etc/os-release; then
     source "$SCRIPT_DIR/bootstrap/bootstrap-ubuntu.sh"
+elif [ -f /etc/os-release ] && grep -qi "arch" /etc/os-release; then
+    source "$SCRIPT_DIR/bootstrap/bootstrap-arch.sh"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     source "$SCRIPT_DIR/bootstrap/bootstrap-mac.sh"
-elif [[ "$OSTYPE" == "linux-musl" ]]; then
-    source "$SCRIPT_DIR/bootstrap/bootstrap-arch.sh"
 else
     echo "Unsupported OS"
     exit 1
