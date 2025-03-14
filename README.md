@@ -18,6 +18,7 @@ Reload your shell and you are good to go.
 
 - macOS
 - Ubuntu
+- Arch Linux
 
 ## Credits
 
