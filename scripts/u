@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 
 echo "Upgrading Vineflower"
 VERSION=$(curl -s https://api.github.com/repos/Vineflower/vineflower/releases/latest | jq -r .tag_name)
