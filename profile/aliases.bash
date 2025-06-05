@@ -134,8 +134,3 @@ fi
 if ! command -v docker-compose &>/dev/null; then
   alias docker-compose="docker compose"
 fi
-
-if command -v kubectl &>/dev/null; then
-  source <(kubectl completion bash)
-  complete -o default -F __start_kubectl k
-fi

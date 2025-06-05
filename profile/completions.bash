@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# kubectl
+if command -v kubectl &>/dev/null; then
+  source <(kubectl completion bash)
+  complete -o default -F __start_kubectl k
+fi
+
 # tab completion for many Bash commands
 if command -v brew &>/dev/null && [ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]; then
   # Ensure existing Homebrew v1 completions continue to work
