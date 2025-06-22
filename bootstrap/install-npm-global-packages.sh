@@ -9,6 +9,7 @@ packages=(
     "http-server"
     "eslint_d"
     "neovim"
+    "tree-sitter-cli"
 )
 
 for package in "${packages[@]}"; do
