@@ -12,3 +12,6 @@ vim.api.nvim_set_keymap(
     ":lua ReloadConfig()<CR>",
     { noremap = true, silent = true }
 )
+
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
