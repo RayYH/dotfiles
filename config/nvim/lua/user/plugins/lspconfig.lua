@@ -12,7 +12,7 @@ return {
                 "nvimtools/none-ls-extras.nvim",
             },
         },
-        "jay-babu/mason-null-ls.nvim",
+        "rayyh/mason-null-ls.nvim",
     },
     config = function()
         require("mason").setup({
