@@ -61,6 +61,7 @@ alias say="say -v Alex "                                                        
 #===========================================================================#
 alias now="date '+%Y-%m-%d %H:%I:%S'" # current time
 alias now_ts="date '+%s'"             # current timestamp
+alias zid="date '+%Y%m%d%H%I%S'"      # zettelkasten id
 
 #===========================================================================#
 #                              Checksum                                     #
