@@ -198,7 +198,7 @@ function o() {
 
 # optimized tree command，omit some folder: please run brew install tree first
 function tre() {
-  tree -aC -I '.git|node_modules|bower_components|vendor' --dirsfirst "$@" | less -FRNX
+  tree -aC -I '.venv|venv|__pycache__|.idea|.pytest_cache|.git|node_modules|bower_components|vendor' --dirsfirst "$@" | less -FRNX
 }
 
 # compress json
