@@ -100,6 +100,15 @@ fi
 rm -rf "$HOME/.shellcheckrc"
 ln -s "$DOTFILES/config/shellcheck/.shellcheckrc" "$HOME/.shellcheckrc"
 
+# uv
+if [ -f "$HOME/.config/uv/uv.toml" ]; then
+    mv "$HOME/.config/uv/uv.toml" "$BACKUP_FOLDER"
+fi
+# mkdir first
+mkdir -p "$HOME/.config/uv"
+rm -rf "$HOME/.config/uv/uv.toml"
+ln -s "$DOTFILES/config/uv/uv.toml" "$HOME/.config/uv/uv.toml"
+
 # editorconfig
 if [ -f "$HOME/.editorconfig" ]; then
     mv "$HOME/.editorconfig" "$BACKUP_FOLDER"
