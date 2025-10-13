@@ -246,6 +246,7 @@ function __formulas() {
         "mysql-client"      # https://dev.mysql.com/doc/refman/8.0/en/
         "neovim-nightly"    # https://neovim.io/
         "nmap"              # https://nmap.org/
+        "ninja"             # https://ninja-build.org/
         "php"               # https://www.php.net/
         "pinentry-mac"      # https://github.com/GPGTools/pinentry -- gnupg needs this
         "pngpaste"          # https://github.com/jcsalterego/pngpaste

@@ -44,6 +44,10 @@ PATH=$(getconf PATH)
 export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
+# vcpkg
+export VCPKG_ROOT="$HOME/Bundles/vcpkg"
+export PATH=$VCPKG_ROOT:$PATH
+
 # cargo
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
