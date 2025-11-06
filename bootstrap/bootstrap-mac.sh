@@ -343,16 +343,16 @@ __rust
 ################################################################################
 # ql plugins
 ################################################################################
-function __ql_plugins() {
-    __echo "Step $step: install quicklook plugins"
-    declare -a qps=(qlstephen quicklook-json qlprettypatch quicklook-csv webpquicklook suspicious-package webpquicklook)
-    for i in "${qps[@]}"; do
-        __install_cask "$i"
-    done
-    unset qps
-    __done "$((step++))"
-}
-__ql_plugins
+# function __ql_plugins() {
+#     __echo "Step $step: install quicklook plugins"
+#     declare -a qps=(qlstephen quicklook-json qlprettypatch quicklook-csv webpquicklook suspicious-package webpquicklook)
+#     for i in "${qps[@]}"; do
+#         __install_cask "$i"
+#     done
+#     unset qps
+#     __done "$((step++))"
+# }
+# __ql_plugins
 
 ################################################################################
 # preferences
