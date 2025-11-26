@@ -1,20 +1,94 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-echo "Upgrading Vineflower"
-VERSION=$(curl -s https://api.github.com/repos/Vineflower/vineflower/releases/latest | jq -r .tag_name)
-CURRENT_VERSION=$(java -jar ${HOME}/Bin/vineflower.jar --help | grep -oP 'Vineflower Decompiler \K\d+\.\d+\.\d+')
-if [ "$VERSION" = "$CURRENT_VERSION" ]; then
-    echo "Vineflower is already up to date"
-else
-    echo "Upgrading Vineflower to ${VERSION}"
-    wget -q "https://github.com/Vineflower/vineflower/releases/download/${VERSION}/vineflower-${VERSION}.jar" -O ${HOME}/Bin/vineflower.jar
-    echo "Vineflower upgraded to ${VERSION}"
-fi
+VINEFLOWER_DIR="${HOME}/Bin"
+VINEFLOWER_JAR="${VINEFLOWER_DIR}/vineflower.jar"
+VINEFLOWER_API="https://api.github.com/repos/Vineflower/vineflower/releases/latest"
 
-echo "Upgrading brew..."
+log() {
+    printf '\n[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
+}
 
-brew update
-brew upgrade
+upgrade_vineflower() {
+    log "Upgrading Vineflower..."
 
-echo "Upgrading flutter..."
-flutter upgrade
+    # Basic dependency checks
+    if ! command -v curl >/dev/null 2>&1; then
+        log "curl not found, skipping Vineflower upgrade"
+        return 0
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        log "jq not found, skipping Vineflower upgrade"
+        return 0
+    fi
+
+    if ! command -v java >/dev/null 2>&1; then
+        log "java not found, skipping Vineflower upgrade"
+        return 0
+    fi
+
+    # Get latest version from GitHub
+    VERSION=$(curl -fsSL "${VINEFLOWER_API}" | jq -r '.tag_name')
+    if [[ -z "${VERSION}" || "${VERSION}" == "null" ]]; then
+        log "Failed to get latest Vineflower version from GitHub"
+        return 1
+    fi
+
+    # Determine current version if jar exists
+    CURRENT_VERSION=""
+    if [[ -f "${VINEFLOWER_JAR}" ]]; then
+        if HELP_OUTPUT=$(java -jar "${VINEFLOWER_JAR}" --help 2>/dev/null); then
+            # Avoid GNU grep -P; use sed for better portability
+            CURRENT_VERSION=$(sed -n 's/.*Vineflower Decompiler \([0-9.]*\).*/\1/p' <<<"${HELP_OUTPUT}" | head -n1 || true)
+        fi
+    fi
+
+    if [[ -n "${CURRENT_VERSION}" && "${VERSION}" == "${CURRENT_VERSION}" ]]; then
+        log "Vineflower is already up to date (${CURRENT_VERSION})"
+        return 0
+    fi
+
+    log "Upgrading Vineflower to ${VERSION} (current: ${CURRENT_VERSION:-none})"
+
+    mkdir -p "${VINEFLOWER_DIR}"
+
+    # Download to a temp file first, then move atomically
+    TMP_JAR=$(mktemp "${VINEFLOWER_DIR}/vineflower.XXXXXX.jar")
+    curl -fsSL "https://github.com/Vineflower/vineflower/releases/download/${VERSION}/vineflower-${VERSION}.jar" \
+        -o "${TMP_JAR}"
+
+    mv "${TMP_JAR}" "${VINEFLOWER_JAR}"
+
+    log "Vineflower upgraded to ${VERSION}"
+}
+
+upgrade_brew() {
+    if ! command -v brew >/dev/null 2>&1; then
+        log "Homebrew not found, skipping brew upgrade"
+        return 0
+    fi
+
+    log "Upgrading Homebrew packages..."
+    # `brew upgrade` assumes a reasonably recent index; combine update + upgrade
+    brew update
+    brew upgrade
+    # Optional but often nice:
+    # brew cleanup
+}
+
+upgrade_flutter() {
+    if ! command -v flutter >/dev/null 2>&1; then
+        log "Flutter not found, skipping flutter upgrade"
+        return 0
+    fi
+
+    log "Upgrading Flutter..."
+    flutter upgrade
+}
+
+upgrade_vineflower
+upgrade_brew
+upgrade_flutter
+
+l

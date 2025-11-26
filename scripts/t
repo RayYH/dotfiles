@@ -1,32 +1,47 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Script to switch to or create a new tmux session
-# Credit to ThePrimeagen
-
-# Check if a directory was passed as an argument
-if [[ $# -eq 1 ]]; then
+# If a directory was passed, use it; otherwise pick one via fzf
+if [[ $# -ge 1 ]]; then
     selected=$1
 else
-    # Find directories in ~/Code/repos/ and append /tmp, then select one using fzf
-    items=$(find ~/Code/repos -maxdepth 3 -mindepth 1 -type d)
-    items+=$(echo -e "\n/tmp")
-    selected=$(echo "$items" | fzf)
+    selected=$(
+        {
+            # Find project directories
+            find "${HOME}/Code/repos" -maxdepth 3 -mindepth 1 -type d 2>/dev/null
+            # Also offer /tmp explicitly
+            printf '%s\n' /tmp
+        } | fzf
+    )
 fi
 
-# Exit if no directory was selected
-if [[ -z $selected ]]; then
+# Exit if nothing selected
+if [[ -z "${selected:-}" ]]; then
     exit 1
 fi
 
-# Replace periods with underscores in the selected directory name
-dirname=$(basename "$selected" | tr '.' '_')
+# Normalize session name from directory basename
+session_name=$(basename "$selected")
+session_name=${session_name//./_}
 
-# Try to switch to an existing tmux session
-if tmux switch-client -t="$dirname"; then
+# If the session already exists, attach/switch to it
+if tmux has-session -t "$session_name" 2>/dev/null; then
+    if [[ -n "${TMUX-}" ]]; then
+        # Already inside tmux: switch client
+        tmux switch-client -t "$session_name"
+    else
+        # Not inside tmux: attach to session
+        tmux attach-session -t "$session_name"
+    fi
     exit 0
 fi
 
-# Create a new tmux session if switching failed
-if ! tmux new-session -c "$selected" -d -s "$dirname"; then
-    tmux new -c "$selected" -A -s "$dirname"
+# Session does not exist yet: create and attach/switch
+if [[ -n "${TMUX-}" ]]; then
+    # Inside tmux: create detached session, then switch
+    tmux new-session -d -s "$session_name" -c "$selected"
+    tmux switch-client -t "$session_name"
+else
+    # Outside tmux: create and attach directly
+    tmux new-session -s "$session_name" -c "$selected"
 fi
