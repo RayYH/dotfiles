@@ -21,6 +21,6 @@ return {
         bg_theme = "bamboo",
         mac_window_bar = true,
         code_font_family = "Cascadia Code",
-        watermark = "RayYH",
+        watermark = "GitHub @RayYH",
     },
 }
