@@ -150,8 +150,8 @@ function __install_nvm_and_nodejs() {
     fi
     yay -S --noconfirm nvm
     source /usr/share/nvm/init-nvm.sh
-    nvm install 22
-    nvm use 22
+    nvm install 24
+    nvm use 24
     __done "$step"
     step=$((step + 1))
 }
@@ -164,7 +164,7 @@ function __install_npm_packages_global() {
         step=$((step + 1))
         return
     fi
-    npm install -g yarn http-server
+    npm install -g yarn http-server pnpm
     __done "$step"
     step=$((step + 1))
 }
@@ -206,7 +206,6 @@ function __install_composer() {
     __done "$step"
 }
 __install_composer
-
 
 function __fix_locales() {
     __echo "Fixing locales..."
