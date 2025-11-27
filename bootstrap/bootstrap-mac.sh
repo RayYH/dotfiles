@@ -238,6 +238,7 @@ function __formulas() {
         "httpie"            # https://httpie.io/
         "imagemagick"       # https://imagemagick.org/index.php
         "jq"                # https://jqlang.github.io/jq/
+        "julia"
         "lua"               # https://www.lua.org/
         "luagit"            # https://luajit.org/luajit.html
         "kubectx"           # https://github.com/ahmetb/kubectx
