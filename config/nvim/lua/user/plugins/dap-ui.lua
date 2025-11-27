@@ -5,8 +5,8 @@ local function setup_dap_signs_and_highlights()
     -- Highlights
     local hl_defs = {
         DapBreakpoint = { fg = "#993939", bg = "#292E42", ctermbg = 0 },
-        DapLogPoint   = { fg = "#61afef", bg = "#292E42", ctermbg = 0 },
-        DapStopped    = { fg = "#98c379", bg = "#292E42", ctermbg = 0 },
+        DapLogPoint = { fg = "#61afef", bg = "#292E42", ctermbg = 0 },
+        DapStopped = { fg = "#98c379", bg = "#292E42", ctermbg = 0 },
     }
 
     for group, opts in pairs(hl_defs) do
@@ -96,10 +96,10 @@ return {
         layouts = {
             {
                 elements = {
-                    { id = "scopes",      size = 0.25 },
+                    { id = "scopes", size = 0.25 },
                     { id = "breakpoints", size = 0.25 },
-                    { id = "stacks",      size = 0.25 },
-                    { id = "watches",     size = 0.25 },
+                    { id = "stacks", size = 0.25 },
+                    { id = "watches", size = 0.25 },
                 },
                 position = "left",
                 size = 40,

@@ -5,9 +5,26 @@ return {
     -- Lazy-load on first use
     cmd = { "ToggleTerm", "TermExec" },
     keys = {
-        { "<C-\\>",  "<cmd>ToggleTerm<CR>", mode = { "n", "t" }, desc = "Toggle terminal" },
-        { "<leader>ct", "<cmd>ToggleTerm<CR>", mode = "n", desc = "Toggle terminal" },
-        { "<leader>cg", function() require("toggleterm-lazygit").toggle() end, mode = "n", desc = "Toggle Lazygit" },
+        {
+            "<C-\\>",
+            "<cmd>ToggleTerm<CR>",
+            mode = { "n", "t" },
+            desc = "Toggle terminal",
+        },
+        {
+            "<leader>ct",
+            "<cmd>ToggleTerm<CR>",
+            mode = "n",
+            desc = "Toggle terminal",
+        },
+        {
+            "<leader>cg",
+            function()
+                require("toggleterm-lazygit").toggle()
+            end,
+            mode = "n",
+            desc = "Toggle Lazygit",
+        },
     },
 
     opts = {

@@ -1,103 +1,40 @@
--- lua/user/plugins/lspconfig.lua
 return {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
-
+    event = "VeryLazy",
     dependencies = {
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
         "b0o/schemastore.nvim",
         {
             "nvimtools/none-ls.nvim",
-            dependencies = {
-                "nvimtools/none-ls-extras.nvim",
-            },
+            dependencies = { "nvimtools/none-ls-extras.nvim" },
         },
-        -- your fork
         "rayyh/mason-null-ls.nvim",
     },
 
     config = function()
         ----------------------------------------------------------------------
-        -- Mason
+        -- Mason / mason-lspconfig
         ----------------------------------------------------------------------
         require("mason").setup({
-            ui = {
-                height = 0.8,
-            },
+            ui = { height = 0.8 },
         })
 
+        -- Let Mason auto-install LSP servers, but we will enable them ourselves
         require("mason-lspconfig").setup({
             automatic_installation = true,
+            automatic_enable = false,
         })
 
-        ----------------------------------------------------------------------
-        -- Capabilities
-        ----------------------------------------------------------------------
         local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
         ----------------------------------------------------------------------
-        -- Diagnostics & signs (global)
+        -- LSP server configs (vim.lsp.config)
         ----------------------------------------------------------------------
-        vim.diagnostic.config({
-            virtual_text = false,
-            float = {
-                source = "if_many",
-            },
-        })
-
-        local signs = {
-            DiagnosticSignError = "",
-            DiagnosticSignWarn  = "",
-            DiagnosticSignInfo  = "",
-            DiagnosticSignHint  = "",
-        }
-
-        for name, text in pairs(signs) do
-            vim.fn.sign_define(name, { text = text, texthl = name })
-        end
-
-        ----------------------------------------------------------------------
-        -- LSP keymaps (buffer-local, on attach)
-        ----------------------------------------------------------------------
-        vim.api.nvim_create_autocmd("LspAttach", {
-            group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
-            callback = function(args)
-                local bufnr = args.buf
-
-                local function map(mode, lhs, rhs, desc)
-                    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
-                end
-
-                -- Diagnostics
-                map("n", "<Leader>d", vim.diagnostic.open_float, "Show line diagnostics")
-
-                -- LSP (Telescope-powered where appropriate)
-                map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", "Goto definition")
-                map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", "Goto implementation")
-                map("n", "gr", "<cmd>Telescope lsp_references<CR>", "Goto references")
-                map("n", "ga", vim.lsp.buf.code_action, "Code actions")
-                map("n", "K", vim.lsp.buf.hover, "Hover")
-                map("n", "<Leader>rn", vim.lsp.buf.rename, "Rename symbol")
-            end,
-        })
-
-        -- Global command (keep it, handy for null-ls or LSP)
-        vim.api.nvim_create_user_command("Format", function()
-            vim.lsp.buf.format({ timeout_ms = 5000 })
-        end, {})
-
-        ----------------------------------------------------------------------
-        -- LSP servers
-        ----------------------------------------------------------------------
-        local util = require("lspconfig.util")
 
         -- Go (gopls)
-        require("lspconfig.gopls").setup({
+        vim.lsp.config("gopls", {
             capabilities = capabilities,
-            cmd = { "gopls" },
-            filetypes = { "go", "gomod", "gowork", "gotmpl" },
-            root_dir = util.root_pattern("go.work", "go.mod", ".git"),
             settings = {
                 gopls = {
                     completeUnimported = true,
@@ -116,7 +53,7 @@ return {
         })
 
         -- Python (pyright)
-        require("lspconfig.pyright").setup({
+        vim.lsp.config("pyright", {
             capabilities = capabilities,
             settings = {
                 python = {
@@ -129,10 +66,10 @@ return {
             },
         })
 
-        -- PHP (phpactor) – diagnostics & most LS features disabled
-        require("lspconfig.phpactor").setup({
+        -- PHP (phpactor) – keep it for refactor tools, but disable LSP UI.
+        vim.lsp.config("phpactor", {
             capabilities = capabilities,
-            on_attach = function(client, _)
+            on_attach = function(client)
                 local caps = client.server_capabilities
                 caps.completionProvider = false
                 caps.hoverProvider = false
@@ -158,22 +95,24 @@ return {
             },
         })
 
-        -- Vue (volar)
-        require("lspconfig.volar").setup({
+        -- Vue / vue_ls (formerly volar)
+        vim.lsp.config("vue_ls", {
             capabilities = capabilities,
-            on_attach = function(client, _)
+            on_attach = function(client)
                 client.server_capabilities.documentFormattingProvider = false
-                client.server_capabilities.documentRangeFormattingProvider = false
+                client.server_capabilities.documentRangeFormattingProvider =
+                    false
             end,
         })
 
-        -- TypeScript / JavaScript (tsserver replacement: ts_ls)
-        require("lspconfig.ts_ls").setup({
+        -- TS/JS (ts_ls) with Vue typescript plugin
+        vim.lsp.config("ts_ls", {
             capabilities = capabilities,
             init_options = {
                 plugins = {
                     {
                         name = "@vue/typescript-plugin",
+                        -- uses global npm install; adjust if needed
                         location = "/usr/local/lib/node_modules/@vue/typescript-plugin",
                         languages = { "javascript", "typescript", "vue" },
                     },
@@ -191,35 +130,32 @@ return {
         })
 
         -- Tailwind CSS
-        require("lspconfig.tailwindcss").setup({
+        vim.lsp.config("tailwindcss", {
             capabilities = capabilities,
         })
 
         -- JSON (with schemastore)
-        require("lspconfig.jsonls").setup({
+        vim.lsp.config("jsonls", {
             capabilities = capabilities,
             settings = {
                 json = {
                     schemas = require("schemastore").json.schemas(),
-                    validate = { enable = true },
                 },
             },
         })
 
-        -- Bash
-        require("lspconfig.bashls").setup({
+        -- Bash (sh + zsh)
+        vim.lsp.config("bashls", {
             capabilities = capabilities,
             filetypes = { "sh", "zsh" },
         })
 
         -- Lua
-        require("lspconfig.lua_ls").setup({
+        vim.lsp.config("lua_ls", {
             capabilities = capabilities,
             settings = {
                 Lua = {
-                    runtime = {
-                        version = "LuaJIT",
-                    },
+                    runtime = { version = "LuaJIT" },
                     workspace = {
                         checkThirdParty = false,
                         library = {
@@ -227,62 +163,74 @@ return {
                             unpack(vim.api.nvim_get_runtime_file("", true)),
                         },
                     },
-                    diagnostics = {
-                        globals = { "vim" },
-                    },
                 },
             },
         })
 
         ----------------------------------------------------------------------
-        -- null-ls / none-ls
+        -- Enable servers (Mason takes care of installing them)
         ----------------------------------------------------------------------
-        local null_ls = require("null-ls")
-        local formatting = null_ls.builtins.formatting
-        local diagnostics = null_ls.builtins.diagnostics
-        local completion = null_ls.builtins.completion
-
-        local sources = {
-            -- formatting
-            formatting.stylua,
-            formatting.jq,
-            formatting.black,
-            formatting.prettier.with({
-                condition = function(utils)
-                    return utils.root_has_file({
-                        ".prettierrc",
-                        ".prettierrc.json",
-                        ".prettierrc.yml",
-                        ".prettierrc.js",
-                        "prettier.config.js",
-                    })
-                end,
-            }),
-            formatting.pint.with({
-                condition = function(utils)
-                    return utils.root_has_file({ "vendor/bin/pint" })
-                end,
-            }),
-
-            -- diagnostics
-            diagnostics.trail_space.with({
-                disabled_filetypes = { "NvimTree" },
-            }),
-
-            -- completion
-            completion.spell,
-
-            -- none-ls-extras (eslint_d)
-            require("none-ls.code_actions.eslint_d"),
-            require("none-ls.diagnostics.eslint_d"),
-            require("none-ls.formatting.eslint_d"),
+        local servers = {
+            "gopls",
+            "pyright",
+            "phpactor",
+            "vue_ls",
+            "ts_ls",
+            "tailwindcss",
+            "jsonls",
+            "bashls",
+            "lua_ls",
         }
 
+        for _, server in ipairs(servers) do
+            vim.lsp.enable(server)
+        end
+
+        ----------------------------------------------------------------------
+        -- null-ls / none-ls (formatting, diagnostics)
+        ----------------------------------------------------------------------
+        local null_ls = require("null-ls")
         local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
         null_ls.setup({
             temp_dir = "/tmp",
-            sources = sources,
+            sources = {
+                -- basic tools
+                null_ls.builtins.formatting.stylua,
+                null_ls.builtins.completion.spell,
+                require("none-ls.code_actions.eslint_d"),
+                require("none-ls.diagnostics.eslint_d"),
+                require("none-ls.formatting.eslint_d"),
+                require("none-ls.formatting.jq"),
+
+                -- trailing spaces
+                null_ls.builtins.diagnostics.trail_space.with({
+                    disabled_filetypes = { "NvimTree" },
+                }),
+
+                -- PHP Pint
+                null_ls.builtins.formatting.pint.with({
+                    condition = function(utils)
+                        return utils.root_has_file({ "vendor/bin/pint" })
+                    end,
+                }),
+
+                -- Prettier only if project config exists
+                null_ls.builtins.formatting.prettier.with({
+                    condition = function(utils)
+                        return utils.root_has_file({
+                            ".prettierrc",
+                            ".prettierrc.json",
+                            ".prettierrc.yml",
+                            ".prettierrc.js",
+                            "prettier.config.js",
+                        })
+                    end,
+                }),
+
+                -- Python
+                null_ls.builtins.formatting.black,
+            },
             on_attach = function(client, bufnr)
                 if client.supports_method("textDocument/formatting") then
                     vim.api.nvim_clear_autocmds({
@@ -303,21 +251,49 @@ return {
             end,
         })
 
-        ----------------------------------------------------------------------
-        -- mason-null-ls
-        ----------------------------------------------------------------------
         require("mason-null-ls").setup({
             automatic_installation = true,
             ensure_installed = { "stylua", "jq", "black" },
         })
 
         ----------------------------------------------------------------------
-        -- Misc LSP helpers
+        -- Keymaps, commands, diagnostics, signs
         ----------------------------------------------------------------------
-        -- Nice to have a global restart binding still
-        vim.keymap.set("n", "<Leader>lr", "<cmd>LspRestart<CR>", {
-            silent = true,
-            desc = "Restart LSP",
+        local map = vim.keymap.set
+
+        map("n", "<Leader>d", vim.diagnostic.open_float)
+        map("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
+        map("n", "ga", vim.lsp.buf.code_action)
+        map("n", "gi", "<cmd>Telescope lsp_implementations<CR>")
+        map("n", "gr", "<cmd>Telescope lsp_references<CR>")
+        map("n", "<Leader>lr", "<cmd>LspRestart<CR>", { silent = true })
+        map("n", "K", vim.lsp.buf.hover)
+        map("n", "<Leader>rn", vim.lsp.buf.rename)
+
+        vim.api.nvim_create_user_command("Format", function()
+            vim.lsp.buf.format({ timeout_ms = 5000 })
+        end, {})
+
+        vim.diagnostic.config({
+            virtual_text = false,
+            float = { source = true },
+        })
+
+        vim.fn.sign_define("DiagnosticSignError", {
+            text = "",
+            texthl = "DiagnosticSignError",
+        })
+        vim.fn.sign_define("DiagnosticSignWarn", {
+            text = "",
+            texthl = "DiagnosticSignWarn",
+        })
+        vim.fn.sign_define("DiagnosticSignInfo", {
+            text = "",
+            texthl = "DiagnosticSignInfo",
+        })
+        vim.fn.sign_define("DiagnosticSignHint", {
+            text = "",
+            texthl = "DiagnosticSignHint",
         })
     end,
 }

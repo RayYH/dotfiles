@@ -54,6 +54,9 @@ return {
 
         vim.keymap.set({ "n", "v" }, "<leader>mp", function()
             conform.format(format_opts)
-        end, { desc = "Format file or range (in visual mode)", silent = true })
+        end, {
+            desc = "Format file or range (in visual mode)",
+            silent = true,
+        })
     end,
 }

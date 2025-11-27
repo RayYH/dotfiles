@@ -65,9 +65,9 @@ return {
     init = function()
         local colors = {
             DashboardHeader = "#6272a4",
-            DashboardDesc   = "#f8f8f2",
-            DashboardIcon   = "#bd93f9",
-            DashboardKey    = "#6272a4",
+            DashboardDesc = "#f8f8f2",
+            DashboardIcon = "#bd93f9",
+            DashboardKey = "#6272a4",
             DashboardFooter = "#6272a4",
         }
 

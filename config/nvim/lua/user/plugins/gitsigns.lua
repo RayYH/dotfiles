@@ -22,12 +22,12 @@ return {
         current_line_blame_formatter = "<author>, <author_time:%R> - <summary>",
 
         signs = {
-            add          = { text = "│" },
-            change       = { text = "│" },
-            delete       = { text = "_" },
-            topdelete    = { text = "‾" },
+            add = { text = "│" },
+            change = { text = "│" },
+            delete = { text = "_" },
+            topdelete = { text = "‾" },
             changedelete = { text = "┄" },
-            untracked    = { text = "┊" },
+            untracked = { text = "┊" },
         },
 
         -- Set up buffer-local keymaps when gitsigns attaches to a buffer

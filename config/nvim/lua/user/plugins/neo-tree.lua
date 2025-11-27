@@ -7,7 +7,10 @@ local function system_open(path)
         vim.fn.jobstart({ "xdg-open", path }, { detach = true })
     else
         -- Fallback: just echo the path so you notice it
-        vim.notify("No system-open handler for this OS: " .. path, vim.log.levels.WARN)
+        vim.notify(
+            "No system-open handler for this OS: " .. path,
+            vim.log.levels.WARN
+        )
     end
 end
 

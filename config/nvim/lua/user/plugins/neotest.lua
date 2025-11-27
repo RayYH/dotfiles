@@ -6,7 +6,7 @@ return {
         "nvim-lua/plenary.nvim",
         "antoinemadec/FixCursorHold.nvim",
         "nvim-treesitter/nvim-treesitter",
-        "nvim-neotest/neotest-jest",
+        "rayyh/neotest-jest",
     },
 
     -- You can also switch to key-based lazy-loading if you want
@@ -26,13 +26,16 @@ return {
         -- Safely require neotest-jest *after* plugin+deps are loaded
         local ok_jest, jest = pcall(require, "neotest-jest")
         if ok_jest then
-            table.insert(adapters, jest({
-                jestCommand = "npm test --",
-                env = { CI = true },
-                cwd = function()
-                    return vim.fn.getcwd()
-                end,
-            }))
+            table.insert(
+                adapters,
+                jest({
+                    jestCommand = "npm test --",
+                    env = { CI = true },
+                    cwd = function()
+                        return vim.fn.getcwd()
+                    end,
+                })
+            )
         else
             vim.notify(
                 "[neotest] neotest-jest not found; Jest adapter disabled",

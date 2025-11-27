@@ -18,11 +18,11 @@ return {
             },
         },
         presets = {
-            bottom_search = true,         -- classic bottom cmdline for search
-            command_palette = true,       -- cmdline + popupmenu together
+            bottom_search = true, -- classic bottom cmdline for search
+            command_palette = true, -- cmdline + popupmenu together
             long_message_to_split = true, -- long messages go to split
-            inc_rename = false,           -- for inc-rename.nvim
-            lsp_doc_border = false,       -- border for hover/signature
+            inc_rename = false, -- for inc-rename.nvim
+            lsp_doc_border = false, -- border for hover/signature
         },
     },
 }
