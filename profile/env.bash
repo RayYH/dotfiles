@@ -51,7 +51,13 @@ export PATH=$VCPKG_ROOT:$PATH
 # cargo
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
+# miniforge
 [ -x "$HOME/miniforge3/bin/conda" ] && eval "$("$HOME/miniforge3/bin/conda" shell.bash hook)"
+
+# Nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
 
 # avoid duplicate path
 PATH=$(printf "%s" "$PATH" | awk -v RS=':' '!a[$1]++ { if (NR > 1) printf RS; printf $1 }')
