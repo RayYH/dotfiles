@@ -1,15 +1,8 @@
 return {
     "nvim-telescope/telescope.nvim",
-    lazy = false,
-    dependencies = {
-        "nvim-lua/plenary.nvim",
-        "nvim-tree/nvim-web-devicons",
-        "nvim-telescope/telescope-live-grep-args.nvim",
-        {
-            "nvim-telescope/telescope-fzf-native.nvim",
-            build = "make",
-        },
-    },
+
+    -- Don't force eager load; keys/commands will pull it in
+    cmd = "Telescope",
     keys = {
         {
             "<leader>fa",
@@ -19,52 +12,72 @@ return {
                     prompt_title = "All Files",
                 })
             end,
+            desc = "Find all files (no ignore)",
         },
         {
             "<leader>fb",
             function()
                 require("telescope.builtin").buffers()
             end,
+            desc = "Find buffers",
         },
         {
             "<leader>ff",
             function()
                 require("telescope.builtin").find_files()
             end,
+            desc = "Find files",
         },
         {
             "<leader>fg",
             function()
                 require("telescope").extensions.live_grep_args.live_grep_args()
             end,
+            desc = "Live grep (with args)",
         },
         {
             "<leader>fh",
             function()
                 require("telescope.builtin").help_tags()
             end,
+            desc = "Find help",
         },
         {
             "<leader>fr",
             function()
                 require("telescope.builtin").oldfiles()
             end,
+            desc = "Find recent files",
         },
         {
             "<leader>fd",
             function()
                 require("telescope.builtin").lsp_document_symbols()
             end,
+            desc = "Document symbols",
         },
     },
-    config = function()
-        local actions = require("telescope.actions")
 
-        require("telescope").setup({
+    lazy = true,
+
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-web-devicons",
+        "nvim-telescope/telescope-live-grep-args.nvim",
+        {
+            "nvim-telescope/telescope-fzf-native.nvim",
+            build = "make",
+        },
+    },
+
+    config = function()
+        local telescope = require("telescope")
+        local actions = require("telescope.actions")
+        local lga_actions = require("telescope-live-grep-args.actions")
+
+        telescope.setup({
             defaults = {
-                path_display = {
-                    truncate = 1,
-                },
+                path_display = { "truncate" },
                 prompt_prefix = "   ",
                 selection_caret = "  ",
                 layout_config = {
@@ -83,22 +96,20 @@ return {
                 },
                 file_ignore_patterns = { ".git/" },
             },
+
             extensions = {
                 live_grep_args = {
                     mappings = {
                         i = {
-                            ["<C-k>"] = require(
-                                "telescope-live-grep-args.actions"
-                            ).quote_prompt(),
-                            ["<C-i>"] = require(
-                                "telescope-live-grep-args.actions"
-                            ).quote_prompt({
+                            ["<C-k>"] = lga_actions.quote_prompt(),
+                            ["<C-i>"] = lga_actions.quote_prompt({
                                 postfix = " --iglob ",
                             }),
                         },
                     },
                 },
             },
+
             pickers = {
                 find_files = {
                     hidden = true,
@@ -124,6 +135,8 @@ return {
             },
         })
 
-        require("telescope").load_extension("fzf")
+        -- Safely load extensions
+        pcall(telescope.load_extension, "fzf")
+        pcall(telescope.load_extension, "live_grep_args")
     end,
 }

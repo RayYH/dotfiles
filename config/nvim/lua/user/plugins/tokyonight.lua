@@ -2,12 +2,15 @@ return {
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
+    main = "tokyonight",
+
     opts = {
         transparent = true,
         styles = {
             sidebars = "transparent",
             floats = "transparent",
         },
+
         on_colors = function(colors)
             colors.gitSigns = {
                 add = colors.teal,
@@ -15,26 +18,37 @@ return {
                 delete = colors.red,
             }
         end,
+
         on_highlights = function(hl, c)
             local util = require("tokyonight.util")
-            local prompt = "#2d3149"
+            local darken = util.darken
+            local lighten = util.lighten
 
+            local prompt = "#2d3149"
+            local bg_dark = c.bg_dark
+            local bg_dark_d85 = darken(bg_dark, 0.85, "#000000")
+            local bg_dark_d75 = darken(bg_dark, 0.75, "#000000")
+            local bg_dark_d98 = darken(bg_dark, 0.98, "#000000")
+
+            -- Bufferline
             hl.BufferlineInactive = {
-                bg = c.bg_dark,
+                bg = bg_dark,
             }
             hl.BufferlineActiveSeparator = {
                 bg = c.bg,
-                fg = util.darken(c.bg_dark, 0.85, "#000000"),
+                fg = bg_dark_d85,
             }
             hl.BufferlineInactiveSeparator = {
-                bg = c.bg_dark,
-                fg = util.darken(c.bg_dark, 0.85, "#000000"),
+                bg = bg_dark,
+                fg = bg_dark_d85,
             }
 
+            -- Neo-tree
             hl.NeoTreeFileNameOpened = {
                 fg = c.orange,
             }
 
+            -- GitSigns blame
             hl.GitSignsCurrentLineBlame = {
                 fg = c.comment,
             }
@@ -45,53 +59,56 @@ return {
             }
             hl.TabActiveSeparator = {
                 bg = c.bg,
-                fg = util.darken(c.bg_dark, 0.85, "#000000"),
+                fg = bg_dark_d85,
             }
             hl.TabInactive = {
-                bg = c.bg_dark,
+                bg = bg_dark,
             }
             hl.TabInactiveSeparator = {
-                bg = c.bg_dark,
-                fg = util.darken(c.bg_dark, 0.85, "#000000"),
+                bg = bg_dark,
+                fg = bg_dark_d85,
             }
 
             hl.SidebarTabActive = {
-                bg = c.bg_dark,
+                bg = bg_dark,
             }
             hl.SidebarTabActiveSeparator = {
-                bg = c.bg_dark,
-                fg = util.darken(c.bg_dark, 0.85, "#000000"),
+                bg = bg_dark,
+                fg = bg_dark_d85,
             }
             hl.SidebarTabInactive = {
-                bg = util.darken(c.bg_dark, 0.75, "#000000"),
+                bg = bg_dark_d75,
                 fg = c.comment,
             }
             hl.SidebarTabInactiveSeparator = {
-                bg = util.darken(c.bg_dark, 0.75, "#000000"),
-                fg = util.darken(c.bg_dark, 0.85, "#000000"),
+                bg = bg_dark_d75,
+                fg = bg_dark_d85,
             }
 
+            -- Statusline
             hl.StatusLine = {
-                bg = util.darken(c.bg_dark, 0.98, "#000000"),
+                bg = bg_dark_d98,
                 fg = c.fg_dark,
             }
             hl.StatusLineComment = {
-                bg = util.darken(c.bg_dark, 0.85, "#000000"),
+                bg = bg_dark_d85,
                 fg = c.comment,
             }
 
+            -- Line numbers
             hl.LineNrAbove = {
                 fg = c.fg_gutter,
             }
             hl.LineNr = {
-                fg = util.lighten(c.fg_gutter, 0.7),
+                fg = lighten(c.fg_gutter, 0.7),
             }
             hl.LineNrBelow = {
                 fg = c.fg_gutter,
             }
 
+            -- Messages
             hl.MsgArea = {
-                bg = util.darken(c.bg_dark, 0.85, "#000000"),
+                bg = bg_dark_d85,
             }
 
             -- Spelling
@@ -102,12 +119,12 @@ return {
 
             -- Telescope
             hl.TelescopeNormal = {
-                bg = c.bg_dark,
+                bg = bg_dark,
                 fg = c.fg_dark,
             }
             hl.TelescopeBorder = {
-                bg = c.bg_dark,
-                fg = c.bg_dark,
+                bg = bg_dark,
+                fg = bg_dark,
             }
             hl.TelescopePromptNormal = {
                 bg = prompt,
@@ -121,20 +138,20 @@ return {
                 fg = c.fg_dark,
             }
             hl.TelescopePreviewTitle = {
-                bg = c.bg_dark,
-                fg = c.bg_dark,
+                bg = bg_dark,
+                fg = bg_dark,
             }
             hl.TelescopeResultsTitle = {
-                bg = c.bg_dark,
-                fg = c.bg_dark,
+                bg = bg_dark,
+                fg = bg_dark,
             }
 
-            -- Indent
+            -- Indent-blankline (ibl)
             hl.IblIndent = {
                 fg = c.bg_highlight,
             }
             hl.IblScope = {
-                fg = util.lighten(c.bg_highlight, 0.95),
+                fg = lighten(c.bg_highlight, 0.95),
             }
 
             -- Copilot
@@ -143,9 +160,9 @@ return {
             }
         end,
     },
+
     config = function(_, opts)
         require("tokyonight").setup(opts)
-
-        vim.cmd("colorscheme tokyonight-night")
+        vim.cmd.colorscheme("tokyonight-night")
     end,
 }

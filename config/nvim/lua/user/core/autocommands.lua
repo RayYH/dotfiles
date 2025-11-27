@@ -1,67 +1,97 @@
-local group = vim.api.nvim_create_augroup("FileTypeOverrides", { clear = true })
-vim.api.nvim_create_autocmd("TermOpen", {
-    group = group,
-    pattern = "*",
-    command = "setlocal nospell",
+local api = vim.api
+local cmd = vim.cmd
+local opt_local = vim.opt_local
+
+local augroup = api.nvim_create_augroup
+local autocmd = api.nvim_create_autocmd
+
+-- Filetype / buffer-local tweaks ------------------------------
+
+local filetype_group = augroup("FileTypeOverrides", { clear = true })
+
+autocmd("TermOpen", {
+    group = filetype_group,
+    callback = function()
+        opt_local.spell = false
+    end,
 })
 
-local hl_yank = vim.api.nvim_create_augroup("highlight-yank", { clear = true })
-vim.api.nvim_create_autocmd("TextYankPost", {
+autocmd("FileType", {
+    group = filetype_group,
+    pattern = { "sh", "go", "rust" },
+    callback = function()
+        opt_local.textwidth = 80
+    end,
+})
+
+autocmd({ "BufRead", "BufNewFile" }, {
+    pattern = { "*.mdx" },
+    callback = function()
+        vim.bo.filetype = "markdown"
+    end,
+})
+
+autocmd({ "BufNewFile", "BufRead" }, {
+    pattern = { "Jenkinsfile" },
+    callback = function()
+        vim.bo.filetype = "groovy"
+    end,
+})
+
+-- Highlight on yank ------------------------------------------ 
+
+local hl_yank = augroup("HighlightYank", { clear = true })
+
+autocmd("TextYankPost", {
     group = hl_yank,
     callback = function()
         vim.highlight.on_yank()
     end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "sh", "go", "rust" },
-    command = "setlocal textwidth=80",
-})
+-- Save / restore folds for markdown --------------------------
 
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern = { "*.mdx" },
-    command = "set filetype=markdown",
-})
+local folds_group = augroup("AutoFolds", { clear = true })
 
-vim.api.nvim_create_autocmd({ "BufWinLeave", "BufWritePost", "WinLeave" }, {
-    group = vim.api.nvim_create_augroup("AutoSaveFolds", { clear = true }),
-    pattern = { "markdown" },
+local ignore_filetypes = {
+    gitcommit = true,
+    gitrebase = true,
+    svg = true,
+    hgcommit = true,
+}
+
+autocmd({ "BufWinLeave", "BufWritePost", "WinLeave" }, {
+    group = folds_group,
     callback = function(args)
-        if vim.b[args.buf].view_activated then
-            vim.cmd.mkview({ mods = { emsg_silent = true } })
+        local buf = args.buf
+        if vim.bo[buf].filetype == "markdown" and vim.b[buf].view_activated then
+            cmd.mkview({ mods = { emsg_silent = true } })
         end
     end,
 })
 
-vim.api.nvim_create_autocmd("BufWinEnter", {
-    group = vim.api.nvim_create_augroup("AutoLoadFolds", { clear = true }),
-    pattern = { "markdown" },
+autocmd("BufWinEnter", {
+    group = folds_group,
     callback = function(args)
-        if not vim.b[args.buf].view_activated then
-            local filetype =
-                vim.api.nvim_get_option_value("filetype", { buf = args.buf })
-            local buftype =
-                vim.api.nvim_get_option_value("buftype", { buf = args.buf })
-            local ignore_filetypes = {
-                "gitcommit",
-                "gitrebase",
-                "svg",
-                "hgcommit",
-            }
-            if
-                buftype == ""
-                and filetype
-                and filetype ~= ""
-                and not vim.tbl_contains(ignore_filetypes, filetype)
-            then
-                vim.b[args.buf].view_activated = true
-                vim.cmd.loadview({ mods = { emsg_silent = true } })
-            end
-        end
-    end,
-})
+        local buf = args.buf
 
-vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
-    pattern = { "Jenkinsfile" },
-    command = "set filetype=groovy",
+        if vim.b[buf].view_activated then
+            return
+        end
+
+        local filetype = api.nvim_get_option_value("filetype", { buf = buf })
+        local buftype = api.nvim_get_option_value("buftype", { buf = buf })
+
+        if buftype ~= "" or not filetype or filetype == "" then
+            return
+        end
+
+        -- Only manage folds for markdown, and skip some special filetypes
+        if filetype ~= "markdown" or ignore_filetypes[filetype] then
+            return
+        end
+
+        vim.b[buf].view_activated = true
+        cmd.loadview({ mods = { emsg_silent = true } })
+    end,
 })

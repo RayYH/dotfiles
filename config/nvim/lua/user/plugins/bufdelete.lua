@@ -1,17 +1,19 @@
 return {
     "famiu/bufdelete.nvim",
-    config = function()
-        vim.keymap.set(
-            "n",
-            "<Leader>qb",
-            ":Bdelete<CR>",
-            { desc = "Delete buffer" }
-        )
-        vim.keymap.set(
-            "n",
-            "<Leader>qB",
-            ":bufdo Bdelete<CR>",
-            { desc = "Delete all buffers" }
-        )
-    end,
+
+    -- Load only when these keys are pressed
+    keys = {
+        {
+            "<leader>qb",
+            "<cmd>Bdelete<CR>",
+            mode = "n",
+            desc = "Delete buffer",
+        },
+        {
+            "<leader>qB",
+            "<cmd>bufdo Bdelete<CR>",
+            mode = "n",
+            desc = "Delete all buffers",
+        },
+    },
 }

@@ -1,14 +1,14 @@
--- Helper function to check if there are words before the cursor
-local has_words_before = function()
-    local _, col = unpack(vim.api.nvim_win_get_cursor(0))
+-- Helper: check if there are words before the cursor
+local function has_words_before()
+    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     if col == 0 then
         return false
     end
-    local current_line = vim.api.nvim_get_current_line()
+    local current_line = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
     return current_line:sub(col, col):match("%s") == nil
 end
 
--- Helper function to remove leading whitespace
+-- Helper: trim leading whitespace from completion label
 local function ltrim(s)
     return s:match("^%s*(.*)")
 end
@@ -16,6 +16,7 @@ end
 return {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
+
     dependencies = {
         "neovim/nvim-lspconfig",
         "hrsh7th/cmp-nvim-lsp",
@@ -23,32 +24,40 @@ return {
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
         "hrsh7th/cmp-cmdline",
-        "hrsh7th/nvim-cmp",
+        -- no need to depend on nvim-cmp itself again
         "L3MON4D3/LuaSnip",
         "saadparwaiz1/cmp_luasnip",
         "onsails/lspkind-nvim",
     },
 
     config = function()
-        --- @type any
         local cmp = require("cmp")
         local luasnip = require("luasnip")
         local lspkind = require("lspkind")
+        local fn = vim.fn
 
+        -- Snippets ---------------------------------------------------------
         require("luasnip.loaders.from_snipmate").lazy_load()
         require("luasnip.loaders.from_lua").load({
-            paths = "~/.config/nvim/snippets",
+            paths = fn.stdpath("config") .. "/snippets",
         })
 
+        -- Insert mode completion -------------------------------------------
         cmp.setup({
             preselect = cmp.PreselectMode.None,
+
             snippet = {
                 expand = function(args)
                     luasnip.lsp_expand(args.body)
                 end,
             },
 
-            window = { completion = { col_offset = -2 } },
+            window = {
+                completion = {
+                    col_offset = -2,
+                },
+            },
+
             formatting = {
                 fields = { "kind", "abbr", "menu" },
                 format = lspkind.cmp_format({
@@ -59,6 +68,7 @@ return {
                     end,
                 }),
             },
+
             mapping = {
                 ["<Tab>"] = cmp.mapping(function(fallback)
                     if cmp.visible() then
@@ -71,6 +81,7 @@ return {
                         fallback()
                     end
                 end, { "i", "s" }),
+
                 ["<S-Tab>"] = cmp.mapping(function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item()
@@ -80,6 +91,7 @@ return {
                         fallback()
                     end
                 end, { "i", "s" }),
+
                 ["<CR>"] = cmp.mapping.confirm({ select = false }),
             },
 
@@ -92,14 +104,19 @@ return {
             },
         })
 
-        cmp.setup.cmdline("/", {
+        -- Cmdline: search ("/" and "?") -----------------------------------
+        cmp.setup.cmdline({ "/", "?" }, {
             mapping = cmp.mapping.preset.cmdline(),
             sources = { { name = "buffer" } },
         })
 
+        -- Cmdline: commands (":") -----------------------------------------
         cmp.setup.cmdline(":", {
             mapping = cmp.mapping.preset.cmdline(),
-            sources = { { name = "path" }, { name = "cmdline" } },
+            sources = {
+                { name = "path" },
+                { name = "cmdline" },
+            },
         })
     end,
 }

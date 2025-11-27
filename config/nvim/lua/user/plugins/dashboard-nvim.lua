@@ -1,6 +1,9 @@
+local api = vim.api
+
 return {
-    -- "glepnir/dashboard-nvim",
     "nvimdev/dashboard-nvim",
+    event = "VimEnter",
+
     opts = {
         theme = "doom",
         config = {
@@ -28,7 +31,6 @@ return {
                     keymap = "SPC f u",
                     action = "Lazy update",
                 },
-
                 {
                     icon = "  ",
                     desc = "Find file               ",
@@ -53,23 +55,24 @@ return {
             },
             footer = { "" },
         },
-        hide = { statusline = false, tabline = false, winbar = false },
+        hide = {
+            statusline = false,
+            tabline = false,
+            winbar = false,
+        },
     },
+
     init = function()
-        vim.api.nvim_set_hl(0, "DashboardHeader", {
-            fg = "#6272a4",
-        })
-        vim.api.nvim_set_hl(0, "DashboardDesc", {
-            fg = "#f8f8f2",
-        })
-        vim.api.nvim_set_hl(0, "DashboardIcon", {
-            fg = "#bd93f9",
-        })
-        vim.api.nvim_set_hl(0, "DashboardKey", {
-            fg = "#6272a4",
-        })
-        vim.api.nvim_set_hl(0, "DashboardFooter", {
-            fg = "#6272a4",
-        })
+        local colors = {
+            DashboardHeader = "#6272a4",
+            DashboardDesc   = "#f8f8f2",
+            DashboardIcon   = "#bd93f9",
+            DashboardKey    = "#6272a4",
+            DashboardFooter = "#6272a4",
+        }
+
+        for group, fg in pairs(colors) do
+            api.nvim_set_hl(0, group, { fg = fg })
+        end
     end,
 }

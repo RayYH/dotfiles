@@ -1,12 +1,14 @@
 return {
     "nvim-treesitter/nvim-treesitter",
-    event = "VeryLazy",
-    enabled = true,
-    build = function()
-        require("nvim-treesitter.install").update({
-            with_sync = true,
-        })
-    end,
+
+    -- Set up when you actually open/edit files
+    event = { "BufReadPost", "BufNewFile" },
+
+    -- Recommended build command for Treesitter
+    build = ":TSUpdate",
+
+    main = "nvim-treesitter.configs",
+
     dependencies = {
         {
             "nvim-treesitter/playground",
@@ -14,7 +16,9 @@ return {
         },
         {
             "JoosepAlviste/nvim-ts-context-commentstring",
+            main = "ts_context_commentstring",
             opts = {
+                -- your custom Blade logic
                 custom_calculation = function(_, language_tree)
                     if
                         vim.bo.filetype == "blade"
@@ -24,10 +28,15 @@ return {
                     end
                 end,
             },
+            init = function()
+                -- If you're using Comment.nvim, this keeps it from loading
+                -- its own ts-context-commentstring module.
+                vim.g.skip_ts_context_commentstring_module = true
+            end,
         },
         "nvim-treesitter/nvim-treesitter-textobjects",
     },
-    main = "nvim-treesitter.configs",
+
     opts = {
         ensure_installed = {
             "arduino",
@@ -67,17 +76,29 @@ return {
             "xml",
             "yaml",
         },
+
         auto_install = true,
+
         highlight = {
             enable = true,
         },
+
         indent = {
             enable = true,
             disable = { "yaml" },
         },
+
+        -- If you’re using Comment.nvim or similar, this is the usual pattern:
+        context_commentstring = {
+            enable = true,
+            enable_autocmd = false,
+        },
+
+        -- Only effective if you have a rainbow plugin wired in elsewhere
         rainbow = {
             enable = true,
         },
+
         textobjects = {
             select = {
                 enable = true,
@@ -91,9 +112,4 @@ return {
             },
         },
     },
-    config = function(_, opts)
-        require("nvim-treesitter.configs").setup(opts)
-        require("ts_context_commentstring").setup({})
-        vim.g.skip_ts_context_commentstring_module = true
-    end,
 }

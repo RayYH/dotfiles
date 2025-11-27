@@ -4,30 +4,40 @@ return {
     dependencies = {
         "echasnovski/mini.icons",
     },
+
     init = function()
         vim.o.timeout = true
         vim.o.timeoutlen = 500
     end,
+
+    -- this is passed into which-key.setup()
     opts = {
         filter = function(mapping)
-            return mapping.desc and mapping.desc ~= ""
+            return mapping.desc ~= nil and mapping.desc ~= ""
         end,
     },
-    config = function()
+
+    config = function(_, opts)
         local wk = require("which-key")
-        wk.setup()
+        wk.setup(opts)
+
+        -- normal-mode mappings / groups
         wk.add({
+            -- git / comment
             { "gb", desc = "Git blame line" },
+
             { "gc", group = "comment" },
-            { "gcc", desc = "comment current line" },
+            { "gcc", desc = "Comment current line" },
             {
                 "gcu",
-                desc = "Uncomment the current and adjacent commented lines.",
+                desc = "Uncomment current and adjacent commented lines",
             },
             {
                 "gcgc",
-                desc = "Uncomment the current and adjacent commented lines.",
+                desc = "Uncomment current and adjacent commented lines",
             },
+
+            -- Markdown
             { "<leader>M", group = "Markdown" },
             {
                 "<leader>Mp",
@@ -37,12 +47,12 @@ return {
             {
                 "<leader>MP",
                 "<cmd>PeekOpen<CR>",
-                desc = "Preview Markdown Via Peek",
+                desc = "Preview Markdown via Peek",
             },
             {
                 "<leader>MC",
                 "<cmd>PeekClose<CR>",
-                desc = "Close Preview Markdown",
+                desc = "Close Markdown Peek",
             },
             {
                 "<leader>Ms",
@@ -54,14 +64,21 @@ return {
                 "<cmd>MarkdownPreviewToggle<CR>",
                 desc = "Toggle Markdown preview",
             },
+
+            -- console / CLI
             { "<leader>c", group = "console/cli" },
             { "<leader>cg", desc = "Open Lazygit" },
-            { "<leader>cc", desc = "Take screenshot and save it to clipboard" },
+            {
+                "<leader>cc",
+                desc = "Take screenshot (clipboard)",
+            },
             {
                 "<leader>cs",
-                desc = "Take screenshoot and save it to filesystem",
+                desc = "Take screenshot (save to filesystem)",
             },
 
+            -- DAP
+            { "<leader>d", group = "debug" },
             {
                 "<leader>db",
                 "<cmd>lua require('dap').toggle_breakpoint()<CR>",
@@ -98,6 +115,7 @@ return {
                 desc = "Stop",
             },
 
+            -- file / telescope
             { "<leader>f", group = "file" },
             { "<leader>fa", desc = "Find all files" },
             { "<leader>fb", desc = "Find buffers" },
@@ -107,51 +125,73 @@ return {
             { "<leader>fh", desc = "Find help" },
             { "<leader>fr", desc = "Recent files" },
             { "<leader>fs", "<cmd>w<CR>", desc = "Save buffer" },
-            { "<leader>fu", "<cmd>Lazy update<CR>", desc = "Update Lazy" },
+            {
+                "<leader>fu",
+                "<cmd>Lazy update<CR>",
+                desc = "Update plugins (Lazy)",
+            },
+
+            -- mode / formatting / treesj
             { "<leader>m", group = "mode" },
-            { "<leader>mj", desc = "Join treesitter nodes" },
-            { "<leader>mm", desc = "Toggle treesitter" },
+            { "<leader>mj", desc = "Join Treesitter nodes" },
+            { "<leader>mm", desc = "Toggle split/join (Treesj)" },
             { "<leader>mp", desc = "Format document" },
-            { "<leader>ms", desc = "Split treesitter nodes" },
+            { "<leader>ms", desc = "Split Treesitter nodes" },
+
+            -- file / folder (neo-tree etc.)
             { "<leader>n", group = "File/Folder" },
+
+            -- quit / buffers
             { "<leader>q", group = "quit" },
             { "<leader>qB", desc = "Close all buffers" },
             { "<leader>qb", desc = "Close buffer" },
+
+            -- splits
             { "<leader>s", group = "split" },
-            { "<leader>sh", "<cmd>split<CR>", desc = "Split horizontal" },
-            { "<leader>sv", "<cmd>vsplit<CR>", desc = "Split vertical" },
+            {
+                "<leader>sh",
+                "<cmd>split<CR>",
+                desc = "Split horizontal",
+            },
+            {
+                "<leader>sv",
+                "<cmd>vsplit<CR>",
+                desc = "Split vertical",
+            },
+
+            -- tests / neotest
             { "<leader>t", group = "test" },
             {
                 "<leader>tM",
-                "<cmd>lua require('neotest').run.run({strategy = 'dap'})<cr>",
-                desc = "Test Method DAP",
+                "<cmd>lua require('neotest').run.run({ strategy = 'dap' })<CR>",
+                desc = "Test method (DAP)",
             },
             {
                 "<leader>tf",
-                "<cmd>lua require('neotest').run.run({vim.fn.expand('%')})<cr>",
-                desc = "Test Class",
+                "<cmd>lua require('neotest').run.run({ vim.fn.expand('%') })<CR>",
+                desc = "Test file",
             },
             {
                 "<leader>tm",
-                "<cmd>lua require('neotest').run.run()<cr>",
-                desc = "Test Method",
+                "<cmd>lua require('neotest').run.run()<CR>",
+                desc = "Test method",
             },
         })
 
+        -- visual-mode codesnap group
         wk.add({
+            { "c", group = "codesnap", mode = "x" },
             {
-                mode = { "x" },
-                { "c", group = "codesnap" },
-                {
-                    "cc",
-                    "<cmd>CodeSnap<cr>",
-                    desc = "Save selected code snapshot into clipboard",
-                },
-                {
-                    "cs",
-                    "<cmd>CodeSnapSave<cr>",
-                    desc = "Save selected code snapshot in ~/Pictures",
-                },
+                "cc",
+                "<cmd>CodeSnap<CR>",
+                mode = "x",
+                desc = "Save code snapshot to clipboard",
+            },
+            {
+                "cs",
+                "<cmd>CodeSnapSave<CR>",
+                mode = "x",
+                desc = "Save code snapshot to ~/Pictures",
             },
         })
     end,
