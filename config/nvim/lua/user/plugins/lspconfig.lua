@@ -160,6 +160,7 @@ return {
                         checkThirdParty = false,
                         library = {
                             "${3rd}/luv/library",
+                            ---@diagnostic disable-next-line: deprecated
                             unpack(vim.api.nvim_get_runtime_file("", true)),
                         },
                     },
