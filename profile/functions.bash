@@ -36,14 +36,24 @@ function fs() {
   fi
 }
 
-# search keyword in given dir
-function search() {
-  str="$1"
-  dir=.
-  if [ -n "$2" ]; then
-    dir="$2"
+# search keyword in given dir (prefer rg, fallback to grep)
+search() {
+  local str="$1"
+  local dir="${2:-.}"
+
+  if [ -z "$str" ]; then
+    echo "usage: search <pattern> [dir]" >&2
+    return 2
   fi
-  grep -rin "$str" "$dir"
+
+  if command -v rg >/dev/null 2>&1; then
+    # -n: line numbers, -S: smart case, --hidden: include hidden files,
+    # --glob '!.git/*': skip git dir (fast + less noise)
+    rg -n -S --hidden --glob '!.git/*' -- "$str" "$dir"
+  else
+    # -r: recursive, -n: line numbers, -i: case-insensitive, -I: skip binary
+    grep -rninI -- "$str" "$dir"
+  fi
 }
 
 # show datetime of given timestamp
