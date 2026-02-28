@@ -145,8 +145,7 @@ esac
 if grep -q "$DOTFILES/setup.bash" "$BASH_PROFILE"; then
     echo "You've already enabled setup"
 else
-    echo >>"$BASH_PROFILE"
-    # shellcheck disable=SC2016,SC2086
-    echo "test -e "$DOTFILES/setup.bash" && source "$DOTFILES/setup.bash"" >>"$BASH_PROFILE"
+    printf '\n' >>"$BASH_PROFILE"
+    printf 'test -e "%s/setup.bash" && source "%s/setup.bash"\n' "$DOTFILES" "$DOTFILES" >>"$BASH_PROFILE"
     echo "setup done, restart your terminal!!"
 fi

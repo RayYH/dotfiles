@@ -58,19 +58,24 @@ search() {
 
 # show datetime of given timestamp
 function ts_d() {
-  local d_format
   local ts
   local ms
   ts=${1:0:10}
   ms=${1:10:${#1}}
-  d_format='"+%Y-%m-%d %H:%M:%S"'
-  [[ -n "$ms" ]] && d_format="\"+%Y-%m-%d %H:%M:%S,$ms\""
-  cmd="date --date @$ts"
-  # we will install core utils
-  if [ ! -e "/usr/local/opt/coreutils/libexec/gnubin/date" ]; then
-    [[ $"OSTYPE" == "darwin"* ]] && cmd="date -d @$ts"
+
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ -n "$ms" ]]; then
+      date -r "$ts" "+%Y-%m-%d %H:%M:%S,$ms"
+    else
+      date -r "$ts" "+%Y-%m-%d %H:%M:%S"
+    fi
+  else
+    if [[ -n "$ms" ]]; then
+      date --date "@$ts" "+%Y-%m-%d %H:%M:%S,$ms"
+    else
+      date --date "@$ts" "+%Y-%m-%d %H:%M:%S"
+    fi
   fi
-  eval "$cmd $d_format"
 }
 
 # create a dataurl of given file
@@ -291,7 +296,7 @@ function git-aliases() {
 }
 
 # use git diff to diff files/folders
-if [ ! "$(hash git &>/dev/null)" ]; then
+if hash git &>/dev/null; then
   function diff() {
     git diff --no-index --color-words "$@"
   }

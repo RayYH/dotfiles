@@ -3,7 +3,7 @@
 CURRENT_DIR="$(cd $(dirname "$BASH_SOURCE[0]") && pwd)"
 
 if [ -f "$CURRENT_DIR/wallpaper.png" ]; then
-    return
+    exit 0
 fi
 
 wget https://backiee.com/static/wallpapers/1920x1080/224618.jpg -O "$CURRENT_DIR/wallpaper.jpg"

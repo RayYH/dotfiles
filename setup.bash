@@ -56,14 +56,26 @@ done
 
 # Set git configurations
 if [ -n "$GIT_AUTHOR_NAME" ] && [ "$GIT_AUTHOR_NAME" != " " ]; then
-  git config --global user.name "$GIT_AUTHOR_NAME"
+  current_git_author_name="$(git config --global --get user.name 2>/dev/null || true)"
+  if [ "$current_git_author_name" != "$GIT_AUTHOR_NAME" ]; then
+    git config --global user.name "$GIT_AUTHOR_NAME"
+  fi
 fi
 
 if [ -n "$GIT_AUTHOR_EMAIL" ] && [ "$GIT_AUTHOR_EMAIL" != " " ]; then
-  git config --global user.email "$GIT_AUTHOR_EMAIL"
+  current_git_author_email="$(git config --global --get user.email 2>/dev/null || true)"
+  if [ "$current_git_author_email" != "$GIT_AUTHOR_EMAIL" ]; then
+    git config --global user.email "$GIT_AUTHOR_EMAIL"
+  fi
 fi
 
 if [ -n "$GIT_SIGNING_KEY" ] && [ "$GIT_SIGNING_KEY" != " " ]; then
-  git config --global commit.gpgsign true
-  git config --global user.signingkey "$GIT_SIGNING_KEY"
+  current_signing_key="$(git config --global --get user.signingkey 2>/dev/null || true)"
+  current_gpgsign="$(git config --global --get commit.gpgsign 2>/dev/null || true)"
+  if [ "$current_signing_key" != "$GIT_SIGNING_KEY" ]; then
+    git config --global user.signingkey "$GIT_SIGNING_KEY"
+  fi
+  if [ "$current_gpgsign" != "true" ]; then
+    git config --global commit.gpgsign true
+  fi
 fi

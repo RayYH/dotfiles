@@ -121,10 +121,8 @@ return {
             filetypes = {
                 "javascript",
                 "javascriptreact",
-                "javascript.jsx",
                 "typescript",
                 "typescriptreact",
-                "typescript.tsx",
                 "vue",
             },
         })
@@ -183,8 +181,23 @@ return {
             "lua_ls",
         }
 
+        local server_cmds = {
+            gopls = "gopls",
+            pyright = "pyright-langserver",
+            phpactor = "phpactor",
+            vue_ls = "vue-language-server",
+            ts_ls = "typescript-language-server",
+            tailwindcss = "tailwindcss-language-server",
+            jsonls = "vscode-json-language-server",
+            bashls = "bash-language-server",
+            lua_ls = "lua-language-server",
+        }
+
         for _, server in ipairs(servers) do
-            vim.lsp.enable(server)
+            local cmd = server_cmds[server]
+            if cmd and vim.fn.executable(cmd) == 1 then
+                vim.lsp.enable(server)
+            end
         end
 
         ----------------------------------------------------------------------
@@ -192,46 +205,50 @@ return {
         ----------------------------------------------------------------------
         local null_ls = require("null-ls")
         local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+        local sources = {
+            -- basic tools
+            null_ls.builtins.formatting.stylua,
+            null_ls.builtins.completion.spell,
+            null_ls.builtins.formatting.jq,
+
+            -- trailing spaces
+            null_ls.builtins.diagnostics.trail_space.with({
+                disabled_filetypes = { "NvimTree" },
+            }),
+
+            -- PHP Pint
+            null_ls.builtins.formatting.pint.with({
+                condition = function(utils)
+                    return utils.root_has_file({ "vendor/bin/pint" })
+                end,
+            }),
+
+            -- Prettier only if project config exists
+            null_ls.builtins.formatting.prettier.with({
+                condition = function(utils)
+                    return utils.root_has_file({
+                        ".prettierrc",
+                        ".prettierrc.json",
+                        ".prettierrc.yml",
+                        ".prettierrc.js",
+                        "prettier.config.js",
+                    })
+                end,
+            }),
+
+            -- Python
+            null_ls.builtins.formatting.black,
+        }
+
+        if vim.fn.executable("eslint_d") == 1 then
+            table.insert(sources, require("none-ls.code_actions.eslint_d"))
+            table.insert(sources, require("none-ls.diagnostics.eslint_d"))
+            table.insert(sources, require("none-ls.formatting.eslint_d"))
+        end
 
         null_ls.setup({
             temp_dir = "/tmp",
-            sources = {
-                -- basic tools
-                null_ls.builtins.formatting.stylua,
-                null_ls.builtins.completion.spell,
-                require("none-ls.code_actions.eslint_d"),
-                require("none-ls.diagnostics.eslint_d"),
-                require("none-ls.formatting.eslint_d"),
-                require("none-ls.formatting.jq"),
-
-                -- trailing spaces
-                null_ls.builtins.diagnostics.trail_space.with({
-                    disabled_filetypes = { "NvimTree" },
-                }),
-
-                -- PHP Pint
-                null_ls.builtins.formatting.pint.with({
-                    condition = function(utils)
-                        return utils.root_has_file({ "vendor/bin/pint" })
-                    end,
-                }),
-
-                -- Prettier only if project config exists
-                null_ls.builtins.formatting.prettier.with({
-                    condition = function(utils)
-                        return utils.root_has_file({
-                            ".prettierrc",
-                            ".prettierrc.json",
-                            ".prettierrc.yml",
-                            ".prettierrc.js",
-                            "prettier.config.js",
-                        })
-                    end,
-                }),
-
-                -- Python
-                null_ls.builtins.formatting.black,
-            },
+            sources = sources,
             on_attach = function(client, bufnr)
                 if client.supports_method("textDocument/formatting") then
                     vim.api.nvim_clear_autocmds({

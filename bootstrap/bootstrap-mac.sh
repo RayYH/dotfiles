@@ -240,7 +240,7 @@ function __formulas() {
         "jq"                # https://jqlang.github.io/jq/
         "julia"
         "lua"               # https://www.lua.org/
-        "luagit"            # https://luajit.org/luajit.html
+        "luajit"            # https://luajit.org/luajit.html
         "kubectx"           # https://github.com/ahmetb/kubectx
         "loc"               # https://github.com/cgag/loc
         "make"              # https://www.gnu.org/software/make/
@@ -360,7 +360,7 @@ __rust
 ################################################################################
 function __preferences() {
     __echo "Step $step: Setting macOS preferences..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/RayYH/dotfiles/refs/heads/main/bootstrap/mac-defaults.sh)"
+    /bin/bash "$SCRIPT_DIR/mac-defaults.sh"
     __done "$((step++))"
 }
 [ -n "${S_ONLY_UPDATE+1}" ] || __preferences

@@ -19,7 +19,13 @@ __logo
 
 __echo "Updating package lists..."
 __command_exists "pacman" || __error "pacman is not installed"
-sudo pacman -Syu --noconfirm
+
+if [[ $EUID -eq 0 ]]; then
+    pacman -Syu --noconfirm
+else
+    __command_exists "sudo" || __error "'sudo' is required when not running as root. Please install sudo first."
+    sudo pacman -Syu --noconfirm
+fi
 
 # Install sudo if missing
 if ! __command_exists "sudo"; then
@@ -89,6 +95,7 @@ function __install_yay() {
     cd "$SCRIPT_DIR"
     rm -rf /tmp/yay
     __done "$step"
+    step=$((step + 1))
 }
 __install_yay
 
@@ -114,6 +121,7 @@ function __install_go() {
     fi
     sudo pacman -S --noconfirm go
     __done "$step"
+    step=$((step + 1))
 }
 __install_go
 
@@ -138,12 +146,13 @@ function __install_rust() {
     fi
     sudo pacman -S --noconfirm rust
     __done "$step"
+    step=$((step + 1))
 }
 __install_rust
 
 function __install_nvm_and_nodejs() {
     __echo "Installing NVM and Node.js..."
-    if __command_exists "nvm"; then
+    if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
         __done "$step"
         step=$((step + 1))
         return
@@ -179,6 +188,7 @@ function __install_deno() {
     fi
     curl -fsSL https://deno.land/install.sh | sh -s -- -y
     __done "$step"
+    step=$((step + 1))
 }
 __install_deno
 
@@ -191,6 +201,7 @@ function __install_php() {
     fi
     sudo pacman -S --noconfirm php php-fpm php-gd php-intl php-sqlite php-redis xdebug
     __done "$step"
+    step=$((step + 1))
 }
 __install_php
 
@@ -204,6 +215,7 @@ function __install_composer() {
     curl -sS https://getcomposer.org/installer | php
     sudo mv composer.phar /usr/local/bin/composer
     __done "$step"
+    step=$((step + 1))
 }
 __install_composer
 
@@ -213,5 +225,6 @@ function __fix_locales() {
     sudo locale-gen
     sudo localectl set-locale LANG=en_US.UTF-8
     __done "$step"
+    step=$((step + 1))
 }
 __fix_locales
