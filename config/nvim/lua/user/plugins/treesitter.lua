@@ -11,10 +11,6 @@ return {
 
     dependencies = {
         {
-            "nvim-treesitter/playground",
-            cmd = "TSPlaygroundToggle",
-        },
-        {
             "JoosepAlviste/nvim-ts-context-commentstring",
             main = "ts_context_commentstring",
             opts = {
