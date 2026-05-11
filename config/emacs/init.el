@@ -1,3 +1,8 @@
+;; Make MacTeX / TeX Live visible to GUI Emacs on macOS.
+(when (eq system-type 'darwin)
+  (add-to-list 'exec-path "/Library/TeX/texbin")
+  (setenv "PATH" (concat "/Library/TeX/texbin:" (getenv "PATH"))))
+
 (setq custom-file "~/.emacs.d/custom.el")
 
 (menu-bar-mode 0)
@@ -51,6 +56,13 @@
          ("C-c n j" . org-roam-dailies-capture-today))
   :config
   (org-roam-db-autosync-mode))
+
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+(recentf-mode 1)
+(setq recentf-max-menu-items 25
+      recentf-max-saved-items 100
+      recentf-exclude '("/tmp/" "/.emacs.d/elpa/" "\\.gz$"))
 
 ;; Always follow symbolic links to version-controlled files.
 (setq vc-follow-symlinks t)
