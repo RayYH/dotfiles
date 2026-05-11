@@ -4,10 +4,11 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 
-(setq inhight-startup-screen t)
+(setq inhibit-startup-screen t)
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 (package-initialize)
 
 (unless package-archive-contents
@@ -31,5 +32,27 @@
 
 (when (display-graphic-p)
   (set-face-attribute 'default nil :family "IntelOne Mono" :height 120))
+
+(use-package vterm
+  :ensure t
+  :commands vterm
+  :config
+  ;; Optional: increase scrollback
+  (setq vterm-max-scrollback 10000))
+
+;; (use-package org-roam
+;;   :ensure t
+;;   :custom
+;;   (org-roam-directory "~/Zettelkasten/Org")
+;;   :bind (("C-c n l" . org-roam-buffer-toggle)
+;;          ("C-c n f" . org-roam-node-find)
+;;          ("C-c n i" . org-roam-node-insert)
+;;          ("C-c n c" . org-roam-capture)
+;;          ("C-c n j" . org-roam-dailies-capture-today))
+;;   :config
+;;   (org-roam-db-autosync-mode))
+
+;; Always follow symbolic links to version-controlled files.
+(setq vc-follow-symlinks t)
 
 (load-file custom-file)
