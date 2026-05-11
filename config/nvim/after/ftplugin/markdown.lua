@@ -1,2 +1,5 @@
-vim.opt_local.conceallevel = 2
-vim.opt_local.textwidth = 120
+local opt = vim.opt_local
+
+opt.conceallevel = 2
+opt.textwidth = 120
+opt.wrap = true

@@ -4,3 +4,4 @@ opt.shiftwidth = 2
 opt.softtabstop = 2
 opt.tabstop = 2
 opt.spell = false
+opt.conceallevel = 0
