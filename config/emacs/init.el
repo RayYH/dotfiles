@@ -55,6 +55,19 @@
 ;; Always follow symbolic links to version-controlled files.
 (setq vc-follow-symlinks t)
 
+(use-package smex
+  :ensure t
+  :bind (("M-x" . smex)
+         ("C-c C-c M-x" . execute-extended-command)))
+
+(use-package ido-completing-read+
+  :ensure t
+  :config
+  (ido-mode 1)
+  (ido-everywhere 1)
+  (ido-ubiquitous-mode 1)
+  (setq ido-enable-flex-matching t))
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
