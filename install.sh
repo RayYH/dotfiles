@@ -42,6 +42,17 @@ fi
 rm -rf "$HOME/.config/nvim"
 ln -s "$DOTFILES/config/nvim" "$HOME/.config/nvim"
 
+mkdir -p "$HOME/.emacs.d"
+for item in "$DOTFILES/config/emacs"/*; do
+    [ -e "$item" ] || continue
+    dest="$HOME/.emacs.d/$(basename "$item")"
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+        mv "$dest" "$BACKUP_FOLDER"
+    fi
+    rm -rf "$dest"
+    ln -s "$item" "$dest"
+done
+
 if [ -d "$HOME/.config/alacritty" ]; then
     mv "$HOME/.config/alacritty" "$BACKUP_FOLDER"
 fi
