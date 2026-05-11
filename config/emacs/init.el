@@ -55,4 +55,14 @@
 ;; Always follow symbolic links to version-controlled files.
 (setq vc-follow-symlinks t)
 
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+
+(use-package diff-hl
+  :ensure t
+  :hook ((prog-mode . diff-hl-mode)
+         (magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)))
+
 (load-file custom-file)
