@@ -68,6 +68,20 @@
   (ido-ubiquitous-mode 1)
   (setq ido-enable-flex-matching t))
 
+(require 'dired-x)
+(setq dired-omit-files "^\\.[^.]\\|^\\.\\.$"
+      dired-dwim-target t)
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+
+(use-package paredit
+  :ensure t
+  :hook ((emacs-lisp-mode  . paredit-mode)
+         (clojure-mode     . paredit-mode)
+         (lisp-mode        . paredit-mode)
+         (common-lisp-mode . paredit-mode)
+         (scheme-mode      . paredit-mode)
+         (racket-mode      . paredit-mode)))
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
