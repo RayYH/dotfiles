@@ -22,7 +22,7 @@ map(
     "n",
     "<Esc>",
     "<cmd>nohlsearch<CR>",
-    with_opts { desc = "Clear search highlighting when pressing <Esc>" }
+    with_opts({ desc = "Clear search highlighting when pressing <Esc>" })
 )
 
 -- Open the current file in the default program.
@@ -30,7 +30,7 @@ map(
     "n",
     "<leader>oo",
     "<cmd>!open %<CR><CR>",
-    with_opts { desc = "Open the current file in the default program" }
+    with_opts({ desc = "Open the current file in the default program" })
 )
 
 ----------------------------------------------------------------
@@ -41,14 +41,14 @@ map(
     "n",
     "[d",
     vim.diagnostic.goto_prev,
-    with_opts { desc = "Go to previous [d]iagnostic" }
+    with_opts({ desc = "Go to previous [d]iagnostic" })
 )
 
 map(
     "n",
     "]d",
     vim.diagnostic.goto_next,
-    with_opts { desc = "Go to next [d]iagnostic" }
+    with_opts({ desc = "Go to next [d]iagnostic" })
 )
 
 ----------------------------------------------------------------
@@ -60,7 +60,7 @@ map(
     "n",
     "gf",
     ":edit <cfile><CR>",
-    with_opts { desc = "Open file under cursor (create if needed)" }
+    with_opts({ desc = "Open file under cursor (create if needed)" })
 )
 
 ----------------------------------------------------------------
@@ -72,14 +72,14 @@ map(
     "v",
     "<",
     "<gv",
-    with_opts { desc = "Reselect visual selection after indenting" }
+    with_opts({ desc = "Reselect visual selection after indenting" })
 )
 
 map(
     "v",
     ">",
     ">gv",
-    with_opts { desc = "Reselect visual selection after indenting" }
+    with_opts({ desc = "Reselect visual selection after indenting" })
 )
 
 -- Maintain the cursor position when yanking a visual selection.
@@ -88,14 +88,18 @@ map(
     "v",
     "y",
     "myy`y",
-    with_opts { desc = "Maintain the cursor position when yanking a visual selection" }
+    with_opts({
+        desc = "Maintain the cursor position when yanking a visual selection",
+    })
 )
 
 map(
     "v",
     "Y",
     "myY`y",
-    with_opts { desc = "Maintain the cursor position when yanking a visual selection" }
+    with_opts({
+        desc = "Maintain the cursor position when yanking a visual selection",
+    })
 )
 
 -- Paste replace visual selection without copying it.
@@ -103,7 +107,7 @@ map(
     "v",
     "p",
     '"_dP',
-    with_opts { desc = "Paste replace visual selection without copying it" }
+    with_opts({ desc = "Paste replace visual selection without copying it" })
 )
 
 ----------------------------------------------------------------
@@ -115,14 +119,14 @@ map(
     "n",
     "k",
     "v:count == 0 ? 'gk' : 'k'",
-    with_opts { expr = true, desc = "Move up by display rows" }
+    with_opts({ expr = true, desc = "Move up by display rows" })
 )
 
 map(
     "n",
     "j",
     "v:count == 0 ? 'gj' : 'j'",
-    with_opts { expr = true, desc = "Move down by display rows" }
+    with_opts({ expr = true, desc = "Move down by display rows" })
 )
 
 -- Reselect pasted text.
@@ -130,7 +134,7 @@ map(
     "n",
     "p",
     "p`[v`]",
-    with_opts { desc = "Reselect pasted text after pasting" }
+    with_opts({ desc = "Reselect pasted text after pasting" })
 )
 
 ----------------------------------------------------------------
@@ -138,8 +142,8 @@ map(
 ----------------------------------------------------------------
 
 -- Easy insertion of a trailing ; or , from insert mode.
-map("i", ";;", "<Esc>A;<Esc>", with_opts { desc = "Append ; at end of line" })
-map("i", ",,", "<Esc>A,<Esc>", with_opts { desc = "Append , at end of line" })
+map("i", ";;", "<Esc>A;<Esc>", with_opts({ desc = "Append ; at end of line" }))
+map("i", ",,", "<Esc>A,<Esc>", with_opts({ desc = "Append , at end of line" }))
 
 ----------------------------------------------------------------
 -- Misc
@@ -150,29 +154,51 @@ map(
     "n",
     "q:",
     "<cmd>q<CR>",
-    with_opts { desc = "Disable command-line window (quit instead)" }
+    with_opts({ desc = "Disable command-line window (quit instead)" })
 )
 
 ----------------------------------------------------------------
 -- Move text up and down
 ----------------------------------------------------------------
 
-map("i", "<A-j>", "<Esc>:move .+1<CR>==gi", with_opts { desc = "Move text down" })
-map("i", "<A-k>", "<Esc>:move .-2<CR>==gi", with_opts { desc = "Move text up" })
+map(
+    "i",
+    "<A-j>",
+    "<Esc>:move .+1<CR>==gi",
+    with_opts({ desc = "Move text down" })
+)
+map(
+    "i",
+    "<A-k>",
+    "<Esc>:move .-2<CR>==gi",
+    with_opts({ desc = "Move text up" })
+)
 
-map("n", "<A-j>", ":move .+1<CR>==", with_opts { desc = "Move text down" })
-map("n", "<A-k>", ":move .-2<CR>==", with_opts { desc = "Move text up" })
+map("n", "<A-j>", ":move .+1<CR>==", with_opts({ desc = "Move text down" }))
+map("n", "<A-k>", ":move .-2<CR>==", with_opts({ desc = "Move text up" }))
 
-map("v", "<A-j>", ":move '>+1<CR>gv=gv", with_opts { desc = "Move text down" })
-map("v", "<A-k>", ":move '<-2<CR>gv=gv", with_opts { desc = "Move text up" })
+map("v", "<A-j>", ":move '>+1<CR>gv=gv", with_opts({ desc = "Move text down" }))
+map("v", "<A-k>", ":move '<-2<CR>gv=gv", with_opts({ desc = "Move text up" }))
+
+-- Leave terminal mode with Esc Esc
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], {
+    noremap = true,
+    silent = true,
+})
+
+-- Move from terminal mode to windows/tmux panes smoothly
+vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-w>h]], { silent = true })
+vim.keymap.set("t", "<C-j>", [[<C-\><C-n><C-w>j]], { silent = true })
+vim.keymap.set("t", "<C-k>", [[<C-\><C-n><C-w>k]], { silent = true })
+vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-w>l]], { silent = true })
 
 ----------------------------------------------------------------
 -- Disable arrow keys
 ----------------------------------------------------------------
 
-for _, mode in ipairs { "n", "i", "v" } do
-    map(mode, "<Up>", "<Nop>", with_opts { desc = "Disable arrow keys" })
-    map(mode, "<Down>", "<Nop>", with_opts { desc = "Disable arrow keys" })
-    map(mode, "<Left>", "<Nop>", with_opts { desc = "Disable arrow keys" })
-    map(mode, "<Right>", "<Nop>", with_opts { desc = "Disable arrow keys" })
+for _, mode in ipairs({ "n", "i", "v" }) do
+    map(mode, "<Up>", "<Nop>", with_opts({ desc = "Disable arrow keys" }))
+    map(mode, "<Down>", "<Nop>", with_opts({ desc = "Disable arrow keys" }))
+    map(mode, "<Left>", "<Nop>", with_opts({ desc = "Disable arrow keys" }))
+    map(mode, "<Right>", "<Nop>", with_opts({ desc = "Disable arrow keys" }))
 end
