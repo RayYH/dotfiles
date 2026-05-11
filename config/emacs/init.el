@@ -1,7 +1,8 @@
-;; Make MacTeX / TeX Live visible to GUI Emacs on macOS.
-(when (eq system-type 'darwin)
-  (add-to-list 'exec-path "/Library/TeX/texbin")
-  (setenv "PATH" (concat "/Library/TeX/texbin:" (getenv "PATH"))))
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns x))
+  :config
+  (exec-path-from-shell-initialize))
 
 (setq custom-file "~/.emacs.d/custom.el")
 
@@ -14,7 +15,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(package-initialize)
 
 (unless package-archive-contents
   (package-refresh-contents))
@@ -44,6 +44,15 @@
   :config
   ;; Optional: increase scrollback
   (setq vterm-max-scrollback 10000))
+
+(use-package ob-php
+  :ensure t
+  :after org
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages
+           '((php . t)))))
 
 (use-package org-roam
   :ensure t
