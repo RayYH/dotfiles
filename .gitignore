@@ -1,3 +1,9 @@
 *.bak
 *.tmp
 *log
+
+# Emacs
+*~
+\#*\#
+.\#*
+*.elc

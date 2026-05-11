@@ -8,7 +8,7 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (package-initialize)
 
 (unless package-archive-contents
@@ -40,17 +40,17 @@
   ;; Optional: increase scrollback
   (setq vterm-max-scrollback 10000))
 
-;; (use-package org-roam
-;;   :ensure t
-;;   :custom
-;;   (org-roam-directory "~/Zettelkasten/Org")
-;;   :bind (("C-c n l" . org-roam-buffer-toggle)
-;;          ("C-c n f" . org-roam-node-find)
-;;          ("C-c n i" . org-roam-node-insert)
-;;          ("C-c n c" . org-roam-capture)
-;;          ("C-c n j" . org-roam-dailies-capture-today))
-;;   :config
-;;   (org-roam-db-autosync-mode))
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory "~/Zettelkasten/Org")
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-db-autosync-mode))
 
 ;; Always follow symbolic links to version-controlled files.
 (setq vc-follow-symlinks t)
@@ -68,6 +68,21 @@
   (ido-ubiquitous-mode 1)
   (setq ido-enable-flex-matching t))
 
+(use-package helm
+  :ensure t
+  :config
+  (setq helm-ff-transformer-show-only-basename nil))
+
+(global-set-key (kbd "C-c h g g") 'helm-grep-do-git-grep)
+
+(use-package helm-ls-git
+  :ensure t
+  :bind ("C-c h g l" . helm-ls-git-ls))
+
+(global-set-key (kbd "C-c h f") 'helm-find)
+(global-set-key (kbd "C-c h a") 'helm-org-agenda-files-headings)
+(global-set-key (kbd "C-c h r") 'helm-recentf)
+
 (require 'dired-x)
 (setq dired-omit-files "^\\.[^.]\\|^\\.\\.$"
       dired-dwim-target t)
@@ -84,7 +99,8 @@
 
 (use-package magit
   :ensure t
-  :bind ("C-x g" . magit-status))
+  :bind (("C-c m s" . magit-status)
+         ("C-c m l" . magit-log-current)))
 
 (use-package diff-hl
   :ensure t
