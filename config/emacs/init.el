@@ -42,7 +42,6 @@
   :ensure t
   :commands vterm
   :config
-  ;; Optional: increase scrollback
   (setq vterm-max-scrollback 10000))
 
 (use-package ob-php
