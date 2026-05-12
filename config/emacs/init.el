@@ -29,6 +29,8 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode 1)
 
+(electric-pair-mode 1)
+
 (dolist (mode '(term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook
@@ -141,6 +143,74 @@
           (vterm                "Vterm"        "t")
           (project-kill-buffers "Kill buffers" "k")))
   :bind-keymap ("C-c p" . project-prefix-map))
+
+(use-package yasnippet
+  :ensure t
+  :hook (lsp-mode . yas-minor-mode))
+
+(use-package lsp-mode
+  :ensure t
+  :hook ((java-mode       . lsp-deferred)
+         (rust-mode       . lsp-deferred)
+         (go-mode         . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (js-mode         . lsp-deferred)
+         (python-mode     . lsp-deferred)
+         (c-mode          . lsp-deferred)
+         (c++-mode        . lsp-deferred))
+  :commands (lsp lsp-deferred)
+  :config
+  (setq lsp-keymap-prefix "C-c l"
+        lsp-idle-delay 0.5
+        lsp-lens-enable t))
+
+(use-package lsp-ui
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-enable t
+        lsp-ui-peek-enable t))
+
+(use-package company
+  :ensure t
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.2))
+
+(use-package helm-lsp
+  :ensure t
+  :after (lsp-mode helm)
+  :commands helm-lsp-workspace-symbol)
+
+;; Java — lsp-java auto-downloads Eclipse JDT LS
+(use-package lsp-java
+  :ensure t
+  :after lsp-mode)
+
+;; Rust
+(use-package rust-mode
+  :ensure t)
+
+;; Go — auto-format on save; requires: go install golang.org/x/tools/gopls@latest
+(use-package go-mode
+  :ensure t
+  :hook (go-mode . (lambda ()
+                     (add-hook 'before-save-hook #'gofmt-before-save nil t))))
+
+;; TypeScript/TSX — requires: npm i -g typescript-language-server typescript
+(use-package typescript-mode
+  :ensure t
+  :mode "\\.tsx?\\'")
+
+;; Python uses built-in python-mode; requires: pip install pyright
+;; C/C++ uses built-in modes; requires: clangd (via system package manager)
+
+;; Dockerfile — requires: npm i -g dockerfile-language-server-nodejs
+(use-package dockerfile-mode
+  :ensure t
+  :hook (dockerfile-mode . lsp-deferred))
 
 (use-package p4
   :ensure t

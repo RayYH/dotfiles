@@ -36,3 +36,9 @@ _testmain.go
 
 .idea/
 /.claude
+
+# Emacs
+*~
+\#*\#
+.\#*
+*.elc
