@@ -8,8 +8,8 @@
    '(agent-shell cmake-mode diff-hl doom-themes exec-path-from-shell
 		 go-mode helm-ls-git ido-completing-read+ json-mode
 		 lua-mode magit markdown-mode ob-php org-roam paredit
-		 rainbow-delimiters rust-mode smex typescript-mode
-		 vterm web-mode yaml-mode)))
+		 powershell rainbow-delimiters rust-mode smex
+		 typescript-mode vterm web-mode yaml-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -44,6 +44,14 @@
   :config
   (setq vterm-max-scrollback 10000))
 
+(use-package powershell
+  :ensure t)
+
+(use-package bat-mode
+  :ensure t
+  :mode (("\\.bat\\'" . bat-mode)
+         ("\\.cmd\\'" . bat-mode)))
+
 (use-package ob-php
   :ensure t
   :after org
@@ -121,6 +129,33 @@
   :ensure t
   :bind (("C-c m s" . magit-status)
          ("C-c m l" . magit-log-current)))
+
+(use-package project
+  :config
+  (setq project-vc-extra-root-markers '(".project" ".projectile" ".p4ignore" ".p4config"))
+  (setq project-switch-commands
+        '((project-find-file    "Find file"    "f")
+          (project-find-regexp  "Find regexp"  "g")
+          (project-dired        "Dired"        "d")
+          (magit-project-status "Magit"        "m")
+          (vterm                "Vterm"        "t")
+          (project-kill-buffers "Kill buffers" "k")))
+  :bind-keymap ("C-c p" . project-prefix-map))
+
+(use-package p4
+  :ensure t
+  :bind (("C-c 4 e" . p4-edit)
+         ("C-c 4 a" . p4-add)
+         ("C-c 4 d" . p4-diff)
+         ("C-c 4 D" . p4-diff2)
+         ("C-c 4 r" . p4-revert)
+         ("C-c 4 s" . p4-submit)
+         ("C-c 4 l" . p4-filelog)
+         ("C-c 4 o" . p4-opened)
+         ("C-c 4 S" . p4-status)
+         ("C-c 4 m" . p4-move)
+         ("C-c 4 c" . p4-changes)
+         ("C-c 4 =" . p4-describe)))
 
 (use-package diff-hl
   :ensure t
