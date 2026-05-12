@@ -77,6 +77,10 @@
 
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
+(use-package org-modern
+  :ensure t
+  :hook (org-mode . org-modern-mode))
+
 (recentf-mode 1)
 (setq recentf-max-menu-items 25
       recentf-max-saved-items 100
