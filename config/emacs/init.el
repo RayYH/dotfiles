@@ -133,4 +133,16 @@
 (global-set-key (kbd "C-c b p") #'previous-buffer)
 (global-set-key (kbd "C-c b n") #'next-buffer)
 
+(defun my/duplicate-line ()
+  "Duplicate current line, leaving point on the new copy at the same column."
+  (interactive)
+  (let ((col (current-column))
+        (line (buffer-substring (line-beginning-position) (line-end-position))))
+    (end-of-line)
+    (newline)
+    (insert line)
+    (move-to-column col)))
+
+(global-set-key (kbd "C-,") #'my/duplicate-line)
+
 (load-file custom-file)
