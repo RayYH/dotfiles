@@ -77,6 +77,17 @@
 
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
+(defun my/org-roam-search-text ()
+  "Search full text in org-roam-directory using ripgrep via helm."
+  (interactive)
+  (require 'org-roam)
+  (let ((default-directory org-roam-directory)
+        (helm-grep-ag-command
+         "rg --color=always --smart-case --no-heading --line-number %s %s %s"))
+    (helm-do-grep-ag nil)))
+
+(global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
+
 (use-package org-modern
   :ensure t
   :hook (org-mode . org-modern-mode))
