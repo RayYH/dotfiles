@@ -88,6 +88,19 @@
 
 (global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
 
+(use-package org-download
+  :ensure t
+  :after org
+  :config
+  ;; Save images into ./images relative to current Org file
+  (setq org-download-image-dir "./images")
+  ;; Insert image link at point
+  (setq org-download-method 'directory)
+  ;; Automatically display the image after insertion
+  (setq org-download-display-inline-images t)
+  ;; Optional convenient keybinding
+  (define-key org-mode-map (kbd "C-c i") #'org-download-clipboard))
+
 (use-package org-modern
   :ensure t
   :hook (org-mode . org-modern-mode))
