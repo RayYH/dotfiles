@@ -8,10 +8,7 @@ source "$SCRIPT_DIR/../helpers.sh"
 __command_exists pip || __error "pip is not installed"
 
 packages=(
-    "black"
-    "flake8"
-    "isort"
-    "neovim"
+
 )
 
 __echo "Installing global pip packages..."

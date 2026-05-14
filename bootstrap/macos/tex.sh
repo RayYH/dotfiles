@@ -14,9 +14,9 @@ export PATH="/Library/TeX/texbin:$PATH"
 
 __echo "Updating tlmgr and installing dvipng..."
 sudo tlmgr update --self
+sudo tlmgr update --all || true  # mirror sync failures are non-fatal
+# for org mode
 sudo tlmgr install dvipng
-
-__command_exists latex || __error "'latex' not found on PATH. Restart your terminal."
-__command_exists dvipng || __error "'dvipng' not found on PATH."
+sudo tlmgr install wrapfig capt-of
 
 __echo "✔ TeX installed."

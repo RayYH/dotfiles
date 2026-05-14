@@ -11,4 +11,3 @@ __echo "Installing zoxide via Homebrew..."
 brew install zoxide
 
 __echo "✔ zoxide installed."
-__echo "Add to your shell config: eval \"\$(zoxide init zsh)\""

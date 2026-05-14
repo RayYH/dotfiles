@@ -9,9 +9,6 @@ __command_exists npm || __error "npm is not installed"
 
 packages=(
     "http-server"
-    "eslint_d"
-    "neovim"
-    "tree-sitter-cli"
 )
 
 __echo "Installing global npm packages..."
