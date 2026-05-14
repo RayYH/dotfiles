@@ -77,6 +77,11 @@
 
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
+(add-hook 'org-mode-hook
+          (lambda ()
+            (visual-line-mode 1)
+            (org-indent-mode 1)))
+
 (defun my/org-roam-search-text ()
   "Search full text in org-roam-directory using ripgrep via helm."
   (interactive)
