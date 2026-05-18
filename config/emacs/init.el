@@ -290,10 +290,13 @@
 
 ;; org babel
 (with-eval-after-load 'org
+  (require 'ob-C)
+  (defalias 'org-babel-execute:c++ 'org-babel-execute:C++)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((lua . t)
-     (emacs-lisp . t))))
+     (emacs-lisp . t)
+     (C . t))))
 
 (setq org-confirm-babel-evaluate nil)
 (setq org-babel-default-header-args:lua
