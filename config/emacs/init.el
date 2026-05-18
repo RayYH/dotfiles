@@ -44,7 +44,7 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (when (display-graphic-p)
-  (set-face-attribute 'default nil :family "IntelOne Mono" :height 120))
+  (set-face-attribute 'default nil :family "IntelOne Mono" :height 150))
 
 (use-package vterm
   :ensure t
@@ -277,6 +277,28 @@
 ;; Buffer switching without arrow keys
 (global-set-key (kbd "C-c b p") #'previous-buffer)
 (global-set-key (kbd "C-c b n") #'next-buffer)
+
+;; Spell checking
+(use-package flyspell
+  :ensure nil
+  :hook ((org-mode . flyspell-mode)
+         (text-mode . flyspell-mode)
+         (prog-mode . flyspell-prog-mode))
+  :config
+  (setq ispell-program-name "hunspell")
+  (setq ispell-dictionary "en_US"))
+
+;; org babel
+(with-eval-after-load 'org
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((lua . t)
+     (emacs-lisp . t))))
+
+(setq org-confirm-babel-evaluate nil)
+(setq org-babel-default-header-args:lua
+      '((:results . "output")))
+
 
 (defun my/duplicate-line ()
   "Duplicate current line, leaving point on the new copy at the same column."
