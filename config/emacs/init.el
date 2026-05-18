@@ -86,7 +86,11 @@
 (add-hook 'org-mode-hook
           (lambda ()
             (visual-line-mode 1)
-            (org-indent-mode 1)))
+            (org-indent-mode 1)
+            (make-local-variable 'ispell-skip-region-alist)
+            (add-to-list 'ispell-skip-region-alist '("\\[\\[" . "\\]\\]"))
+            (add-to-list 'ispell-skip-region-alist '("https?://" . "\\S-*"))
+            (add-to-list 'ispell-skip-region-alist '("[./\\~][-a-zA-Z0-9_./\\]*"))))
 
 (defun my/org-roam-search-text ()
   "Search full text in org-roam-directory using ripgrep via helm."
@@ -279,6 +283,7 @@
 (global-set-key (kbd "C-c b n") #'next-buffer)
 
 ;; Spell checking
+;; https://wordlist.aspell.net/dicts/
 (use-package flyspell
   :ensure nil
   :hook ((org-mode . flyspell-mode)
