@@ -272,6 +272,8 @@
          (magit-pre-refresh . diff-hl-magit-pre-refresh)
          (magit-post-refresh . diff-hl-magit-post-refresh)))
 
+(global-set-key (kbd "C-x r") #'undo-redo)
+
 ;; Buffer switching without arrow keys
 (global-set-key (kbd "C-c b p") #'previous-buffer)
 (global-set-key (kbd "C-c b n") #'next-buffer)
