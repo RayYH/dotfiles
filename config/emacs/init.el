@@ -90,7 +90,13 @@
             (make-local-variable 'ispell-skip-region-alist)
             (add-to-list 'ispell-skip-region-alist '("\\[\\[" . "\\]\\]"))
             (add-to-list 'ispell-skip-region-alist '("https?://" . "\\S-*"))
-            (add-to-list 'ispell-skip-region-alist '("[./\\~][-a-zA-Z0-9_./\\]*"))))
+            (add-to-list 'ispell-skip-region-alist '("[./\\~][-a-zA-Z0-9_./\\]*"))
+            (setq-local electric-pair-pairs
+                        (seq-remove (lambda (p) (= (car p) ?<))
+                                    electric-pair-pairs))
+            (setq-local electric-pair-text-pairs
+                        (seq-remove (lambda (p) (= (car p) ?<))
+                                    electric-pair-text-pairs))))
 
 (defun my/org-roam-search-text ()
   "Search full text in org-roam-directory using ripgrep via helm."
@@ -306,6 +312,9 @@
 (setq org-confirm-babel-evaluate nil)
 (setq org-babel-default-header-args:lua
       '((:results . "output")))
+
+
+(global-set-key (kbd "C-x C-b") #'ibuffer)
 
 
 (defun my/duplicate-line ()
