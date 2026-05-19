@@ -96,7 +96,13 @@
                                     electric-pair-pairs))
             (setq-local electric-pair-text-pairs
                         (seq-remove (lambda (p) (= (car p) ?<))
-                                    electric-pair-text-pairs))))
+                                    electric-pair-text-pairs))
+            (add-hook 'post-self-insert-hook
+                      (lambda ()
+                        (when (and (eq last-command-event ?<)
+                                   (eq (char-after) ?>))
+                          (delete-char 1)))
+                      nil t)))
 
 (defun my/org-roam-search-text ()
   "Search full text in org-roam-directory using ripgrep via helm."
@@ -313,6 +319,15 @@
 (setq org-babel-default-header-args:lua
       '((:results . "output")))
 
+(use-package org
+  :config
+  ;; Use SVG previews if available.
+  ;; sudo tlmgr install dvisvgm
+  (setq org-preview-latex-default-process 'dvisvgm)
+
+  ;; Make LaTeX preview images larger.
+  (setq org-format-latex-options
+        (plist-put org-format-latex-options :scale 1.0)))
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 
