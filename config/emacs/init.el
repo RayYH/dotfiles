@@ -74,7 +74,7 @@
     (newline)
     (insert line)
     (move-to-column col)))
-(global-set-key (kbd "C-,") #'my/duplicate-line)
+(global-set-key (kbd "C-x ,") #'my/duplicate-line)
 
 
 ;; ============================================================
@@ -301,7 +301,8 @@
    'org-babel-load-languages
    '((lua        . t)
      (emacs-lisp . t)
-     (C          . t))))
+     (C          . t)
+     (java       . t))))
 
 (setq org-confirm-babel-evaluate nil)
 (setq org-babel-default-header-args:lua '((:results . "output")))
