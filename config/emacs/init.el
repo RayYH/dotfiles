@@ -189,9 +189,10 @@
          (c++-mode        . lsp-deferred))
   :commands (lsp lsp-deferred)
   :config
-  (setq lsp-keymap-prefix "C-c l"
-        lsp-idle-delay    0.5
-        lsp-lens-enable   t))
+  (setq lsp-keymap-prefix                  "C-c l"
+        lsp-idle-delay                     0.5
+        lsp-lens-enable                    t
+        lsp-headerline-breadcrumb-enable   nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -267,7 +268,10 @@
   ;; sudo tlmgr install dvisvgm
   (setq org-preview-latex-default-process 'dvisvgm)
   (setq org-format-latex-options
-        (plist-put org-format-latex-options :scale 1.0)))
+        (plist-put org-format-latex-options :scale 1.5)))
+
+(use-package org-fragtog
+  :hook (org-mode . org-fragtog-mode))
 
 (add-hook 'org-mode-hook
           (lambda ()
@@ -296,6 +300,7 @@
 
 (with-eval-after-load 'org
   (require 'ob-C)
+  (defalias 'org-babel-execute:c   'org-babel-execute:C)
   (defalias 'org-babel-execute:c++ 'org-babel-execute:C++)
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -305,6 +310,7 @@
      (java       . t))))
 
 (setq org-confirm-babel-evaluate nil)
+(setq org-src-fontify-natively t)
 (setq org-babel-default-header-args:lua '((:results . "output")))
 
 (use-package ob-php
