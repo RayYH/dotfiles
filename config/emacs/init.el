@@ -249,6 +249,21 @@
   :mode (("\\.bat\\'" . bat-mode)
          ("\\.cmd\\'" . bat-mode)))
 
+;; ============================================================
+;; Backups 
+;; ============================================================
+
+;; Put backup files like file.org~ here
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
+;; Put auto-save files like #file.org# here
+(setq auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+
+;; Create folders if they do not exist
+(make-directory (expand-file-name "backups/" user-emacs-directory) t)
+(make-directory (expand-file-name "auto-saves/" user-emacs-directory) t)
+
 
 ;; ============================================================
 ;; Org Mode
@@ -336,11 +351,12 @@
 (global-set-key (kbd "C-c l") #'org-store-link)
 
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "MEETING(m)" "|" "DONE(d!)" "CANCELLED(c@)")))
+      '((sequence "TODO(t)" "NEXT(n)" "DOING(g)" "WAIT(w@/!)" "MEETING(m)" "|" "DONE(d!)" "CANCELLED(c@)")))
 
 (setq org-todo-keyword-faces
       '(("TODO"      . (:weight bold))
         ("NEXT"      . (:weight bold))
+        ("DOING"     . (:weight bold))
         ("WAIT"      . (:weight bold))
         ("MEETING"   . (:weight bold))
         ("CANCELLED" . (:weight bold))))
