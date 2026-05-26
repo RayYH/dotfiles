@@ -326,7 +326,10 @@
 
 (setq org-confirm-babel-evaluate nil)
 (setq org-src-fontify-natively t)
-(setq org-babel-default-header-args:lua '((:results . "output")))
+(setq org-babel-default-header-args:lua  '((:results . "output")))
+(setq org-babel-default-header-args:java
+      `((:dir     . ,(temporary-file-directory))
+        (:results . "output")))
 
 (use-package ob-php
   :after org
