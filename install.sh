@@ -25,10 +25,12 @@ mkdir -p "$BACKUP_FOLDER"
 
 backup_and_remove() {
     local target="$1"
-    if [ -e "$target" ] || [ -L "$target" ]; then
+    if [ -L "$target" ]; then
+        cp -rL "$target" "$BACKUP_FOLDER/$(basename "$target")"
+        rm -rf "$target"
+    elif [ -e "$target" ]; then
         mv "$target" "$BACKUP_FOLDER"
     fi
-    rm -rf "$target"
 }
 
 install_entry() {

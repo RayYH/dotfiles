@@ -22,7 +22,15 @@ $SkipSrc = @('config/kitty', 'config/tmux', 'config/starship', 'config/wget', 's
 
 function Backup-And-Remove {
     param([string]$Path)
-    if (Test-Path $Path) {
+    if (-not (Test-Path $Path -ErrorAction SilentlyContinue)) { return }
+    $item = Get-Item $Path -Force
+    if ($item.LinkType -in ('SymbolicLink', 'Junction')) {
+        $real = $item.Target
+        if ($real -and (Test-Path $real)) {
+            Copy-Item $real (Join-Path $BACKUP $item.Name) -Recurse -Force
+        }
+        Remove-Item $Path -Force -Recurse
+    } else {
         Move-Item -Path $Path -Destination $BACKUP -Force
     }
 }
