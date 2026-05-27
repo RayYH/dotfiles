@@ -43,20 +43,6 @@ alias TRACE="lwp-request -m 'TRACE'"     # TRACE
 alias OPTIONS="lwp-request -m 'OPTIONS'" # OPTIONS
 
 #===========================================================================#
-#                           Apple Services                                  #
-#===========================================================================#
-alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"                                                                                                                              # Flush Directory Service cache
-alias clear_files="sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"                           # Clear Apple’s System Logs to improve shell startup speed, clear download history from quarantine.
-alias ls_cleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder" # Clean up LaunchServices to remove duplicates in the “Open With” menu
-alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"                                                                                                      # Show hidden files in Finder
-alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"                                                                                                     # Hide hidden files in Finder
-alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"                                                                                                   # Show all desktop icons (useful when presenting)
-alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"                                                                                                  # Hide all desktop icons (useful when presenting)
-alias spotoff="sudo mdutil -a -i off"                                                                                                                                                            # Disable Spotlight
-alias spoton="sudo mdutil -a -i on"                                                                                                                                                              # Enable Spotlight
-alias say="say -v Alex "                                                                                                                                                                         # preferred say command
-
-#===========================================================================#
 #                             Date/Time                                     #
 #===========================================================================#
 alias now="date '+%Y-%m-%d %H:%I:%S'" # current time
@@ -96,8 +82,7 @@ alias fgrep='fgrep --color=auto'                          # Always enable colore
 alias egrep='egrep --color=auto'                          # Always enable colored `egrep` output
 alias ssh='TERM=xterm ssh'                                # Always use xterm
 alias cheat='cheat -c'                                    # Always colorized
-alias vim='nvim'                                          # Preferred 'vim' implementation
-alias vi='nvim'                                           # Preferred 'vi' implementation
+alias vi='vim'                                            # Preferred 'vi' implementation
 
 #===========================================================================#
 #                      Other Commands or Aliases                            #
@@ -135,3 +120,7 @@ fi
 if ! command -v docker-compose &>/dev/null; then
   alias docker-compose="docker compose"
 fi
+
+
+
+

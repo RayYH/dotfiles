@@ -26,7 +26,6 @@
   :config
   (exec-path-from-shell-initialize))
 
-
 ;; ============================================================
 ;; UI & Appearance
 ;; ============================================================
@@ -40,16 +39,14 @@
   (package-install 'doom-themes))
 (load-theme 'doom-tokyo-night t)
 
-;; fc-list : family | sort -u
-;; (when (display-graphic-p)
-;;   (set-face-attribute 'default nil :family "IntelOne Mono Light" :height 135))
-
+;; Fonts, use fc-list : family | sort -u to view available fonts
 (when (display-graphic-p)
   (set-face-attribute 'default nil
                       :family "IntelOne Mono"
                       :weight 'light
                       :height 135))
 
+;; relative line numbers
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode 1)
 (dolist (mode '(term-mode-hook shell-mode-hook eshell-mode-hook org-mode-hook))
@@ -70,8 +67,7 @@
          (scheme-mode      . paredit-mode)
          (racket-mode      . paredit-mode)))
 
-(global-set-key (kbd "C-x r") #'undo-redo)
-
+;; duplicate line
 (defun my/duplicate-line ()
   "Duplicate current line, leaving point on the new copy at the same column."
   (interactive)
@@ -81,8 +77,9 @@
     (newline)
     (insert line)
     (move-to-column col)))
-(global-set-key (kbd "C-x ,") #'my/duplicate-line)
 
+(global-set-key (kbd "C-x ,") #'my/duplicate-line)
+(global-set-key (kbd "C-x r") #'undo-redo)
 
 ;; ============================================================
 ;; Completion & Search

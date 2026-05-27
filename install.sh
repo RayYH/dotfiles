@@ -65,23 +65,6 @@ fi
 rm -rf "$HOME/.config/starship.toml"
 ln -s "$DOTFILES/config/starship/starship.toml" "$HOME/.config/starship.toml"
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    if [[ -f "$DOTFILES/config/starship/ubuntu/starship.toml" ]]; then
-        rm -rf "$HOME/.config/starship.toml"
-        ln -s "$DOTFILES/config/starship/ubuntu/starship.toml" "$HOME/.config/starship.toml"
-    fi
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    if [[ -f "$DOTFILES/config/starship/macos/starship.toml" ]]; then
-        rm -rf "$HOME/.config/starship.toml"
-        ln -s "$DOTFILES/config/starship/macos/starship.toml" "$HOME/.config/starship.toml"
-    fi
-elif [[ "$OSTYPE" == "linux-musl" ]]; then
-    if [[ -f "$DOTFILES/config/starship/arch/starship.toml" ]]; then
-        rm -rf "$HOME/.config/starship.toml"
-        ln -s "$DOTFILES/config/starship/arch/starship.toml" "$HOME/.config/starship.toml"
-    fi
-fi
-
 if [ -f "$HOME/.curlrc" ]; then
     mv "$HOME/.curlrc" "$BACKUP_FOLDER"
 fi
