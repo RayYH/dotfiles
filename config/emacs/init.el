@@ -40,8 +40,15 @@
   (package-install 'doom-themes))
 (load-theme 'doom-tokyo-night t)
 
+;; fc-list : family | sort -u
+;; (when (display-graphic-p)
+;;   (set-face-attribute 'default nil :family "IntelOne Mono Light" :height 135))
+
 (when (display-graphic-p)
-  (set-face-attribute 'default nil :family "IntelOne Mono" :height 150))
+  (set-face-attribute 'default nil
+                      :family "IntelOne Mono"
+                      :weight 'light
+                      :height 135))
 
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode 1)
@@ -120,6 +127,9 @@
 (setq dired-omit-files "^\\.[^.]\\|^\\.\\.$"
       dired-dwim-target t)
 (add-hook 'dired-mode-hook #'dired-omit-mode)
+
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "C-c n") #'dired-create-empty-file))
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-c b p") #'previous-buffer)
