@@ -445,6 +445,16 @@
 
 (global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
 
+;; -- multi cursor --
+(use-package multiple-cursors
+  :bind
+  (("C-S-c C-S-c" . mc/edit-lines)
+   ("C->"         . mc/mark-next-like-this)
+   ("C-<"         . mc/mark-previous-like-this)
+   ("C-c C-<"     . mc/mark-all-like-this)
+   ("C-c C-w"     . mc/mark-next-like-this-word)
+   ("C-c C-s"     . mc/mark-next-like-this-symbol)))
+
 ;; -- Extras --
 
 (use-package org-download
