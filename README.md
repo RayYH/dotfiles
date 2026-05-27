@@ -28,3 +28,4 @@ I've borrowed a lot of ideas from the following repositories:
 - [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles)
 - [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
 - [ntegralist/nvim](https://github.com/Integralist/nvim)
+- [josean-dev/dev-environment-files](https://github.com/josean-dev/dev-environment-files)
