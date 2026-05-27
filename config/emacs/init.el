@@ -243,6 +243,40 @@
 (use-package dockerfile-mode
   :hook (dockerfile-mode . lsp-deferred))
 
+;; Lua — requires: brew install lua-language-server
+(use-package lua-mode
+  :mode "\\.lua\\'"
+  :hook (lua-mode . lsp-deferred)
+  :config
+  (setq lua-indent-level 2)
+  :bind (:map lua-mode-map
+              ("C-c C-r" . my/run-current-lua-file)))
+
+;; Auto-insert end/until when pressing RET after Lua block-opening lines
+(defun my/lua-newline-and-close ()
+  "Newline-and-indent; insert matching end/until after Lua block openers."
+  (interactive)
+  (let* ((line (string-trim
+                (buffer-substring-no-properties
+                 (line-beginning-position) (point))))
+         (closer (cond
+                  ((string-match-p "\\`\\(local +\\)?function\\b" line)   "end")
+                  ((string-match-p "\\(if\\|elseif\\).*\\bthen\\'"  line) "end")
+                  ((string-match-p "\\(for\\|while\\).*\\bdo\\'"    line) "end")
+                  ((string-match-p "\\`do\\'"                        line) "end")
+                  ((string-match-p "\\`repeat\\'"                    line) "until ")
+                  (t nil))))
+    (newline-and-indent)
+    (when closer
+      (save-excursion
+        (newline)
+        (insert closer)
+        (indent-according-to-mode)))))
+
+(add-hook 'lua-mode-hook
+          (lambda ()
+            (local-set-key (kbd "RET") #'my/lua-newline-and-close)))
+
 
 ;; ============================================================
 ;; Shell & Terminal
@@ -492,9 +526,6 @@
     (save-buffer)
     (compile (format "lua %s"
                      (shell-quote-argument (file-name-nondirectory buffer-file-name))))))
-
-(with-eval-after-load 'lua-mode
-  (define-key lua-mode-map (kbd "C-c C-r") #'my/run-current-lua-file))
 
 ;; ============================================================
 ;; Keybindings

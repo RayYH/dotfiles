@@ -7,13 +7,13 @@ WORKING_DIR=$(cd "$WORKING_DIR" && pwd)
 [ -z "$SET_UP" ] && export SET_UP="$WORKING_DIR"
 [ -z "$SET_UP_BACKUP" ] && export SET_UP_BACKUP="$SET_UP/backup"
 
-# Set the configuration file
+# Set the configuration file and try to load it, fallback to use default
+# configuration template file
 SET_UP_CONFIG_FILE="$HOME/.setuprc"
-# If configuration file not exist, use the default configuration template file
 [ ! -f "$SET_UP_CONFIG_FILE" ] && SET_UP_CONFIG_FILE="$SET_UP/.setuprc"
-# Load configuration file
 [ -f "$SET_UP_CONFIG_FILE" ] && source "$SET_UP_CONFIG_FILE" 2>/dev/null
 
+# Source the essential scripts
 source "$SET_UP"/profile/env.bash
 source "$SET_UP"/profile/aliases.bash
 [ -f "$SET_UP/profile/$USER.bash" ] && source "$SET_UP/profile/$USER.bash"
@@ -40,7 +40,6 @@ fi
 
 # Change additional shell optional behavior
 # -s (set) -u (unset)
-# http://www.hep.by/gnu/bash/The-Shopt-Builtin.html#The-Shopt-Builtin
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 # Append to the Bash history file, rather than overwriting it
