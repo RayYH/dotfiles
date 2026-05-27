@@ -1,0 +1,25 @@
+# Dotfiles symlink manifest
+# Format:  src -> dest [copy]
+#   src    path relative to dotfiles root; supports trailing /* to expand children
+#   dest   target path; ~ expands to $HOME
+#   copy   optional third word to copy instead of symlink
+
+config/kitty                      -> ~/.config/kitty
+config/tmux/tmux.conf             -> ~/.tmux.conf
+config/nvim                       -> ~/.config/nvim
+config/emacs/init.el              -> ~/.emacs.d/init.el
+config/emacs/early-init.el        -> ~/.emacs.d/early-init.el
+config/emacs/custom.el            -> ~/.emacs.d/custom.el copy
+config/alacritty                  -> ~/.config/alacritty
+config/starship/starship.toml     -> ~/.config/starship.toml
+config/curl/.curlrc               -> ~/.curlrc
+config/wget/.wgetrc               -> ~/.wgetrc
+config/shellcheck/.shellcheckrc   -> ~/.shellcheckrc
+config/uv/uv.toml                 -> ~/.config/uv/uv.toml
+config/editorconfig/.editorconfig -> ~/.editorconfig
+config/conda/.condarc             -> ~/.condarc
+config/jetbrains/.ideavimrc       -> ~/.ideavimrc
+config/git/.gitignore             -> ~/.gitignore
+config/git/.gitconfig             -> ~/.gitconfig copy
+scripts/t                         -> ~/.local/bin/t
+scripts/u                         -> ~/.local/bin/u

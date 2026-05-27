@@ -22,6 +22,7 @@ alias spoton="sudo mdutil -a -i on"                                             
 alias say="say -v Alex "
 alias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'       # open google chrome
 alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf' # Merge PDF files, preserving hyperlinks, Usage: `mergepdf input{1,2,3}.pdf`
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"                       # Delete all .DS_Store files recursively
 
 ###############################################################################
 # Path

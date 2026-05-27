@@ -10,6 +10,16 @@ $timestamp = Get-Date -Format 'yyyyMMddHHmmss'
 $BACKUP = Join-Path $DOTFILES "backup\$timestamp"
 New-Item -ItemType Directory -Path $BACKUP -Force | Out-Null
 
+# Unix dest paths that resolve differently on Windows
+$PathOverrides = @{
+    '~/.config/nvim'       = "$env:LOCALAPPDATA\nvim"
+    '~/.config/alacritty'  = "$env:APPDATA\alacritty"
+    '~/.config/uv/uv.toml' = "$env:APPDATA\uv\uv.toml"
+}
+
+# MANIFEST src prefixes that do not apply on Windows
+$SkipSrc = @('config/kitty', 'config/tmux', 'config/starship', 'config/wget', 'scripts/')
+
 function Backup-And-Remove {
     param([string]$Path)
     if (Test-Path $Path) {
@@ -17,11 +27,32 @@ function Backup-And-Remove {
     }
 }
 
-function New-Link {
-    param([string]$Link, [string]$Target, [switch]$Directory)
-    $type = if ($Directory) { 'Junction' } else { 'SymbolicLink' }
-    New-Item -ItemType $type -Path $Link -Target $Target -Force | Out-Null
-    Write-Host "linked: $Link -> $Target"
+function Install-Entry {
+    param([string]$Src, [string]$Dest, [string]$Op = 'link')
+
+    $parent = Split-Path $Dest -Parent
+    if ($parent -and -not (Test-Path $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    if ($Op -eq 'copy' -and (Test-Path $Dest)) {
+        $answer = Read-Host "$Dest already exists. Override? [y/N]"
+        if ($answer -notmatch '^[Yy]$') {
+            Write-Host "Skipping $Dest"
+            return
+        }
+    }
+
+    Backup-And-Remove $Dest
+
+    if ($Op -eq 'copy') {
+        Copy-Item $Src $Dest
+        Write-Host "copied: $Src -> $Dest"
+    } else {
+        $type = if (Test-Path $Src -PathType Container) { 'Junction' } else { 'SymbolicLink' }
+        New-Item -ItemType $type -Path $Dest -Target $Src -Force | Out-Null
+        Write-Host "linked: $Dest -> $Src"
+    }
 }
 
 # .setuprc
@@ -30,64 +61,43 @@ if (-not (Test-Path $setuprc)) {
     Copy-Item (Join-Path $DOTFILES '.setuprc') $setuprc
 }
 
-# Emacs
-$emacsDir = Join-Path $HOME '.emacs.d'
-New-Item -ItemType Directory -Path $emacsDir -Force | Out-Null
-Get-ChildItem (Join-Path $DOTFILES 'config\emacs') | ForEach-Object {
-    $dest = Join-Path $emacsDir $_.Name
-    Backup-And-Remove $dest
-    New-Link -Link $dest -Target $_.FullName
+# Read MANIFEST
+Get-Content (Join-Path $DOTFILES 'MANIFEST') | ForEach-Object {
+    $line = $_.Trim()
+    if ($line -match '^#' -or $line -eq '') { return }
+    if ($line -notmatch '^(.+?)\s*->\s*(\S+)(?:\s+(\S+))?$') { return }
+
+    $src  = $Matches[1].TrimEnd()
+    $dest = $Matches[2]
+    $op   = if ($Matches[3]) { $Matches[3] } else { 'link' }
+
+    foreach ($skip in $SkipSrc) {
+        if ($src.StartsWith($skip)) { return }
+    }
+
+    # Handle glob (src/*)
+    if ($src.EndsWith('/*')) {
+        $srcDir      = Join-Path $DOTFILES ($src.TrimEnd('/*') -replace '/', '\')
+        $destExpanded = $dest -replace '^~', $HOME
+        New-Item -ItemType Directory -Path $destExpanded -Force | Out-Null
+        Get-ChildItem $srcDir | ForEach-Object {
+            $itemDest = Join-Path $destExpanded $_.Name
+            Backup-And-Remove $itemDest
+            $type = if ($_.PSIsContainer) { 'Junction' } else { 'SymbolicLink' }
+            New-Item -ItemType $type -Path $itemDest -Target $_.FullName -Force | Out-Null
+            Write-Host "linked: $itemDest -> $($_.FullName)"
+        }
+        return
+    }
+
+    $srcResolved  = Join-Path $DOTFILES ($src -replace '/', '\')
+    $destResolved = if ($PathOverrides.ContainsKey($dest)) {
+        $PathOverrides[$dest]
+    } else {
+        ($dest -replace '^~', $HOME) -replace '/', '\'
+    }
+
+    Install-Entry -Src $srcResolved -Dest $destResolved -Op $op
 }
-
-# Neovim — Windows uses %LOCALAPPDATA%\nvim
-$nvimDest = Join-Path $env:LOCALAPPDATA 'nvim'
-Backup-And-Remove $nvimDest
-New-Link -Link $nvimDest -Target (Join-Path $DOTFILES 'config\nvim') -Directory
-
-# Alacritty — Windows uses %APPDATA%\alacritty
-$alacrittyDest = Join-Path $env:APPDATA 'alacritty'
-Backup-And-Remove $alacrittyDest
-New-Link -Link $alacrittyDest -Target (Join-Path $DOTFILES 'config\alacritty') -Directory
-
-# Git
-$gitconfig = Join-Path $HOME '.gitconfig'
-Backup-And-Remove $gitconfig
-Copy-Item (Join-Path $DOTFILES 'config\git\.gitconfig') $gitconfig
-
-$gitignore = Join-Path $HOME '.gitignore'
-Backup-And-Remove $gitignore
-New-Link -Link $gitignore -Target (Join-Path $DOTFILES 'config\git\.gitignore')
-
-# EditorConfig
-$editorconfig = Join-Path $HOME '.editorconfig'
-Backup-And-Remove $editorconfig
-New-Link -Link $editorconfig -Target (Join-Path $DOTFILES 'config\editorconfig\.editorconfig')
-
-# JetBrains IdeaVim
-$ideavimrc = Join-Path $HOME '.ideavimrc'
-Backup-And-Remove $ideavimrc
-New-Link -Link $ideavimrc -Target (Join-Path $DOTFILES 'config\jetbrains\.ideavimrc')
-
-# Conda
-$condarc = Join-Path $HOME '.condarc'
-Backup-And-Remove $condarc
-New-Link -Link $condarc -Target (Join-Path $DOTFILES 'config\conda\.condarc')
-
-# Curl
-$curlrc = Join-Path $HOME '.curlrc'
-Backup-And-Remove $curlrc
-New-Link -Link $curlrc -Target (Join-Path $DOTFILES 'config\curl\.curlrc')
-
-# UV — Windows uses %APPDATA%\uv
-$uvDir = Join-Path $env:APPDATA 'uv'
-New-Item -ItemType Directory -Path $uvDir -Force | Out-Null
-$uvToml = Join-Path $uvDir 'uv.toml'
-Backup-And-Remove $uvToml
-New-Link -Link $uvToml -Target (Join-Path $DOTFILES 'config\uv\uv.toml')
-
-# ShellCheck
-$shellcheckrc = Join-Path $HOME '.shellcheckrc'
-Backup-And-Remove $shellcheckrc
-New-Link -Link $shellcheckrc -Target (Join-Path $DOTFILES 'config\shellcheck\.shellcheckrc')
 
 Write-Host "`nDone. Restart your terminal."

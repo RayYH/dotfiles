@@ -92,7 +92,6 @@ alias qfind="find . -name "                                                     
 alias sudo='sudo '                                                                  # Enable aliases to be sudo’ed
 alias week='date +%V'                                                               # Get week number
 alias co="tr -d '\n' | pbcopy"                                                      # Trim new lines and copy to clipboard: `cat filename | c`
-alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"                       # Delete all .DS_Store files recursively
 alias path='echo -e ${PATH//:/\\n}'                                                 # Print all paths
 alias reload="source ~/.bashrc"                                                     # reload bashrc
 alias map="xargs -n1"                                                               # Intuitive map function, For example, to list all directories that contain a certain file: `find . -name .gitattributes | map dirname`
@@ -120,7 +119,4 @@ fi
 if ! command -v docker-compose &>/dev/null; then
   alias docker-compose="docker compose"
 fi
-
-
-
 

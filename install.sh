@@ -23,109 +23,53 @@ mkdir -p "$HOME/.config"
 BACKUP_FOLDER="$DOTFILES/backup/$(date +%Y%m%d%H%M%S)"
 mkdir -p "$BACKUP_FOLDER"
 
-if [ -d "$HOME/.config/kitty" ]; then
-    mv "$HOME/.config/kitty" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.config/kitty"
-ln -s "$DOTFILES/config/kitty" "$HOME/.config/kitty"
-
-# tmux
-if [ -f "$HOME/.tmux.conf" ]; then
-    mv "$HOME/.tmux.conf" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.tmux.conf"
-ln -s "$DOTFILES/config/tmux/tmux.conf" "$HOME/.tmux.conf"
-
-if [ -d "$HOME/.config/nvim" ]; then
-    mv "$HOME/.config/nvim" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.config/nvim"
-ln -s "$DOTFILES/config/nvim" "$HOME/.config/nvim"
-
-mkdir -p "$HOME/.emacs.d"
-for item in "$DOTFILES/config/emacs"/*; do
-    [ -e "$item" ] || continue
-    dest="$HOME/.emacs.d/$(basename "$item")"
-    if [ -e "$dest" ] || [ -L "$dest" ]; then
-        mv "$dest" "$BACKUP_FOLDER"
+backup_and_remove() {
+    local target="$1"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        mv "$target" "$BACKUP_FOLDER"
     fi
-    rm -rf "$dest"
-    ln -s "$item" "$dest"
-done
+    rm -rf "$target"
+}
 
-if [ -d "$HOME/.config/alacritty" ]; then
-    mv "$HOME/.config/alacritty" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.config/alacritty"
-ln -s "$DOTFILES/config/alacritty" "$HOME/.config/alacritty"
+install_entry() {
+    local src="$1"
+    local dest="${2/#\~/$HOME}"
+    local op="${3:-link}"
+    mkdir -p "$(dirname "$dest")"
+    if [[ "$op" == "copy" ]] && ( [ -e "$dest" ] || [ -L "$dest" ] ); then
+        read -r -p "$dest already exists. Override? [y/N] " answer </dev/tty
+        [[ "$answer" =~ ^[Yy]$ ]] || { echo "Skipping $dest"; return; }
+    fi
+    backup_and_remove "$dest"
+    if [[ "$op" == "copy" ]]; then
+        cp "$src" "$dest"
+    else
+        ln -s "$src" "$dest"
+    fi
+}
 
-if [ -f "$HOME/.config/starship.toml" ]; then
-    mv "$HOME/.config/starship.toml" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.config/starship.toml"
-ln -s "$DOTFILES/config/starship/starship.toml" "$HOME/.config/starship.toml"
+while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
 
-if [ -f "$HOME/.curlrc" ]; then
-    mv "$HOME/.curlrc" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.curlrc"
-ln -s "$DOTFILES/config/curl/.curlrc" "$HOME/.curlrc"
+    src=$(echo "$line" | sed 's/[[:space:]]*->.*$//' | sed 's/[[:space:]]*$//')
+    rest=$(echo "$line" | sed 's/^.*->[[:space:]]*//')
+    dest=$(echo "$rest" | awk '{print $1}')
+    op=$(echo "$rest" | awk 'NF>1 {print $2}')
 
-if [ -f "$HOME/.wgetrc" ]; then
-    mv "$HOME/.wgetrc" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.wgetrc"
-ln -s "$DOTFILES/config/wget/.wgetrc" "$HOME/.wgetrc"
-
-if [ -f "$HOME/.shellcheckrc" ]; then
-    mv "$HOME/.shellcheckrc" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.shellcheckrc"
-ln -s "$DOTFILES/config/shellcheck/.shellcheckrc" "$HOME/.shellcheckrc"
-
-if [ -f "$HOME/.config/uv/uv.toml" ]; then
-    mv "$HOME/.config/uv/uv.toml" "$BACKUP_FOLDER"
-fi
-mkdir -p "$HOME/.config/uv"
-rm -rf "$HOME/.config/uv/uv.toml"
-ln -s "$DOTFILES/config/uv/uv.toml" "$HOME/.config/uv/uv.toml"
-
-if [ -f "$HOME/.editorconfig" ]; then
-    mv "$HOME/.editorconfig" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.editorconfig"
-ln -s "$DOTFILES/config/editorconfig/.editorconfig" "$HOME/.editorconfig"
-
-if [ -f "$HOME/.condarc" ]; then
-    mv "$HOME/.condarc" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.condarc"
-ln -s "$DOTFILES/config/conda/.condarc" "$HOME/.condarc"
-
-if [ -f "$HOME/.ideavimrc" ]; then
-    mv "$HOME/.ideavimrc" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.ideavimrc"
-ln -s "$DOTFILES/config/jetbrains/.ideavimrc" "$HOME/.ideavimrc"
-
-if [ -f "$HOME/.gitignore" ]; then
-    mv "$HOME/.gitignore" "$BACKUP_FOLDER"
-fi
-rm -rf "$HOME/.gitignore"
-ln -s "$DOTFILES/config/git/.gitignore" "$HOME/.gitignore"
-
-if [ -f "$HOME/.gitconfig" ]; then
-    mv "$HOME/.gitconfig" "$BACKUP_FOLDER"
-fi
-cp "$DOTFILES/config/git/.gitconfig" "$HOME/.gitconfig"
-
-mkdir -p "$HOME/.local/bin"
-
-rm -rf "$HOME/.local/bin/t"
-ln -s "$DOTFILES/scripts/t" "$HOME/.local/bin/t"
-
-rm -rf "$HOME/.local/bin/u"
-ln -s "$DOTFILES/scripts/u" "$HOME/.local/bin/u"
+    if [[ "$src" == *\* ]]; then
+        src_dir="$DOTFILES/${src%/*}"
+        dest="${dest/#\~/$HOME}"
+        mkdir -p "$dest"
+        for item in "$src_dir"/*; do
+            [ -e "$item" ] || continue
+            backup_and_remove "$dest/$(basename "$item")"
+            ln -s "$item" "$dest/$(basename "$item")"
+        done
+    else
+        install_entry "$DOTFILES/$src" "$dest" "$op"
+    fi
+done < "$DOTFILES/MANIFEST"
 
 case $OSTYPE in
 darwin*)
