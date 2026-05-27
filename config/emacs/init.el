@@ -472,6 +472,27 @@
   (setq ispell-program-name "hunspell"
         ispell-dictionary   "en_US"))
 
+;; ============================================================
+;; Compile
+;; ============================================================
+(defun my/run-current-lua-file ()
+  "Run the current Lua file with lua."
+  (interactive)
+  (when (buffer-file-name)
+    (save-buffer)
+    (compile (format "lua %s"
+                     (shell-quote-argument (file-name-nondirectory buffer-file-name))))))
+
+(with-eval-after-load 'lua-mode
+  (define-key lua-mode-map (kbd "C-c C-r") #'my/run-current-lua-file))
+
+;; ============================================================
+;; Keybindings
+;; ============================================================
+;; Move to top / bottom of current buffer
+
+(global-set-key (kbd "C-c j t") #'beginning-of-buffer)
+(global-set-key (kbd "C-c j b") #'end-of-buffer)
 
 ;; ============================================================
 ;; Finalize
