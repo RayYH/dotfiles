@@ -410,10 +410,10 @@ function xl() {
   fi
 }
 
-function mman() {
-  man "$@" 2>/dev/null
-}
-alias man="mman"
+# function mman() {
+#   man "$@" 2>/dev/null
+# }
+# alias man="mman"
 
 function yy() {
   # yazi support: https://yazi-rs.github.io/docs/quick-start
