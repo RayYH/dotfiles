@@ -1,0 +1,15 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rayyounghong/dev-ubuntu
+    container_name: dev-ubuntu
+    stdin_open: true
+    tty: true
+    working_dir: /home/ray
+    volumes:
+      - dev-workspace:/home/ray/workspace
+    command: bash --login
+volumes:
+  dev-workspace:

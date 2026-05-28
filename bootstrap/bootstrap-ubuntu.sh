@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # ============================================================
 # Helpers
 # ============================================================
@@ -52,6 +50,24 @@ __logo() {
     printf '\n'
 }
 
+# Returns the latest tag from a GitHub repo (owner/repo)
+__gh_latest() {
+    curl -fsSL "https://api.github.com/repos/$1/releases/latest" \
+        | grep '"tag_name"' | sed 's/.*"tag_name": "\(.*\)".*/\1/'
+}
+
+# Install a binary to /usr/local/bin (root) or ~/.local/bin (user)
+__install_bin() {
+    local src="$1" name
+    name="$(basename "$src")"
+    if [[ $EUID -eq 0 ]]; then
+        install -m755 "$src" "/usr/local/bin/$name"
+    else
+        mkdir -p "$HOME/.local/bin"
+        install -m755 "$src" "$HOME/.local/bin/$name"
+    fi
+}
+
 # ============================================================
 # Init
 # ============================================================
@@ -93,14 +109,13 @@ step=1
 __next_step() { __done "$step"; step=$((step + 1)); }
 
 # ============================================================
-# Steps
+# Package manager / PPAs  (keep at the top, not reordered)
 # ============================================================
 
 __add_ppas() {
     __echo "Step $step: Adding PPAs..."
     __command_exists "add-apt-repository" || $SUDO apt-get install -y software-properties-common
     $SUDO add-apt-repository -y ppa:neovim-ppa/unstable
-    $SUDO add-apt-repository -y ppa:longsleep/golang-backports
     $SUDO add-apt-repository -y ppa:ondrej/php
     $SUDO apt-get update -y
     __next_step
@@ -112,13 +127,27 @@ __install_essential_packages() {
     $SUDO apt-get install -y \
         build-essential lsb-release gnupg2 ca-certificates \
         apt-transport-https software-properties-common \
-        curl git htop jq tmux wget zip unzip neovim
+        curl git htop jq tmux wget zip unzip \
+        libreadline-dev libssl-dev zlib1g-dev
     __next_step
 }
 __install_essential_packages
 
+__fix_locales() {
+    __echo "Step $step: Fixing locales..."
+    DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y --no-install-recommends tzdata locales
+    $SUDO locale-gen en_US.UTF-8
+    $SUDO update-locale LANG=en_US.UTF-8
+    __next_step
+}
+__fix_locales
+
+# ============================================================
+# Shell
+# ============================================================
+
 __install_shell() {
-    __echo "Step $step: Installing shell..."
+    __echo "Step $step: Installing shell (bash)..."
     $SUDO apt-get install -y bash
     if [[ "$SHELL" != *bash ]]; then
         command -v bash | $SUDO tee -a /etc/shells >/dev/null
@@ -128,27 +157,79 @@ __install_shell() {
 }
 __install_shell
 
-__install_starship() {
-    __echo "Step $step: Installing starship..."
+# ============================================================
+# Shell tools: starship, zoxide, yazi, bat
+# ============================================================
+
+__install_shell_tools() {
+    __echo "Step $step: Installing shell tools (starship, zoxide, yazi, bat)..."
+
+    mkdir -p "${HOME}/.local/bin"
+
+    # starship
     if ! __command_exists "starship"; then
-        curl -sS https://starship.rs/install.sh | sh -s -- -y
+        curl -sS https://starship.rs/install.sh | sh -s -- -y --bin-dir "${HOME}/.local/bin"
     fi
+
+    # zoxide
+    if ! __command_exists "zoxide"; then
+        curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+    fi
+
+    local arch
+    arch="$(uname -m)"
+    local yazi_arch bat_arch
+    case "$arch" in
+        x86_64)  yazi_arch="x86_64-unknown-linux-musl";  bat_arch="x86_64-unknown-linux-musl"  ;;
+        aarch64) yazi_arch="aarch64-unknown-linux-musl"; bat_arch="aarch64-unknown-linux-gnu"  ;;
+        *) __error "Unsupported architecture: $arch" ;;
+    esac
+
+    # yazi
+    if ! __command_exists "yazi"; then
+        local yazi_ver
+        yazi_ver="$(__gh_latest sxyazi/yazi)"
+        curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${yazi_ver}/yazi-${yazi_arch}.zip" \
+            -o /tmp/yazi.zip
+        unzip -qo /tmp/yazi.zip -d /tmp/yazi-extract
+        __install_bin "/tmp/yazi-extract/yazi-${yazi_arch}/yazi"
+        rm -rf /tmp/yazi.zip /tmp/yazi-extract
+    fi
+
+    # bat
+    if ! __command_exists "bat"; then
+        local bat_ver
+        bat_ver="$(__gh_latest sharkdp/bat)"
+        local bat_dir="bat-${bat_ver}-${bat_arch}"
+        curl -fsSL "https://github.com/sharkdp/bat/releases/download/${bat_ver}/${bat_dir}.tar.gz" \
+            -o /tmp/bat.tar.gz
+        tar -xzf /tmp/bat.tar.gz -C /tmp/
+        __install_bin "/tmp/${bat_dir}/bat"
+        rm -rf /tmp/bat.tar.gz "/tmp/${bat_dir}"
+    fi
+
     __next_step
 }
-__install_starship
+__install_shell_tools
 
-__install_go() {
-    __echo "Step $step: Installing Go..."
+# ============================================================
+# Go dev
+# ============================================================
+
+__install_go_dev() {
+    __echo "Step $step: Installing Go (latest from go.dev)..."
     if ! __command_exists "go"; then
+        local arch
         arch="$(uname -m)"
         case "$arch" in
-            x86_64)  arch="amd64" ;;
-            aarch64) arch="arm64" ;;
+            x86_64)  arch="amd64"  ;;
+            aarch64) arch="arm64"  ;;
             armv6l)  arch="armv6l" ;;
             *) __error "Unsupported architecture: $arch" ;;
         esac
+        local version
         version="$(curl -fsSL 'https://go.dev/VERSION?m=text' | head -1)"
-        tarball="${version}.linux-${arch}.tar.gz"
+        local tarball="${version}.linux-${arch}.tar.gz"
         curl -fsSL "https://go.dev/dl/${tarball}" -o "/tmp/${tarball}"
         $SUDO rm -rf /usr/local/go
         $SUDO tar -C /usr/local -xzf "/tmp/${tarball}"
@@ -156,111 +237,145 @@ __install_go() {
     fi
     __next_step
 }
-__install_go
+__install_go_dev
 
-__install_python3() {
-    __echo "Step $step: Installing Python3..."
-    if ! __command_exists "python3"; then
-        $SUDO apt-get install -y python3 python3-venv python3-pip
+# ============================================================
+# Python: Miniforge + uv
+# ============================================================
+
+__install_python() {
+    __echo "Step $step: Installing Python (Miniforge + uv)..."
+
+    # Miniforge (conda)
+    if ! __command_exists "conda"; then
+        local installer="Miniforge3-$(uname)-$(uname -m).sh"
+        curl -fsSL "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}" \
+            -o "/tmp/${installer}"
+        bash "/tmp/${installer}" -b
+        rm -f "/tmp/${installer}"
     fi
+
+    # uv
+    if ! __command_exists "uv"; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    fi
+
     __next_step
 }
-__install_python3
+__install_python
 
-__install_rust() {
-    __echo "Step $step: Installing Rust..."
+# ============================================================
+# Rust dev
+# ============================================================
+
+__install_rust_dev() {
+    __echo "Step $step: Installing Rust (rustup)..."
     if ! __command_exists "rustc"; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     fi
     __next_step
 }
-__install_rust
+__install_rust_dev
 
-__install_nvm_and_nodejs() {
-    __echo "Step $step: Installing NVM and Node.js..."
+# ============================================================
+# Web dev: nvm + Node.js LTS
+# ============================================================
+
+__install_web_dev() {
+    __echo "Step $step: Installing web dev (nvm + Node.js 24)..."
     if [[ ! -s "$HOME/.nvm/nvm.sh" ]]; then
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-        export NVM_DIR="$HOME/.nvm"
-        # shellcheck disable=SC1090
-        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    fi
+    export NVM_DIR="$HOME/.nvm"
+    # shellcheck disable=SC1090
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    if ! nvm ls 24 &>/dev/null; then
         nvm install 24
-        nvm use 24
     fi
+    nvm use 24
     __next_step
 }
-__install_nvm_and_nodejs
+__install_web_dev
 
-__install_npm_packages_global() {
-    __echo "Step $step: Installing global npm packages..."
-    if ! __command_exists "yarn"; then
-        npm install -g pnpm yarn http-server eslint_d neovim tree-sitter-cli
-    fi
-    __next_step
-}
-__install_npm_packages_global
+# ============================================================
+# PHP dev: php8.5 + Composer
+# ============================================================
 
-__install_pip_packages() {
-    __echo "Step $step: Installing global pip packages..."
-    __command_exists pip || __error "pip is not installed"
-    pip install black flake8 isort neovim
-    __next_step
-}
-__install_pip_packages
+__install_php_dev() {
+    __echo "Step $step: Installing PHP dev (php8.5 + Composer)..."
 
-__install_deno() {
-    __echo "Step $step: Installing Deno..."
-    if ! __command_exists "deno"; then
-        curl -fsSL https://deno.land/install.sh | sh -s -- -y
-    fi
-    __next_step
-}
-__install_deno
-
-__install_php() {
-    __echo "Step $step: Installing PHP..."
     if ! __command_exists "php"; then
         $SUDO apt-get install -y \
-            php8.4-{common,readline,bcmath,fpm,xml,mysql,zip,intl,ldap,gd,cli,bz2,curl,mbstring,pgsql,opcache,soap,cgi,redis}
+            php8.5-cli php8.5-common php8.5-fpm \
+            php8.5-bcmath php8.5-bz2 php8.5-curl php8.5-gd \
+            php8.5-intl php8.5-mbstring php8.5-mysql php8.5-pgsql \
+            php8.5-soap php8.5-xml php8.5-zip
     fi
-    __next_step
-}
-__install_php
 
-__install_composer() {
-    __echo "Step $step: Installing Composer..."
     if ! __command_exists "composer"; then
-        curl -sS https://getcomposer.org/installer | php
-        $SUDO mv composer.phar /usr/local/bin/composer
+        curl -fsSL https://getcomposer.org/installer | php -- --install-dir=/tmp --filename=composer
+        __install_bin /tmp/composer
+        rm -f /tmp/composer
+    fi
+
+    __next_step
+}
+__install_php_dev
+
+# ============================================================
+# Lua dev: compile from source
+# ============================================================
+
+__install_lua_dev() {
+    __echo "Step $step: Installing Lua ${LUA_VERSION:-5.4.7} from source..."
+    if ! __command_exists "lua"; then
+        local version="${LUA_VERSION:-5.4.7}"
+        local src_dir="/tmp/lua-${version}"
+        curl -fsSL "https://www.lua.org/ftp/lua-${version}.tar.gz" -o "/tmp/lua-${version}.tar.gz"
+        tar -xzf "/tmp/lua-${version}.tar.gz" -C /tmp/
+        cd "$src_dir"
+        make linux-readline
+        $SUDO make install
+        cd /
+        rm -rf "$src_dir" "/tmp/lua-${version}.tar.gz"
     fi
     __next_step
 }
-__install_composer
+__install_lua_dev
 
-__install_lua() {
-    __echo "Step $step: Installing Lua 5.1 (via mise)..."
-    __command_exists mise || __error "mise is not installed. See https://mise.jdx.dev/"
-    mise plugins add lua
-    mise use -g lua@5.1
-    ln -sf ~/.local/share/mise/installs/lua/5.1/bin/lua ~/.local/bin/lua5.1
+# ============================================================
+# TeX  (opt-in: S_TEX=1)
+# ============================================================
+
+__install_tex() {
+    __echo "Step $step: Installing TeX (texlive + dvipng)..."
+    $SUDO apt-get install -y texlive dvipng
+    __command_exists latex  || __error "'latex' not found on PATH after install"
+    __command_exists dvipng || __error "'dvipng' not found on PATH after install"
     __next_step
 }
-[ -z ${S_LUA+x} ] || __install_lua
+[ -z ${S_TEX+x} ] || __install_tex
+
+# ============================================================
+# Emacs  (opt-in: S_EMACS=1)
+# ============================================================
 
 __install_emacs() {
-    __echo "Step $step: Building Emacs from source..."
+    __echo "Step $step: Building Emacs ${EMACS_VERSION:-30.1} from source..."
     local version="${EMACS_VERSION:-30.1}"
-    local build_dir="${BUILD_DIR:-/tmp/emacs-build}"
+    local build_dir="/tmp/emacs-build"
+    local gcc_ver
+    gcc_ver=$(gcc -dumpversion | cut -d. -f1)
     $SUDO apt-get install -y \
         autoconf make gcc g++ pkg-config \
         libgnutls28-dev libncurses-dev \
         libgtk-3-dev libxpm-dev libgif-dev libjpeg-dev libpng-dev libtiff-dev \
-        libgccjit-dev libjansson-dev libtree-sitter-dev texinfo
+        "libgccjit-${gcc_ver}-dev" libjansson-dev libtree-sitter-dev texinfo
     mkdir -p "$build_dir"
-    local tarball="emacs-${version}.tar.xz"
-    curl -fL "https://ftp.gnu.org/gnu/emacs/${tarball}" -o "${build_dir}/${tarball}"
-    tar -xJf "${build_dir}/${tarball}" -C "$build_dir"
-    local src="${build_dir}/emacs-${version}"
-    cd "$src"
+    curl -fL "https://ftp.gnu.org/gnu/emacs/emacs-${version}.tar.xz" \
+        -o "${build_dir}/emacs-${version}.tar.xz"
+    tar -xJf "${build_dir}/emacs-${version}.tar.xz" -C "$build_dir"
+    cd "${build_dir}/emacs-${version}"
     ./autogen.sh
     ./configure \
         --with-native-compilation=aot \
@@ -277,45 +392,6 @@ __install_emacs() {
     __next_step
 }
 [ -z ${S_EMACS+x} ] || __install_emacs
-
-__install_tex() {
-    __echo "Step $step: Installing TeX..."
-    $SUDO apt-get install -y texlive dvipng
-    __command_exists latex || __error "'latex' not found on PATH"
-    __command_exists dvipng || __error "'dvipng' not found on PATH"
-    __next_step
-}
-[ -z ${S_TEX+x} ] || __install_tex
-
-__install_zoxide() {
-    __echo "Step $step: Installing zoxide..."
-    if ! __command_exists "zoxide"; then
-        curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-    fi
-    __next_step
-}
-__install_zoxide
-
-__install_miniforge() {
-    __echo "Step $step: Installing Miniforge..."
-    if ! __command_exists "conda"; then
-        local installer="Miniforge3-$(uname)-$(uname -m).sh"
-        curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}"
-        bash "${installer}" -b
-        rm -f "${installer}"
-    fi
-    __next_step
-}
-__install_miniforge
-
-__fix_locales() {
-    __echo "Step $step: Fixing locales..."
-    DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y --no-install-recommends tzdata locales
-    $SUDO locale-gen en_US.UTF-8
-    $SUDO update-locale LANG=en_US.UTF-8
-    __next_step
-}
-__fix_locales
 
 # ============================================================
 # Done
