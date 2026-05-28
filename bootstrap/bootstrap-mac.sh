@@ -307,22 +307,6 @@ function __tex() {
 }
 [ -z ${S_TEX+x} ] || __tex
 
-function __npm_packages() {
-    __echo "Step $step: install global npm packages"
-    __command_exists npm || __error "npm is not installed"
-    npm install -g http-server
-    __done "$((step++))"
-}
-[ -z ${S_NPM_PACKAGES+x} ] || __npm_packages
-
-function __pip_packages() {
-    __echo "Step $step: install global pip packages"
-    __command_exists pip || __error "pip is not installed"
-    # add packages as needed
-    __done "$((step++))"
-}
-[ -z ${S_PIP_PACKAGES+x} ] || __pip_packages
-
 function __preferences() {
     __echo "Step $step: Setting macOS preferences..."
     defaults write NSGlobalDomain KeyRepeat        -int 1
