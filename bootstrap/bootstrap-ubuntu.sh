@@ -96,16 +96,6 @@ __next_step() { __done "$step"; step=$((step + 1)); }
 # Steps
 # ============================================================
 
-__install_essential_packages() {
-    __echo "Step $step: Installing essential packages..."
-    $SUDO apt-get install -y \
-        build-essential lsb-release gnupg2 ca-certificates \
-        apt-transport-https software-properties-common \
-        curl git htop jq tmux wget zip unzip neovim
-    __next_step
-}
-__install_essential_packages
-
 __add_ppas() {
     __echo "Step $step: Adding PPAs..."
     __command_exists "add-apt-repository" || $SUDO apt-get install -y software-properties-common
@@ -116,6 +106,16 @@ __add_ppas() {
     __next_step
 }
 __add_ppas
+
+__install_essential_packages() {
+    __echo "Step $step: Installing essential packages..."
+    $SUDO apt-get install -y \
+        build-essential lsb-release gnupg2 ca-certificates \
+        apt-transport-https software-properties-common \
+        curl git htop jq tmux wget zip unzip neovim
+    __next_step
+}
+__install_essential_packages
 
 __install_shell() {
     __echo "Step $step: Installing shell..."
