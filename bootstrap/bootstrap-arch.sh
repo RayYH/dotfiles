@@ -242,6 +242,18 @@ __install_fonts() {
 __install_fonts
 
 # ============================================================
+# Git tools: git-delta
+# ============================================================
+
+__install_git_tools() {
+    __echo "Step $step: Installing git tools (git-delta)..."
+    # shellcheck disable=SC2086
+    $PKG git-delta
+    __next_step
+}
+__install_git_tools
+
+# ============================================================
 # Go dev
 # ============================================================
 
