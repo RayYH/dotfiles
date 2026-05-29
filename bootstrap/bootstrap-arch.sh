@@ -148,10 +148,11 @@ __fix_locales() {
     __echo "Step $step: Fixing locales..."
     if [[ $EUID -eq 0 ]]; then
         pacman -S --noconfirm --needed glibc
+        locale-gen
     else
         sudo pacman -S --noconfirm --needed glibc
+        sudo locale-gen
     fi
-    locale-gen
     localectl set-locale LANG=en_US.UTF-8 2>/dev/null || true
     __next_step
 }
@@ -227,6 +228,18 @@ __install_shell_tools() {
     __next_step
 }
 __install_shell_tools
+
+# ============================================================
+# Fonts: Intel One Mono
+# ============================================================
+
+__install_fonts() {
+    __echo "Step $step: Installing fonts (Intel One Mono)..."
+    # shellcheck disable=SC2086
+    $PKG ttf-intel-one-mono
+    __next_step
+}
+__install_fonts
 
 # ============================================================
 # Go dev
