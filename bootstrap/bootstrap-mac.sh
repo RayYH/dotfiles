@@ -311,6 +311,11 @@ function __preferences() {
     __echo "Step $step: Setting macOS preferences..."
     defaults write NSGlobalDomain KeyRepeat        -int 1
     defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+	# https://git.sr.ht/~foosoft/anki-connect#notes-for-macos-users
+	defaults write net.ankiweb.dtop NSAppSleepDisabled -bool true
+	defaults write net.ichi2.anki NSAppSleepDisabled -bool true
+	defaults write org.qt-project.Qt.QtWebEngineCore NSAppSleepDisabled -bool true
     __done "$((step++))"
 }
 [ -n "${S_ONLY_UPDATE+1}" ] || __preferences
