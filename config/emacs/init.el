@@ -200,7 +200,9 @@
   (setq lsp-keymap-prefix                  "C-c l"
         lsp-idle-delay                     0.5
         lsp-lens-enable                    t
-        lsp-headerline-breadcrumb-enable   nil))
+        lsp-headerline-breadcrumb-enable   nil
+        lsp-enable-indentation             nil
+        lsp-enable-on-type-formatting      nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -236,12 +238,14 @@
 
 ;; Python uses built-in python-mode; requires: pip install pyright
 ;; C/C++ uses built-in modes; requires: clangd
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (c-set-style "stroustrup")
-            (setq c-basic-offset 4)
-            (electric-indent-local-mode -1)
-            (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
+(defun my/c-mode-setup ()
+  (c-set-style "stroustrup")
+  (setq c-basic-offset 4)
+  (setq-local indent-tabs-mode nil)
+  (local-set-key (kbd "RET") #'newline-and-indent)
+  (add-hook 'before-save-hook #'lsp-format-buffer nil t))
+
+(add-hook 'c-mode-common-hook #'my/c-mode-setup)
 
 ;; Dockerfile — requires: npm i -g dockerfile-language-server-nodejs
 (use-package dockerfile-mode
