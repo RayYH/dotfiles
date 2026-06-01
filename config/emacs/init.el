@@ -240,6 +240,7 @@
           (lambda ()
             (c-set-style "stroustrup")
             (setq c-basic-offset 4)
+            (electric-indent-local-mode -1)
             (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
 
 ;; Dockerfile — requires: npm i -g dockerfile-language-server-nodejs
