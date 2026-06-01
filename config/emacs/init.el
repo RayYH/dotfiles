@@ -236,6 +236,11 @@
 
 ;; Python uses built-in python-mode; requires: pip install pyright
 ;; C/C++ uses built-in modes; requires: clangd
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (c-set-style "stroustrup")
+            (setq c-basic-offset 4)
+            (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
 
 ;; Dockerfile — requires: npm i -g dockerfile-language-server-nodejs
 (use-package dockerfile-mode
@@ -498,8 +503,32 @@
   (define-key org-mode-map (kbd "C-c i") #'org-download-clipboard))
 
 (use-package org-modern
-  :hook (org-mode . org-modern-mode))
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq org-modern-table-vertical nil))
 
+
+;; markdown enhancement
+
+(global-so-long-mode 1)
+
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (display-line-numbers-mode -1)
+            (setq-local bidi-display-reordering nil)
+            (setq-local bidi-paragraph-direction 'left-to-right)))
+
+(defun my/markdown-big-file-lite-mode ()
+  (when (> (buffer-size) (* 1 1024 1024))
+    (font-lock-mode -1)
+    (visual-line-mode -1)
+    (flyspell-mode -1)
+    (when (bound-and-true-p flycheck-mode)
+      (flycheck-mode -1))
+    (when (bound-and-true-p flymake-mode)
+      (flymake-mode -1))
+    (message "Big Markdown file detected: using lightweight editing mode.")))
+(add-hook 'markdown-mode-hook #'my/markdown-big-file-lite-mode)
 
 ;; ============================================================
 ;; Spell Checking
@@ -513,6 +542,20 @@
   :config
   (setq ispell-program-name "hunspell"
         ispell-dictionary   "en_US"))
+
+;; ============================================================
+;; Code Folding
+;; ============================================================
+
+(use-package hideshow
+  :ensure nil
+  :hook (prog-mode . hs-minor-mode)
+  :bind (:map hs-minor-mode-map
+              ("C-c z a" . hs-toggle-hiding)
+              ("C-c z c" . hs-hide-block)
+              ("C-c z o" . hs-show-block)
+              ("C-c z m" . hs-hide-all)
+              ("C-c z r" . hs-show-all)))
 
 ;; ============================================================
 ;; Compile
