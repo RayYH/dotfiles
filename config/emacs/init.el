@@ -286,6 +286,11 @@
             (local-set-key (kbd "RET") #'my/lua-newline-and-close)))
 
 
+; elisp
+(with-eval-after-load 'elisp-mode
+  (define-key lisp-interaction-mode-map (kbd "C-c C-j")
+              #'eval-print-last-sexp))
+
 ;; ============================================================
 ;; Shell & Terminal
 ;; ============================================================
