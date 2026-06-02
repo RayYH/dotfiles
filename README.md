@@ -8,25 +8,21 @@
 Git must be installed before cloning this repository.
 
 **macOS**
+
 ```bash
 xcode-select --install
 ```
 
 **Ubuntu**
+
 ```bash
 sudo apt install git
 ```
 
 **Arch Linux**
+
 ```bash
 sudo pacman -S git
-```
-
-**Windows**
-
-Download and install from [git-scm.com](https://git-scm.com/download/win), or via winget:
-```powershell
-winget install Git.Git
 ```
 
 ## Installation
