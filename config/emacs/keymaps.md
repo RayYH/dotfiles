@@ -10,6 +10,7 @@ the live menu.
 |-----------|-------------------------------------|
 | `C-c b`   | Buffer navigation                   |
 | `C-c h`   | Helm-style search (now consult)     |
+| `C-c !`   | Diagnostics (flymake)               |
 | `C-c j`   | Jump (top/bottom of buffer)         |
 | `C-c l`   | LSP (eglot) — active in code buffers |
 | `C-c m`   | Magit                               |
@@ -77,6 +78,8 @@ the live menu.
 | `M-s g`   | `consult-ripgrep`                             |
 | `M-s l`   | `consult-line`                                |
 | `M-s L`   | `consult-line-multi`                          |
+| `C-x C-d` | `consult-dir`                                 |
+| `C-x C-j` | `consult-dir-jump-file` (inside Vertico)      |
 | `C-c r`   | `consult-recent-file`                         |
 | `C-c h a` | `consult-org-agenda`                          |
 | `C-c h h` | `consult-org-heading`                         |
@@ -98,6 +101,12 @@ the live menu.
 | `C-c b p` | `previous-buffer`    |
 | `C-c j t` | `beginning-of-buffer`|
 | `C-c j b` | `end-of-buffer`      |
+| `S-<left>`  | `windmove-left`    |
+| `S-<right>` | `windmove-right`   |
+| `S-<up>`    | `windmove-up`      |
+| `S-<down>`  | `windmove-down`    |
+| `C-c <left>`  | `winner-undo`     |
+| `C-c <right>` | `winner-redo`     |
 
 ---
 
@@ -159,6 +168,14 @@ Standard `project.el` bindings under the prefix, e.g.
 | `M-.`     | `xref-find-definitions` (default — works with eglot) |
 | `M-,`     | `xref-go-back`                |
 | `M-?`     | `xref-find-references`        |
+
+### Diagnostics (Flymake)
+
+| Key       | Command                            |
+|-----------|------------------------------------|
+| `C-c ! l` | `flymake-show-buffer-diagnostics`  |
+| `C-c ! p` | `flymake-goto-prev-error`          |
+| `C-c ! n` | `flymake-goto-next-error`          |
 
 ---
 
@@ -229,8 +246,10 @@ Standard `project.el` bindings under the prefix, e.g.
 
 | Key       | Command                                                 |
 |-----------|---------------------------------------------------------|
-| `C-h k`   | Describe key (built-in)                                 |
-| `C-h f`   | Describe function (built-in)                            |
-| `C-h v`   | Describe variable (built-in)                            |
+| `C-h k`   | `helpful-key`                                           |
+| `C-h f`   | `helpful-callable`                                      |
+| `C-h v`   | `helpful-variable`                                      |
+| `C-h x`   | `helpful-command`                                      |
+| `C-c C-d` | `helpful-at-point`                                      |
 | `C-h B`   | `embark-bindings` — list all actions for current target |
 | *any prefix + wait 0.5s* | `which-key` shows the next-key menu      |

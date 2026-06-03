@@ -3,7 +3,8 @@
 ;;; Commentary:
 ;;
 ;;  1. Bootstrap                  package archives, use-package, PATH
-;;  2. UI & Appearance            chrome, theme, fonts, modeline, line numbers
+;;  2. UI & Appearance            chrome, theme, fonts, modeline, icons,
+;;                                line numbers, visual polish
 ;;  3. Editing                    pairs, multi-cursor, paredit, folding,
 ;;                                rainbow-delimiters, expand-region, avy, vundo
 ;;  4. Completion & Search        vertico, orderless, marginalia, consult,
@@ -98,24 +99,36 @@
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
-(setq inhibit-startup-screen t)
+(setq inhibit-startup-screen t
+      frame-title-format '("%b  ·  Emacs")
+      ring-bell-function #'ignore
+      use-dialog-box nil
+      use-file-dialog nil)
 
 ;; -- 2.2 Theme --
 (use-package doom-themes
   :config (load-theme 'doom-tokyo-night t))
 
-;; -- 2.3 Modeline (run `M-x nerd-icons-install-fonts' once on a new machine) --
+;; -- 2.3 Icons + modeline (run `M-x nerd-icons-install-fonts' once) --
 (use-package nerd-icons)
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
-  :custom (doom-modeline-height 28))
+  :custom
+  (doom-modeline-height 30)
+  (doom-modeline-bar-width 4)
+  (doom-modeline-buffer-file-name-style 'truncate-with-project)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon t)
+  (doom-modeline-buffer-state-icon t))
 
 ;; -- 2.4 Fonts (use `fc-list : family | sort -u' to view available fonts) --
 (when (display-graphic-p)
   (set-face-attribute 'default nil
                       :family "IntelOne Mono"
                       :weight 'light
-                      :height 135))
+                      :height 135)
+  (set-face-attribute 'fixed-pitch nil :family "IntelOne Mono")
+  (set-face-attribute 'variable-pitch nil :family "Inter" :height 1.0))
 
 ;; -- 2.5 Line numbers (prog + text modes only) --
 (setq display-line-numbers-type 'relative)
@@ -129,7 +142,56 @@
 (when (fboundp 'pixel-scroll-precision-mode)
   (pixel-scroll-precision-mode 1))
 
-;; -- 2.7 Indentation defaults --
+;; -- 2.7 Visual polish --
+(global-hl-line-mode 1)
+(column-number-mode 1)
+(blink-cursor-mode 0)
+(setq-default cursor-type 'bar)
+(setq-default indicate-buffer-boundaries 'left)
+(setq-default indicate-empty-lines t)
+(setq window-divider-default-right-width 1
+      window-divider-default-bottom-width 1)
+(window-divider-mode 1)
+
+(use-package spacious-padding
+  :if (display-graphic-p)
+  :init (spacious-padding-mode 1)
+  :custom
+  (spacious-padding-widths
+   '( :internal-border-width 12
+      :header-line-width 4
+      :mode-line-width 6
+      :tab-width 4
+      :right-divider-width 8
+      :scroll-bar-width 8)))
+
+(use-package solaire-mode
+  :init (solaire-global-mode 1))
+
+(use-package pulsar
+  :init (pulsar-global-mode 1)
+  :custom
+  (pulsar-pulse t)
+  (pulsar-delay 0.045)
+  (pulsar-iterations 8)
+  (pulsar-face 'pulsar-cyan)
+  (pulsar-highlight-face 'pulsar-cyan)
+  :config
+  (dolist (command '(consult-goto-line
+                     consult-line
+                     consult-ripgrep
+                     other-window
+                     recenter-top-bottom
+                     switch-to-buffer
+                     windmove-left
+                     windmove-right
+                     windmove-up
+                     windmove-down
+                     xref-find-definitions
+                     xref-go-back))
+    (add-to-list 'pulsar-pulse-functions command)))
+
+;; -- 2.8 Indentation defaults --
 (setq-default tab-width 4
               indent-tabs-mode nil)
 
@@ -140,6 +202,10 @@
 
 ;; -- 3.1 Electric pairs --
 (electric-pair-mode 1)
+(delete-selection-mode 1)
+(global-subword-mode 1)
+(setq sentence-end-double-space nil
+      save-interprogram-paste-before-kill t)
 
 ;; -- 3.2 Multiple cursors --
 (use-package multiple-cursors
@@ -207,6 +273,12 @@
 (use-package marginalia
   :init (marginalia-mode))
 
+(use-package nerd-icons-completion
+  :after (marginalia nerd-icons)
+  :config
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
 (use-package consult
   :bind (("C-x b"   . consult-buffer)
          ("C-x p b" . consult-project-buffer)
@@ -223,6 +295,23 @@
          ("C-c h a" . consult-org-agenda)
          ("C-c h h" . consult-org-heading))
   :config (setq consult-narrow-key "<"))
+
+(use-package consult-dir
+  :bind (("C-x C-d" . consult-dir)
+         :map vertico-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
+
+(use-package vertico-posframe
+  :if (display-graphic-p)
+  :after vertico
+  :init (vertico-posframe-mode 1)
+  :custom
+  (vertico-posframe-border-width 1)
+  (vertico-posframe-min-width 90)
+  (vertico-posframe-width 110)
+  (vertico-posframe-height 22)
+  (vertico-posframe-poshandler #'posframe-poshandler-frame-center))
 
 (use-package embark
   :bind (("C-."   . embark-act)
@@ -245,6 +334,19 @@
   :init (global-auto-revert-mode)
   :custom (global-auto-revert-non-file-buffers t))
 (use-package repeat :ensure nil :init (repeat-mode))
+(use-package windmove
+  :ensure nil
+  :init (windmove-default-keybindings 'shift))
+(use-package winner
+  :ensure nil
+  :init (winner-mode 1))
+
+(use-package helpful
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)
+         ("C-h x" . helpful-command)
+         ("C-c C-d" . helpful-at-point)))
 
 
 ;; ============================================================
@@ -262,6 +364,8 @@
 (setq dired-omit-files "^\\.[^.]\\|^\\.\\.$"
       dired-dwim-target t)
 (add-hook 'dired-mode-hook #'dired-omit-mode)
+(use-package nerd-icons-dired
+  :hook (dired-mode . nerd-icons-dired-mode))
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "C-c n") #'dired-create-empty-file))
 
@@ -269,6 +373,7 @@
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-c b p") #'previous-buffer)
 (global-set-key (kbd "C-c b n") #'next-buffer)
+(setq uniquify-buffer-name-style 'forward)
 
 ;; -- 5.4 Backups & auto-saves --
 (setq backup-directory-alist
@@ -313,7 +418,10 @@
 ;; -- 7.2 diff-hl (magit integration is automatic in diff-hl >= 1.11) --
 (use-package diff-hl
   :hook ((prog-mode  . diff-hl-mode)
-         (dired-mode . diff-hl-dired-mode)))
+         (prog-mode  . diff-hl-margin-mode)
+         (dired-mode . diff-hl-dired-mode))
+  :config
+  (diff-hl-flydiff-mode 1))
 
 ;; -- 7.3 wgrep (edit grep results in place; C-c C-p in a grep buffer) --
 (use-package wgrep
@@ -355,6 +463,11 @@
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode))
 
+(use-package nerd-icons-corfu
+  :after (corfu nerd-icons)
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
 ;; -- 8.2 Completion-at-point extensions --
 (use-package cape
   :init
@@ -365,10 +478,25 @@
 (use-package yasnippet :hook (prog-mode . yas-minor-mode))
 
 ;; -- 8.4 Eglot (built-in LSP client) --
+(defun my/c-c++-eglot-ensure ()
+  "Start Eglot for C/C++ when clangd is available."
+  (if (executable-find "clangd")
+      (eglot-ensure)
+    (message "C/C++ LSP disabled: install clangd and reopen this buffer.")))
+
+(defun my/eglot-format-buffer-when-managed ()
+  "Format current buffer with Eglot when it is managed by a server."
+  (when (eglot-managed-p)
+    (eglot-format-buffer)))
+
 (use-package eglot
   :ensure nil
-  :hook ((c-ts-mode          . eglot-ensure)
-         (c++-ts-mode        . eglot-ensure)
+  :hook ((c-mode             . my/c-c++-eglot-ensure)
+         (c++-mode           . my/c-c++-eglot-ensure)
+         (c-or-c++-mode      . my/c-c++-eglot-ensure)
+         (c-ts-mode          . my/c-c++-eglot-ensure)
+         (c++-ts-mode        . my/c-c++-eglot-ensure)
+         (c-or-c++-ts-mode   . my/c-c++-eglot-ensure)
          (python-ts-mode     . eglot-ensure)
          (rust-mode          . eglot-ensure)
          (go-mode            . eglot-ensure)
@@ -399,6 +527,14 @@
 (use-package consult-eglot
   :after eglot
   :bind (:map eglot-mode-map ("C-c l s" . consult-eglot-symbols)))
+
+;; -- 8.5 Diagnostics --
+(use-package flymake
+  :ensure nil
+  :bind (:map flymake-mode-map
+              ("C-c ! l" . flymake-show-buffer-diagnostics)
+              ("C-c ! p" . flymake-goto-prev-error)
+              ("C-c ! n" . flymake-goto-next-error)))
 
 
 ;; ============================================================
@@ -450,7 +586,7 @@
   (setq-local indent-tabs-mode      nil
               c-ts-mode-indent-offset 4)
   (local-set-key (kbd "RET") #'newline-and-indent)
-  (add-hook 'before-save-hook #'eglot-format-buffer nil t))
+  (add-hook 'before-save-hook #'my/eglot-format-buffer-when-managed nil t))
 
 (setq c-ts-mode-indent-style 'k&r)
 (add-hook 'c-ts-base-mode-hook #'my/c-ts-mode-setup)
