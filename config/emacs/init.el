@@ -1,65 +1,156 @@
-;;; init.el --- Emacs configuration
+;;; init.el --- Emacs configuration -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;;
+;;  1. Bootstrap                  package archives, use-package, PATH
+;;  2. UI & Appearance            chrome, theme, fonts, modeline, line numbers
+;;  3. Editing                    pairs, multi-cursor, paredit, folding,
+;;                                rainbow-delimiters, expand-region, avy, vundo
+;;  4. Completion & Search        vertico, orderless, marginalia, consult,
+;;                                embark, savehist, save-place, which-key
+;;  5. File & Buffer Management   recentf, dired, ibuffer, backups, auto-revert
+;;  6. Project Management         project.el
+;;  7. Version Control            magit, diff-hl, wgrep, perforce
+;;  8. Code Intelligence          corfu, cape, yasnippet, eglot, consult-eglot
+;;  9. Language Support           tree-sitter modes + per-language packages
+;; 10. Shell & Terminal           vterm, powershell, bat
+;; 11. Org Mode                   core, babel, agenda, capture, roam, extras
+;; 12. Markdown
+;; 13. Spell Checking
+;; 14. Misc Commands
+;; 15. Global Keybindings
+;; 16. Finalize
+;;
+;;; Code:
 
 
 ;; ============================================================
-;; Bootstrap: package manager & use-package
+;; 1. Bootstrap
 ;; ============================================================
 
+;; -- 1.1 Custom file --
 (setq custom-file "~/.emacs.d/custom.el")
 
+;; -- 1.2 Package archives --
+;; Emacs has already run `package-activate-all' (from early-init's
+;; `package-quickstart' setting) by the time init.el loads, so we just
+;; configure archives and refresh the index if it's empty.
 (require 'package)
 (setq package-archives
       '(("gnu"   . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
 
-(unless (package-installed-p 'use-package)
-  (unless package-archive-contents
-    (package-refresh-contents))
-  (package-install 'use-package))
+;; -- 1.3 use-package (built-in since Emacs 29) --
 (require 'use-package)
-(setq use-package-always-ensure t)
+(setq use-package-always-ensure  t
+      ;; When `use-package' tries to install a package whose dated tar URL is
+      ;; stale (HTTP 404 from MELPA), automatically refresh the index once
+      ;; and retry instead of erroring out.
+      use-package-always-defer    nil)
 
-;; Sync PATH from shell on macOS/Linux GUI frames
+(defun my/use-package-refresh-on-404 (orig-fn package &rest args)
+  "Advice around `package-install': refresh contents once on a 404, then retry."
+  (condition-case err
+      (apply orig-fn package args)
+    (error
+     (if (and (stringp (error-message-string err))
+              (string-match-p "Not found\\|404" (error-message-string err)))
+         (progn
+           (message "Stale MELPA index for %s — refreshing and retrying." package)
+           (package-refresh-contents)
+           (apply orig-fn package args))
+       (signal (car err) (cdr err))))))
+(advice-add 'package-install :around #'my/use-package-refresh-on-404)
+
+;; Defer `package-quickstart-refresh' until after init completes. Emacs runs
+;; it automatically after every `package-install', but it internally calls
+;; `package-initialize' — which fires a spurious "Unnecessary call to
+;; `package-initialize' in init file" warning when packages are installed
+;; during init (typical for `use-package' :ensure on a fresh machine). Batch
+;; into a single refresh after startup.
+(defvar my/package-quickstart-needs-refresh nil)
+(defun my/defer-quickstart-refresh ()
+  "Flag a quickstart refresh instead of running it during init."
+  (setq my/package-quickstart-needs-refresh t))
+(advice-add 'package--quickstart-maybe-refresh
+            :override #'my/defer-quickstart-refresh)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (advice-remove 'package--quickstart-maybe-refresh
+                           #'my/defer-quickstart-refresh)
+            (when my/package-quickstart-needs-refresh
+              (package-quickstart-refresh))))
+
+;; -- 1.4 PATH from shell (GUI frames on macOS/Linux) --
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns x))
   :config
   (exec-path-from-shell-initialize))
 
+
 ;; ============================================================
-;; UI & Appearance
+;; 2. UI & Appearance
 ;; ============================================================
 
+;; -- 2.1 Frame chrome (early-init also disables these to avoid flash) --
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (setq inhibit-startup-screen t)
 
-(unless (package-installed-p 'doom-themes)
-  (package-install 'doom-themes))
-(load-theme 'doom-tokyo-night t)
+;; -- 2.2 Theme --
+(use-package doom-themes
+  :config (load-theme 'doom-tokyo-night t))
 
-;; Fonts, use fc-list : family | sort -u to view available fonts
+;; -- 2.3 Modeline (run `M-x nerd-icons-install-fonts' once on a new machine) --
+(use-package nerd-icons)
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom (doom-modeline-height 28))
+
+;; -- 2.4 Fonts (use `fc-list : family | sort -u' to view available fonts) --
 (when (display-graphic-p)
   (set-face-attribute 'default nil
                       :family "IntelOne Mono"
                       :weight 'light
                       :height 135))
 
-;; relative line numbers
+;; -- 2.5 Line numbers (prog + text modes only) --
 (setq display-line-numbers-type 'relative)
-(global-display-line-numbers-mode 1)
-(dolist (mode '(term-mode-hook shell-mode-hook eshell-mode-hook org-mode-hook))
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(add-hook 'text-mode-hook #'display-line-numbers-mode)
+;; Opt out of text-mode subtypes that read better without numbers.
+(dolist (mode '(org-mode-hook markdown-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(setq-default tab-width 4)
+;; -- 2.6 Pixel-precision scrolling (Emacs 29+) --
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+
+;; -- 2.7 Indentation defaults --
+(setq-default tab-width 4
+              indent-tabs-mode nil)
+
 
 ;; ============================================================
-;; Editing Fundamentals
+;; 3. Editing
 ;; ============================================================
 
+;; -- 3.1 Electric pairs --
 (electric-pair-mode 1)
 
+;; -- 3.2 Multiple cursors --
+(use-package multiple-cursors
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->"         . mc/mark-next-like-this)
+         ("C-<"         . mc/mark-previous-like-this)
+         ("C-c C-<"     . mc/mark-all-like-this)
+         ("C-c C-w"     . mc/mark-next-like-this-word)
+         ("C-c C-s"     . mc/mark-next-like-this-symbol)))
+
+;; -- 3.3 Paredit (Lisps) --
 (use-package paredit
   :hook ((emacs-lisp-mode  . paredit-mode)
          (clojure-mode     . paredit-mode)
@@ -68,85 +159,167 @@
          (scheme-mode      . paredit-mode)
          (racket-mode      . paredit-mode)))
 
-;; duplicate line
-(defun my/duplicate-line ()
-  "Duplicate current line, leaving point on the new copy at the same column."
-  (interactive)
-  (let ((col (current-column))
-        (line (buffer-substring (line-beginning-position) (line-end-position))))
-    (end-of-line)
-    (newline)
-    (insert line)
-    (move-to-column col)))
+;; -- 3.4 Rainbow delimiters --
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
-(global-set-key (kbd "C-x ,") #'my/duplicate-line)
-(global-set-key (kbd "C-x r") #'undo-redo)
+;; -- 3.5 Expand region --
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
 
-;; ============================================================
-;; Completion & Search
-;; ============================================================
+;; -- 3.6 Avy (jump to char / line / word) --
+(use-package avy
+  :bind (("C-:"   . avy-goto-char)
+         ("C-'"   . avy-goto-char-2)
+         ("M-g f" . avy-goto-line)
+         ("M-g w" . avy-goto-word-1)))
 
-(use-package smex
-  :bind (("M-x"           . smex)
-         ("C-c C-c M-x"   . execute-extended-command)))
+;; -- 3.7 Visual undo --
+(use-package vundo
+  :bind ("C-x u" . vundo))
 
-(use-package ido-completing-read+
-  :config
-  (ido-mode 1)
-  (ido-everywhere 1)
-  (ido-ubiquitous-mode 1)
-  (setq ido-enable-flex-matching t))
-
-(use-package helm
-  :config
-  (setq helm-ff-transformer-show-only-basename nil))
-
-(use-package helm-ls-git
-  :bind ("C-c h g l" . helm-ls-git-ls))
-
-(global-set-key (kbd "C-c h g g") 'helm-grep-do-git-grep)
-(global-set-key (kbd "C-c h f")   'helm-find)
-(global-set-key (kbd "C-c h a")   'helm-org-agenda-files-headings)
-(global-set-key (kbd "C-c h r")   'helm-recentf)
+;; -- 3.8 Code folding (vim-style za/zc/zo/zm/zr) --
+(use-package hideshow
+  :ensure nil
+  :hook (prog-mode . hs-minor-mode)
+  :bind (:map hs-minor-mode-map
+              ("C-c z a" . hs-toggle-hiding)
+              ("C-c z c" . hs-hide-block)
+              ("C-c z o" . hs-show-block)
+              ("C-c z m" . hs-hide-all)
+              ("C-c z r" . hs-show-all)))
 
 
 ;; ============================================================
-;; File & Buffer Management
+;; 4. Completion & Search (vertico stack)
 ;; ============================================================
 
+(use-package vertico
+  :init (vertico-mode)
+  :custom (vertico-cycle t))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides
+   '((file (styles basic partial-completion)))))
+
+(use-package marginalia
+  :init (marginalia-mode))
+
+(use-package consult
+  :bind (("C-x b"   . consult-buffer)
+         ("C-x p b" . consult-project-buffer)
+         ("C-x r b" . consult-bookmark)
+         ("M-y"     . consult-yank-pop)
+         ("M-g g"   . consult-goto-line)
+         ("M-g i"   . consult-imenu)
+         ("M-g I"   . consult-imenu-multi)
+         ("M-s d"   . consult-fd)
+         ("M-s g"   . consult-ripgrep)
+         ("M-s l"   . consult-line)
+         ("M-s L"   . consult-line-multi)
+         ("C-c r"   . consult-recent-file)
+         ("C-c h a" . consult-org-agenda)
+         ("C-c h h" . consult-org-heading))
+  :config (setq consult-narrow-key "<"))
+
+(use-package embark
+  :bind (("C-."   . embark-act)
+         ("C-;"   . embark-dwim)
+         ("C-h B" . embark-bindings)))
+
+(use-package embark-consult
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+;; -- Built-ins --
+(use-package savehist  :ensure nil :init (savehist-mode))
+(use-package saveplace :ensure nil :init (save-place-mode))
+(use-package which-key
+  :ensure nil
+  :init (which-key-mode)
+  :custom (which-key-idle-delay 0.5))
+(use-package autorevert
+  :ensure nil
+  :init (global-auto-revert-mode)
+  :custom (global-auto-revert-non-file-buffers t))
+(use-package repeat :ensure nil :init (repeat-mode))
+
+
+;; ============================================================
+;; 5. File & Buffer Management
+;; ============================================================
+
+;; -- 5.1 Recentf --
 (recentf-mode 1)
 (setq recentf-max-menu-items 25
       recentf-max-saved-items 100
       recentf-exclude '("/tmp/" "/.emacs.d/elpa/" "\\.gz$"))
 
-(setq vc-follow-symlinks t)
-
+;; -- 5.2 Dired --
 (require 'dired-x)
 (setq dired-omit-files "^\\.[^.]\\|^\\.\\.$"
       dired-dwim-target t)
 (add-hook 'dired-mode-hook #'dired-omit-mode)
-
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "C-c n") #'dired-create-empty-file))
 
+;; -- 5.3 Buffer navigation --
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-c b p") #'previous-buffer)
 (global-set-key (kbd "C-c b n") #'next-buffer)
 
+;; -- 5.4 Backups & auto-saves --
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name "backups/" user-emacs-directory)))
+      auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+(make-directory (expand-file-name "backups/"    user-emacs-directory) t)
+(make-directory (expand-file-name "auto-saves/" user-emacs-directory) t)
+
+;; -- 5.5 Follow symlinks into VC trees without prompting --
+(setq vc-follow-symlinks t)
+
 
 ;; ============================================================
-;; Version Control
+;; 6. Project Management
 ;; ============================================================
 
+(use-package project
+  :ensure nil
+  :bind-keymap ("C-c p" . project-prefix-map)
+  :config
+  (setq project-vc-extra-root-markers
+        '(".project" ".projectile" ".p4ignore" ".p4config"))
+  (setq project-switch-commands
+        '((project-find-file    "Find file"    "f")
+          (consult-ripgrep      "Ripgrep"      "g")
+          (project-dired        "Dired"        "d")
+          (magit-project-status "Magit"        "m")
+          (vterm                "Vterm"        "t")
+          (project-kill-buffers "Kill buffers" "k"))))
+
+
+;; ============================================================
+;; 7. Version Control
+;; ============================================================
+
+;; -- 7.1 Magit --
 (use-package magit
   :bind (("C-c m s" . magit-status)
          ("C-c m l" . magit-log-current)))
 
+;; -- 7.2 diff-hl (magit integration is automatic in diff-hl >= 1.11) --
 (use-package diff-hl
-  :hook ((prog-mode          . diff-hl-mode)
-         (magit-pre-refresh  . diff-hl-magit-pre-refresh)
-         (magit-post-refresh . diff-hl-magit-post-refresh)))
+  :hook ((prog-mode  . diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode)))
 
+;; -- 7.3 wgrep (edit grep results in place; C-c C-p in a grep buffer) --
+(use-package wgrep
+  :custom (wgrep-auto-save-buffer t))
+
+;; -- 7.4 Perforce --
 (use-package p4
   :bind (("C-c 4 e" . p4-edit)
          ("C-c 4 a" . p4-add)
@@ -163,104 +336,158 @@
 
 
 ;; ============================================================
-;; Project Management
+;; 8. Code Intelligence (eglot + corfu)
 ;; ============================================================
 
-(use-package project
+;; -- 8.1 In-buffer completion popup --
+(use-package corfu
+  :init (global-corfu-mode)
+  :custom
+  (corfu-auto              t)
+  (corfu-auto-prefix       1)
+  (corfu-auto-delay        0.15)
+  (corfu-cycle             t)
+  (corfu-quit-no-match     'separator)
+  (corfu-preview-current   'insert))
+
+(use-package corfu-popupinfo
+  :ensure nil
+  :after corfu
+  :hook (corfu-mode . corfu-popupinfo-mode))
+
+;; -- 8.2 Completion-at-point extensions --
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+
+;; -- 8.3 Snippets --
+(use-package yasnippet :hook (prog-mode . yas-minor-mode))
+
+;; -- 8.4 Eglot (built-in LSP client) --
+(use-package eglot
+  :ensure nil
+  :hook ((c-ts-mode          . eglot-ensure)
+         (c++-ts-mode        . eglot-ensure)
+         (python-ts-mode     . eglot-ensure)
+         (rust-mode          . eglot-ensure)
+         (go-mode            . eglot-ensure)
+         (java-ts-mode       . eglot-ensure)
+         (csharp-ts-mode     . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
+         (tsx-ts-mode        . eglot-ensure)
+         (js-ts-mode         . eglot-ensure)
+         (web-mode           . eglot-ensure)
+         (dockerfile-mode    . eglot-ensure)
+         (lua-mode           . eglot-ensure)
+         (php-mode           . eglot-ensure))
+  :bind (:map eglot-mode-map
+              ("C-c l a" . eglot-code-actions)
+              ("C-c l r" . eglot-rename)
+              ("C-c l f" . eglot-format-buffer)
+              ("C-c l d" . eldoc)
+              ("C-c l i" . eglot-find-implementation)
+              ("C-c l t" . eglot-find-typeDefinition))
   :config
-  (setq project-vc-extra-root-markers '(".project" ".projectile" ".p4ignore" ".p4config"))
-  (setq project-switch-commands
-        '((project-find-file    "Find file"    "f")
-          (project-find-regexp  "Find regexp"  "g")
-          (project-dired        "Dired"        "d")
-          (magit-project-status "Magit"        "m")
-          (vterm                "Vterm"        "t")
-          (project-kill-buffers "Kill buffers" "k")))
-  :bind-keymap ("C-c p" . project-prefix-map))
+  (setq eglot-events-buffer-config '(:size 0 :format full)
+        eglot-autoshutdown   t
+        eglot-sync-connect   0
+        eglot-extend-to-xref t)
+  ;; Disable jsonrpc event logging — large perf win for chatty servers.
+  (fset #'jsonrpc--log-event #'ignore))
+
+(use-package consult-eglot
+  :after eglot
+  :bind (:map eglot-mode-map ("C-c l s" . consult-eglot-symbols)))
 
 
 ;; ============================================================
-;; LSP & Language Support
+;; 9. Language Support
 ;; ============================================================
 
-(use-package yasnippet
-  :hook (lsp-mode . yas-minor-mode))
+;; -- 9.1 Tree-sitter grammars + remaps (Emacs 29+) --
+;;       Run `M-x my/install-treesit-grammars' once on a new machine.
+(setq treesit-language-source-alist
+      '((bash       "https://github.com/tree-sitter/tree-sitter-bash")
+        (c          "https://github.com/tree-sitter/tree-sitter-c")
+        (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
+        (c-sharp    "https://github.com/tree-sitter/tree-sitter-c-sharp")
+        (css        "https://github.com/tree-sitter/tree-sitter-css")
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        (go         "https://github.com/tree-sitter/tree-sitter-go")
+        (html       "https://github.com/tree-sitter/tree-sitter-html")
+        (java       "https://github.com/tree-sitter/tree-sitter-java")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+        (json       "https://github.com/tree-sitter/tree-sitter-json")
+        (python     "https://github.com/tree-sitter/tree-sitter-python")
+        (rust       "https://github.com/tree-sitter/tree-sitter-rust")
+        (toml       "https://github.com/tree-sitter/tree-sitter-toml")
+        (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+        (yaml       "https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
 
-(use-package lsp-mode
-  :hook ((java-mode       . lsp-deferred)
-         (rust-mode       . lsp-deferred)
-         (go-mode         . lsp-deferred)
-         (typescript-mode . lsp-deferred)
-         (js-mode         . lsp-deferred)
-         (python-mode     . lsp-deferred)
-         (c-mode          . lsp-deferred)
-         (c++-mode        . lsp-deferred))
-  :commands (lsp lsp-deferred)
-  :config
-  (setq lsp-keymap-prefix                  "C-c l"
-        lsp-idle-delay                     0.5
-        lsp-lens-enable                    t
-        lsp-headerline-breadcrumb-enable   nil
-        lsp-enable-indentation             nil
-        lsp-enable-on-type-formatting      nil))
+(setq major-mode-remap-alist
+      '((c-mode          . c-ts-mode)
+        (c++-mode        . c++-ts-mode)
+        (c-or-c++-mode   . c-or-c++-ts-mode)
+        (csharp-mode     . csharp-ts-mode)
+        (java-mode       . java-ts-mode)
+        (javascript-mode . js-ts-mode)
+        (js-mode         . js-ts-mode)
+        (json-mode       . json-ts-mode)
+        (python-mode     . python-ts-mode)))
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :config
-  (setq lsp-ui-doc-enable     t
-        lsp-ui-sideline-enable t
-        lsp-ui-peek-enable     t))
+(defun my/install-treesit-grammars ()
+  "Install all tree-sitter grammars in `treesit-language-source-alist'."
+  (interactive)
+  (dolist (lang (mapcar #'car treesit-language-source-alist))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
 
-(use-package company
-  :hook (prog-mode . company-mode)
-  :config
-  (setq company-minimum-prefix-length 1
-        company-idle-delay 0.2))
+;; -- 9.2 C / C++  (requires: clangd) --
+(defun my/c-ts-mode-setup ()
+  "Indent, RET, and format-on-save tweaks shared by c-ts-mode/c++-ts-mode."
+  (setq-local indent-tabs-mode      nil
+              c-ts-mode-indent-offset 4)
+  (local-set-key (kbd "RET") #'newline-and-indent)
+  (add-hook 'before-save-hook #'eglot-format-buffer nil t))
 
-(use-package helm-lsp
-  :after (lsp-mode helm)
-  :commands helm-lsp-workspace-symbol)
+(setq c-ts-mode-indent-style 'k&r)
+(add-hook 'c-ts-base-mode-hook #'my/c-ts-mode-setup)
 
-;; Java — lsp-java auto-downloads Eclipse JDT LS
-(use-package lsp-java
-  :after lsp-mode)
-
+;; -- 9.3 Rust  (requires: rustup component add rust-analyzer) --
 (use-package rust-mode)
 
-;; Go — requires: go install golang.org/x/tools/gopls@latest
+;; -- 9.4 Java  (requires: install eclipse-jdt-ls; eglot auto-detects it) --
+;;       Eglot drives jdtls directly; lsp-java is no longer needed.
+
+;; -- 9.5 Go  (requires: go install golang.org/x/tools/gopls@latest) --
 (use-package go-mode
   :hook (go-mode . (lambda ()
                      (add-hook 'before-save-hook #'gofmt-before-save nil t))))
 
-;; TypeScript/TSX — requires: npm i -g typescript-language-server typescript
-(use-package typescript-mode
-  :mode "\\.tsx?\\'")
+;; -- 9.6 PHP  (requires: composer global require intelephense, or phpactor) --
+(use-package php-mode)
 
-;; Python uses built-in python-mode; requires: pip install pyright
-;; C/C++ uses built-in modes; requires: clangd
-(defun my/c-mode-setup ()
-  (c-set-style "stroustrup")
-  (setq c-basic-offset 4)
-  (setq-local indent-tabs-mode nil)
-  (local-set-key (kbd "RET") #'newline-and-indent)
-  (add-hook 'before-save-hook #'lsp-format-buffer nil t))
+;; -- 9.7 C#  (requires: dotnet tool install -g csharp-ls) --
+;;       csharp-mode + csharp-ts-mode are built-in in Emacs 29+.
 
-(add-hook 'c-mode-common-hook #'my/c-mode-setup)
+;; -- 9.8 Lua  (requires: brew install lua-language-server) --
+(defun my/run-current-lua-file ()
+  "Run the current Lua file with `lua'."
+  (interactive)
+  (when (buffer-file-name)
+    (save-buffer)
+    (compile (format "lua %s"
+                     (shell-quote-argument
+                      (file-name-nondirectory buffer-file-name))))))
 
-;; Dockerfile — requires: npm i -g dockerfile-language-server-nodejs
-(use-package dockerfile-mode
-  :hook (dockerfile-mode . lsp-deferred))
-
-;; Lua — requires: brew install lua-language-server
 (use-package lua-mode
   :mode "\\.lua\\'"
-  :hook (lua-mode . lsp-deferred)
-  :config
-  (setq lua-indent-level 2)
+  :config (setq lua-indent-level 2)
   :bind (:map lua-mode-map
               ("C-c C-r" . my/run-current-lua-file)))
 
-;; Auto-insert end/until when pressing RET after Lua block-opening lines
 (defun my/lua-newline-and-close ()
   "Newline-and-indent; insert matching end/until after Lua block openers."
   (interactive)
@@ -271,8 +498,8 @@
                   ((string-match-p "\\`\\(local +\\)?function\\b" line)   "end")
                   ((string-match-p "\\(if\\|elseif\\).*\\bthen\\'"  line) "end")
                   ((string-match-p "\\(for\\|while\\).*\\bdo\\'"    line) "end")
-                  ((string-match-p "\\`do\\'"                        line) "end")
-                  ((string-match-p "\\`repeat\\'"                    line) "until ")
+                  ((string-match-p "\\`do\\'"                       line) "end")
+                  ((string-match-p "\\`repeat\\'"                   line) "until ")
                   (t nil))))
     (newline-and-indent)
     (when closer
@@ -285,14 +512,42 @@
           (lambda ()
             (local-set-key (kbd "RET") #'my/lua-newline-and-close)))
 
+;; -- 9.9 Python  (requires: pip install pyright  or  python-lsp-server[all]) --
+;;       Eglot-ensure is registered on python-ts-mode above.
 
-; elisp
+;; -- 9.10 TypeScript / JavaScript (web dev) --
+;;        requires: npm i -g typescript typescript-language-server
+(add-to-list 'auto-mode-alist '("\\.ts\\'"  . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+
+;; HTML / CSS / templates
+(use-package web-mode
+  :mode (("\\.html?\\'"  . web-mode)
+         ("\\.css\\'"    . web-mode)
+         ("\\.s[ac]ss\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset    2
+        web-mode-code-indent-offset   2))
+
+;; -- 9.11 Emacs Lisp --
 (with-eval-after-load 'elisp-mode
   (define-key lisp-interaction-mode-map (kbd "C-c C-j")
               #'eval-print-last-sexp))
 
+;; -- 9.12 Dockerfile  (requires: npm i -g dockerfile-language-server-nodejs) --
+(use-package dockerfile-mode)
+
+;; -- 9.13 PowerShell / Batch --
+(use-package powershell)
+(use-package bat-mode
+  :ensure nil
+  :mode (("\\.bat\\'" . bat-mode)
+         ("\\.cmd\\'" . bat-mode)))
+
+
 ;; ============================================================
-;; Shell & Terminal
+;; 10. Shell & Terminal
 ;; ============================================================
 
 (use-package vterm
@@ -300,50 +555,54 @@
   :config
   (setq vterm-max-scrollback 10000))
 
-(use-package powershell)
-
-(use-package bat-mode
-  :mode (("\\.bat\\'" . bat-mode)
-         ("\\.cmd\\'" . bat-mode)))
 
 ;; ============================================================
-;; Backups 
+;; 11. Org Mode
 ;; ============================================================
 
-;; Put backup files like file.org~ here
-(setq backup-directory-alist
-      `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
-;; Put auto-save files like #file.org# here
-(setq auto-save-file-name-transforms
-      `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+(setq org-directory             "~/Zettelkasten/Org"
+      my/org-agenda-directory   (expand-file-name "agenda" "~/Zettelkasten/Org"))
 
-;; Create folders if they do not exist
-(make-directory (expand-file-name "backups/" user-emacs-directory) t)
-(make-directory (expand-file-name "auto-saves/" user-emacs-directory) t)
-
-
-;; ============================================================
-;; Org Mode
-;; ============================================================
-
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-
-(setq org-directory "~/Zettelkasten/Org")
-(setq my/org-agenda-directory (expand-file-name "agenda" org-directory))
 (unless (file-directory-p my/org-agenda-directory)
   (make-directory my/org-agenda-directory t))
 
-;; -- Core --
-
+;; -- 11.1 Core --
 (use-package org
+  :ensure nil
+  :mode ("\\.org\\'" . org-mode)
   :config
   ;; sudo tlmgr install dvisvgm
-  (setq org-preview-latex-default-process 'dvisvgm)
+  (setq org-preview-latex-default-process 'dvisvgm
+        org-confirm-babel-evaluate        nil
+        org-src-fontify-natively          t
+        org-log-done                      'time
+        org-highest-priority              ?A
+        org-default-priority              ?B
+        org-lowest-priority               ?C)
   (setq org-format-latex-options
-        (plist-put org-format-latex-options :scale 1.5)))
-
-(use-package org-fragtog
-  :hook (org-mode . org-fragtog-mode))
+        (plist-put org-format-latex-options :scale 1.5))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "DOING(g)" "WAIT(w@/!)" "MEETING(m)"
+                    "|" "DONE(d!)" "CANCELLED(c@)")))
+  (setq org-todo-keyword-faces
+        '(("TODO"      . (:weight bold))
+          ("NEXT"      . (:weight bold))
+          ("DOING"     . (:weight bold))
+          ("WAIT"      . (:weight bold))
+          ("MEETING"   . (:weight bold))
+          ("CANCELLED" . (:weight bold))))
+  (setq org-tag-alist
+        '((:startgroup)
+          ("work"     . ?w)
+          ("study"    . ?s)
+          ("research" . ?r)
+          ("personal" . ?p)
+          (:endgroup)
+          ("meeting"  . ?m)
+          ("email"    . ?e)
+          ("call"     . ?c)
+          ("urgent"   . ?u)
+          ("waiting"  . ?W))))
 
 (add-hook 'org-mode-hook
           (lambda ()
@@ -354,7 +613,7 @@
             (add-to-list 'ispell-skip-region-alist '("\\[\\[" . "\\]\\]"))
             (add-to-list 'ispell-skip-region-alist '("https?://" . "\\S-*"))
             (add-to-list 'ispell-skip-region-alist '("[./\\~][-a-zA-Z0-9_./\\]*"))
-            ;; Disable <> auto-pairing; org uses < for template expansion
+            ;; Don't auto-pair <>; org uses < for template expansion
             (setq-local electric-pair-pairs
                         (seq-remove (lambda (p) (= (car p) ?<))
                                     electric-pair-pairs))
@@ -368,8 +627,10 @@
                           (delete-char 1)))
                       nil t)))
 
-;; -- Babel --
+(use-package org-fragtog
+  :hook (org-mode . org-fragtog-mode))
 
+;; -- 11.2 Babel --
 (with-eval-after-load 'org
   (require 'ob-C)
   (defalias 'org-babel-execute:c   'org-babel-execute:C)
@@ -381,10 +642,8 @@
      (C          . t)
      (java       . t))))
 
-(setq org-confirm-babel-evaluate nil)
-(setq org-src-fontify-natively t)
-(setq org-babel-default-header-args:lua  '((:results . "output")))
-(setq org-babel-default-header-args:java
+(setq org-babel-default-header-args:lua '((:results . "output"))
+      org-babel-default-header-args:java
       `((:dir     . ,(temporary-file-directory))
         (:results . "output")))
 
@@ -393,155 +652,100 @@
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
-   (append org-babel-load-languages
-           '((php . t)))))
+   (append org-babel-load-languages '((php . t)))))
 
-;; -- Agenda & Capture --
-
+;; -- 11.3 Agenda & Capture --
 (setq org-agenda-files
-      (list
-       (expand-file-name "inbox.org"    my/org-agenda-directory)
-       (expand-file-name "tasks.org"    my/org-agenda-directory)
-       (expand-file-name "meetings.org" my/org-agenda-directory)
-       (expand-file-name "projects.org" my/org-agenda-directory)
-       (expand-file-name "someday.org"  my/org-agenda-directory)))
+      (list (expand-file-name "inbox.org"    my/org-agenda-directory)
+            (expand-file-name "tasks.org"    my/org-agenda-directory)
+            (expand-file-name "meetings.org" my/org-agenda-directory)
+            (expand-file-name "projects.org" my/org-agenda-directory)
+            (expand-file-name "someday.org"  my/org-agenda-directory)))
 
-(global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture)
-(global-set-key (kbd "C-c l") #'org-store-link)
-
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "DOING(g)" "WAIT(w@/!)" "MEETING(m)" "|" "DONE(d!)" "CANCELLED(c@)")))
-
-(setq org-todo-keyword-faces
-      '(("TODO"      . (:weight bold))
-        ("NEXT"      . (:weight bold))
-        ("DOING"     . (:weight bold))
-        ("WAIT"      . (:weight bold))
-        ("MEETING"   . (:weight bold))
-        ("CANCELLED" . (:weight bold))))
-
-(setq org-highest-priority ?A
-      org-default-priority  ?B
-      org-lowest-priority   ?C)
-
-(setq org-log-done 'time)
-
-(setq org-agenda-span                    7
-      org-agenda-start-on-weekday        nil
-      org-agenda-window-setup            'current-window
-      org-agenda-show-future-repeats     t
-      org-agenda-skip-deadline-if-done   t
-      org-agenda-skip-scheduled-if-done  t)
-
-(setq org-tag-alist
-      '((:startgroup)
-        ("work"     . ?w)
-        ("study"    . ?s)
-        ("research" . ?r)
-        ("personal" . ?p)
-        (:endgroup)
-        ("meeting"  . ?m)
-        ("email"    . ?e)
-        ("call"     . ?c)
-        ("urgent"   . ?u)
-        ("waiting"  . ?W)))
+(setq org-agenda-span                   7
+      org-agenda-start-on-weekday       nil
+      org-agenda-window-setup           'current-window
+      org-agenda-show-future-repeats    t
+      org-agenda-skip-deadline-if-done  t
+      org-agenda-skip-scheduled-if-done t)
 
 (setq org-capture-templates
       `(("t" "Task" entry
          (file+headline ,(expand-file-name "tasks.org" my/org-agenda-directory) "Tasks")
          "* TODO %?\n  CREATED: %U\n  %a\n")
-
         ("i" "Inbox" entry
          (file+headline ,(expand-file-name "inbox.org" my/org-agenda-directory) "Inbox")
          "* TODO %?\n  CREATED: %U\n  %a\n")
-
         ("m" "Meeting" entry
          (file+headline ,(expand-file-name "meetings.org" my/org-agenda-directory) "Meetings")
          "* MEETING %? :meeting:\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n** Attendees\n- \n\n** Agenda\n- \n\n** Notes\n- \n\n** Decisions\n- \n\n** Action Items\n- [ ] \n")
-
         ("p" "Project task" entry
          (file+headline ,(expand-file-name "projects.org" my/org-agenda-directory) "Project Tasks")
          "* TODO %? :work:\n  CREATED: %U\n  %a\n")
-
         ("s" "Someday" entry
          (file+headline ,(expand-file-name "someday.org" my/org-agenda-directory) "Someday")
          "* TODO %?\n  CREATED: %U\n")))
 
-;; -- Roam --
-
+;; -- 11.4 Roam --
 (use-package org-roam
-  :custom
-  (org-roam-directory "~/Zettelkasten/Org")
+  :custom (org-roam-directory "~/Zettelkasten/Org")
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture)
          ("C-c n j" . org-roam-dailies-capture-today))
-  :config
-  (org-roam-db-autosync-mode))
+  :config (org-roam-db-autosync-mode))
 
 (defun my/org-roam-search-text ()
-  "Search full text in org-roam-directory using ripgrep via helm."
+  "Full-text search in `org-roam-directory' via consult-ripgrep."
   (interactive)
   (require 'org-roam)
-  (let ((default-directory org-roam-directory)
-        (helm-grep-ag-command
-         "rg --color=always --smart-case --no-heading --line-number %s %s %s"))
-    (helm-do-grep-ag nil)))
+  (consult-ripgrep org-roam-directory))
 
-(global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
-
-;; -- multi cursor --
-(use-package multiple-cursors
-  :bind
-  (("C-S-c C-S-c" . mc/edit-lines)
-   ("C->"         . mc/mark-next-like-this)
-   ("C-<"         . mc/mark-previous-like-this)
-   ("C-c C-<"     . mc/mark-all-like-this)
-   ("C-c C-w"     . mc/mark-next-like-this-word)
-   ("C-c C-s"     . mc/mark-next-like-this-symbol)))
-
-;; -- Extras --
-
+;; -- 11.5 Extras --
 (use-package org-download
   :after org
   :config
-  (setq org-download-image-dir              "./images"
-        org-download-method                 'directory
-        org-download-display-inline-images  t)
-  (define-key org-mode-map (kbd "C-c i") #'org-download-clipboard))
+  (setq org-download-image-dir             "./images"
+        org-download-method                'directory
+        org-download-display-inline-images t)
+  :bind (:map org-mode-map ("C-c i" . org-download-clipboard)))
 
 (use-package org-modern
   :hook (org-mode . org-modern-mode)
-  :config
-  (setq org-modern-table-vertical nil))
+  :config (setq org-modern-table-vertical nil))
 
 
-;; markdown enhancement
+;; ============================================================
+;; 12. Markdown
+;; ============================================================
 
 (global-so-long-mode 1)
 
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (display-line-numbers-mode -1)
-            (setq-local bidi-display-reordering nil)
-            (setq-local bidi-paragraph-direction 'left-to-right)))
-
 (defun my/markdown-big-file-lite-mode ()
+  "Disable expensive minor modes when the buffer is over 1 MB."
   (when (> (buffer-size) (* 1 1024 1024))
     (font-lock-mode -1)
     (visual-line-mode -1)
     (flyspell-mode -1)
-    (when (bound-and-true-p flycheck-mode)
-      (flycheck-mode -1))
-    (when (bound-and-true-p flymake-mode)
-      (flymake-mode -1))
+    (when (bound-and-true-p flymake-mode) (flymake-mode -1))
     (message "Big Markdown file detected: using lightweight editing mode.")))
-(add-hook 'markdown-mode-hook #'my/markdown-big-file-lite-mode)
+
+(defun my/markdown-setup ()
+  "Disable line numbers and force LTR in Markdown buffers."
+  (display-line-numbers-mode -1)
+  (setq-local bidi-display-reordering  nil)
+  (setq-local bidi-paragraph-direction 'left-to-right)
+  (my/markdown-big-file-lite-mode))
+
+(use-package markdown-mode
+  :mode (("\\.md\\'"       . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :hook (markdown-mode . my/markdown-setup))
+
 
 ;; ============================================================
-;; Spell Checking
+;; 13. Spell Checking
 ;; ============================================================
 
 (use-package flyspell
@@ -553,42 +757,35 @@
   (setq ispell-program-name "hunspell"
         ispell-dictionary   "en_US"))
 
-;; ============================================================
-;; Code Folding
-;; ============================================================
-
-(use-package hideshow
-  :ensure nil
-  :hook (prog-mode . hs-minor-mode)
-  :bind (:map hs-minor-mode-map
-              ("C-c z a" . hs-toggle-hiding)
-              ("C-c z c" . hs-hide-block)
-              ("C-c z o" . hs-show-block)
-              ("C-c z m" . hs-hide-all)
-              ("C-c z r" . hs-show-all)))
 
 ;; ============================================================
-;; Compile
+;; 14. Misc Commands
 ;; ============================================================
-(defun my/run-current-lua-file ()
-  "Run the current Lua file with lua."
-  (interactive)
-  (when (buffer-file-name)
-    (save-buffer)
-    (compile (format "lua %s"
-                     (shell-quote-argument (file-name-nondirectory buffer-file-name))))))
+;; (See `my/run-current-lua-file' in section 9.8 and helpers in section 12.)
+
 
 ;; ============================================================
-;; Keybindings
+;; 15. Global Keybindings
 ;; ============================================================
-;; Move to top / bottom of current buffer
 
+(global-set-key (kbd "C-x ,")   #'duplicate-dwim)      ; built-in (Emacs 29+)
+(global-set-key (kbd "C-x r")   #'undo-redo)
 (global-set-key (kbd "C-c j t") #'beginning-of-buffer)
 (global-set-key (kbd "C-c j b") #'end-of-buffer)
 
+;; Org global commands (note: org-store-link moved off C-c l to avoid
+;; collision with eglot keymap prefix)
+(global-set-key (kbd "C-c a")   #'org-agenda)
+(global-set-key (kbd "C-c c")   #'org-capture)
+(global-set-key (kbd "C-c o l") #'org-store-link)
+(global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
+
+
 ;; ============================================================
-;; Finalize
+;; 16. Finalize
 ;; ============================================================
 
-(package-install-selected-packages t)
-(load-file custom-file)
+(when (file-exists-p custom-file)
+  (load-file custom-file))
+
+;;; init.el ends here
