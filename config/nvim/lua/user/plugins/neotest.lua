@@ -4,9 +4,8 @@ return {
     dependencies = {
         "nvim-neotest/nvim-nio",
         "nvim-lua/plenary.nvim",
-        "antoinemadec/FixCursorHold.nvim",
-        "nvim-treesitter/nvim-treesitter",
-        "rayyh/neotest-jest",
+        "neovim-treesitter/nvim-treesitter",
+        "nvim-neotest/neotest-jest",
     },
 
     -- You can also switch to key-based lazy-loading if you want

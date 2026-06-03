@@ -38,7 +38,7 @@ autocmd({ "BufNewFile", "BufRead" }, {
     end,
 })
 
--- Highlight on yank ------------------------------------------ 
+-- Highlight on yank ------------------------------------------
 
 local hl_yank = augroup("HighlightYank", { clear = true })
 
@@ -46,6 +46,35 @@ autocmd("TextYankPost", {
     group = hl_yank,
     callback = function()
         vim.highlight.on_yank()
+    end,
+})
+
+-- Restore cursor position ------------------------------------
+
+local lastplace_group = augroup("LastPlace", { clear = true })
+
+local lastplace_ignore = {
+    gitcommit = true,
+    gitrebase = true,
+    hgcommit = true,
+    svn = true,
+}
+
+autocmd("BufReadPost", {
+    group = lastplace_group,
+    callback = function(args)
+        local buf = args.buf
+
+        if vim.bo[buf].buftype ~= "" or lastplace_ignore[vim.bo[buf].filetype] then
+            return
+        end
+
+        local mark = api.nvim_buf_get_mark(buf, '"')
+        local line_count = api.nvim_buf_line_count(buf)
+
+        if mark[1] > 0 and mark[1] <= line_count then
+            pcall(api.nvim_win_set_cursor, 0, mark)
+        end
     end,
 })
 

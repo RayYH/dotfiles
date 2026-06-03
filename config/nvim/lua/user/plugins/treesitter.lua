@@ -1,20 +1,60 @@
+local languages = {
+    "arduino",
+    "bash",
+    "css",
+    "diff",
+    "dockerfile",
+    "git_config",
+    "git_rebase",
+    "gitattributes",
+    "gitcommit",
+    "gitignore",
+    "go",
+    "html",
+    "http",
+    "ini",
+    "javascript",
+    "json",
+    "lua",
+    "make",
+    "markdown",
+    "markdown_inline",
+    "passwd",
+    "php",
+    "phpdoc",
+    "python",
+    "regex",
+    "ruby",
+    "rust",
+    "sql",
+    "svelte",
+    "typescript",
+    "vim",
+    "vue",
+    "xml",
+    "yaml",
+}
+
+local filetypes = vim.list_extend(vim.deepcopy(languages), { "jsonc" })
+
 return {
-    "nvim-treesitter/nvim-treesitter",
+    "neovim-treesitter/nvim-treesitter",
 
-    -- Set up when you actually open/edit files
-    event = { "BufReadPost", "BufNewFile" },
-
-    -- Recommended build command for Treesitter
-    build = ":TSUpdate",
-
-    main = "nvim-treesitter.configs",
+    -- The maintained rewrite manages parsers/queries through a registry and
+    -- explicitly does not support lazy-loading.
+    lazy = false,
+    build = function()
+        if vim.fn.executable("tree-sitter") == 1 then
+            vim.cmd.TSUpdate()
+        end
+    end,
 
     dependencies = {
+        "neovim-treesitter/treesitter-parser-registry",
         {
             "JoosepAlviste/nvim-ts-context-commentstring",
             main = "ts_context_commentstring",
             opts = {
-                -- your custom Blade logic
                 custom_calculation = function(_, language_tree)
                     if
                         vim.bo.filetype == "blade"
@@ -25,87 +65,70 @@ return {
                 end,
             },
             init = function()
-                -- If you're using Comment.nvim, this keeps it from loading
-                -- its own ts-context-commentstring module.
                 vim.g.skip_ts_context_commentstring_module = true
             end,
         },
-        "nvim-treesitter/nvim-treesitter-textobjects",
-    },
+        {
+            "nvim-treesitter/nvim-treesitter-textobjects",
+            config = function()
+                require("nvim-treesitter-textobjects").setup({
+                    select = {
+                        lookahead = true,
+                    },
+                })
 
-    opts = {
-        ensure_installed = {
-            "arduino",
-            "bash",
-            "comment",
-            "css",
-            "diff",
-            "dockerfile",
-            "git_config",
-            "git_rebase",
-            "gitattributes",
-            "gitcommit",
-            "gitignore",
-            "go",
-            "html",
-            "http",
-            "ini",
-            "javascript",
-            "json",
-            "jsonc",
-            "lua",
-            "make",
-            "markdown",
-            "markdown_inline",
-            "passwd",
-            "php",
-            "phpdoc",
-            "python",
-            "regex",
-            "ruby",
-            "rust",
-            "sql",
-            "svelte",
-            "typescript",
-            "vim",
-            "vue",
-            "xml",
-            "yaml",
-        },
+                local select = require("nvim-treesitter-textobjects.select")
 
-        auto_install = true,
+                vim.keymap.set({ "x", "o" }, "if", function()
+                    select.select_textobject("@function.inner", "textobjects")
+                end, { desc = "Select inner function" })
 
-        highlight = {
-            enable = true,
-        },
+                vim.keymap.set({ "x", "o" }, "af", function()
+                    select.select_textobject("@function.outer", "textobjects")
+                end, { desc = "Select outer function" })
 
-        indent = {
-            enable = true,
-            disable = { "yaml" },
-        },
+                vim.keymap.set({ "x", "o" }, "ia", function()
+                    select.select_textobject("@parameter.inner", "textobjects")
+                end, { desc = "Select inner parameter" })
 
-        -- If you’re using Comment.nvim or similar, this is the usual pattern:
-        context_commentstring = {
-            enable = true,
-            enable_autocmd = false,
-        },
-
-        -- Only effective if you have a rainbow plugin wired in elsewhere
-        rainbow = {
-            enable = true,
-        },
-
-        textobjects = {
-            select = {
-                enable = true,
-                lookahead = true,
-                keymaps = {
-                    ["if"] = "@function.inner",
-                    ["af"] = "@function.outer",
-                    ["ia"] = "@parameter.inner",
-                    ["aa"] = "@parameter.outer",
-                },
-            },
+                vim.keymap.set({ "x", "o" }, "aa", function()
+                    select.select_textobject("@parameter.outer", "textobjects")
+                end, { desc = "Select outer parameter" })
+            end,
         },
     },
+
+    config = function()
+        local treesitter = require("nvim-treesitter")
+        treesitter.setup()
+
+        vim.treesitter.language.register("json", "jsonc")
+
+        vim.api.nvim_create_user_command("TSInstallConfigured", function()
+            if vim.fn.executable("tree-sitter") ~= 1 then
+                vim.notify(
+                    "Install tree-sitter CLI before installing parsers",
+                    vim.log.levels.WARN
+                )
+                return
+            end
+
+            treesitter.install(languages)
+        end, {})
+
+        vim.api.nvim_create_autocmd("FileType", {
+            group = vim.api.nvim_create_augroup("TreesitterStart", {
+                clear = true,
+            }),
+            pattern = filetypes,
+            callback = function(args)
+                pcall(vim.treesitter.start, args.buf)
+
+                if vim.bo[args.buf].filetype ~= "yaml" then
+                    vim.bo[args.buf].indentexpr =
+                        "v:lua.require'nvim-treesitter'.indentexpr()"
+                end
+            end,
+        })
+    end,
 }

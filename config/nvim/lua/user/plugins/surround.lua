@@ -1,5 +1,6 @@
 return {
-    "tpope/vim-surround",
+    "kylechui/nvim-surround",
+    version = "*",
 
     -- Load when you first use any surround mapping
     keys = {
@@ -15,4 +16,6 @@ return {
         { "S", mode = "x", desc = "Surround selection" },
         { "gS", mode = "x", desc = "Surround selection (block)" },
     },
+
+    opts = {},
 }

@@ -1,6 +1,6 @@
 return {
     "Wansmer/treesj",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    dependencies = { "neovim-treesitter/nvim-treesitter" },
 
     -- Lazy-load on first use of these keys
     keys = {

@@ -23,6 +23,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("user.plugins", {
+    git = {
+        timeout = 300,
+    },
     checker = {
         enabled = true,
         notify = false,

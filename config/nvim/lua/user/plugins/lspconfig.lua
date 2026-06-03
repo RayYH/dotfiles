@@ -9,7 +9,6 @@ return {
             "nvimtools/none-ls.nvim",
             dependencies = { "nvimtools/none-ls-extras.nvim" },
         },
-        "rayyh/mason-null-ls.nvim",
     },
 
     config = function()
@@ -209,7 +208,7 @@ return {
             -- basic tools
             null_ls.builtins.formatting.stylua,
             null_ls.builtins.completion.spell,
-            null_ls.builtins.formatting.jq,
+            require("none-ls.formatting.jq"),
 
             -- trailing spaces
             null_ls.builtins.diagnostics.trail_space.with({
@@ -267,11 +266,6 @@ return {
                     })
                 end
             end,
-        })
-
-        require("mason-null-ls").setup({
-            automatic_installation = true,
-            ensure_installed = { "stylua", "jq", "black" },
         })
 
         ----------------------------------------------------------------------

@@ -1,6 +1,6 @@
 return {
-    "tpope/vim-sleuth",
+    "NMAC427/guess-indent.nvim",
 
-    -- Let it attach when you actually open/edit files
     event = { "BufReadPost", "BufNewFile" },
+    opts = {},
 }

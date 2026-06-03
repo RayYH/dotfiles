@@ -36,7 +36,6 @@ return {
     main = "lualine",
 
     dependencies = {
-        "arkav/lualine-lsp-progress",
         "nvim-tree/nvim-web-devicons",
     },
 
@@ -67,7 +66,7 @@ return {
 
             lualine_c = {
                 "filename",
-                "lsp_progress",
+                "lsp_status",
             },
 
             lualine_x = {

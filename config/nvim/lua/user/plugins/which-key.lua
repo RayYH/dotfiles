@@ -41,27 +41,12 @@ return {
             { "<leader>M", group = "Markdown" },
             {
                 "<leader>Mp",
-                "<cmd>MarkdownPreview<CR>",
+                "<cmd>RenderMarkdown preview<CR>",
                 desc = "Preview Markdown",
             },
             {
-                "<leader>MP",
-                "<cmd>PeekOpen<CR>",
-                desc = "Preview Markdown via Peek",
-            },
-            {
-                "<leader>MC",
-                "<cmd>PeekClose<CR>",
-                desc = "Close Markdown Peek",
-            },
-            {
-                "<leader>Ms",
-                "<cmd>MarkdownPreviewStop<CR>",
-                desc = "Stop Markdown preview",
-            },
-            {
                 "<leader>Mt",
-                "<cmd>MarkdownPreviewToggle<CR>",
+                "<cmd>RenderMarkdown toggle<CR>",
                 desc = "Toggle Markdown preview",
             },
 
@@ -140,6 +125,10 @@ return {
 
             -- file / folder (neo-tree etc.)
             { "<leader>n", group = "File/Folder" },
+
+            -- project
+            { "<leader>p", group = "project" },
+            { "<leader>pr", desc = "Set project root" },
 
             -- quit / buffers
             { "<leader>q", group = "quit" },
