@@ -18,7 +18,9 @@ config/shellcheck/.shellcheckrc   -> ~/.shellcheckrc
 config/uv/uv.toml                 -> ~/.config/uv/uv.toml
 config/editorconfig/.editorconfig -> ~/.editorconfig
 config/conda/.condarc             -> ~/.condarc
-config/jetbrains/.ideavimrc       -> ~/.ideavimrc
+config/vim/.vimrc                 -> ~/.vimrc
+config/vim/.vimrc                 -> ~/.ideavimrc
+config/vim/colors                 -> ~/.vim/colors
 config/git/.gitignore             -> ~/.gitignore
 config/git/.gitconfig             -> ~/.gitconfig copy
 scripts/t                         -> ~/.local/bin/t
