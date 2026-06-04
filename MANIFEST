@@ -10,6 +10,7 @@ config/nvim                       -> ~/.config/nvim
 config/emacs/init.el              -> ~/.emacs.d/init.el
 config/emacs/early-init.el        -> ~/.emacs.d/early-init.el
 config/emacs/custom.el            -> ~/.emacs.d/custom.el copy
+config/emacs/snippets             -> ~/.emacs.d/snippets
 config/alacritty                  -> ~/.config/alacritty
 config/starship/starship.toml     -> ~/.config/starship.toml
 config/curl/.curlrc               -> ~/.curlrc

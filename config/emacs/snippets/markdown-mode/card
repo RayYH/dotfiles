@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: Anki Card
+# key: card
+# --
+<!--CARD-->
+
+#### $1
+
+<!--FIELD-->
+
+$0

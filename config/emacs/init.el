@@ -475,7 +475,23 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 ;; -- 8.3 Snippets --
-(use-package yasnippet :hook (prog-mode . yas-minor-mode))
+;; Personal snippets live in ~/.emacs.d/snippets/<mode>/ (symlinked to
+;; dotfiles/config/emacs/snippets). yasnippet-snippets provides community
+;; snippets for every configured language. yasnippet-capf surfaces snippet
+;; keys inside the corfu popup so you don't need to remember triggers.
+(use-package yasnippet
+  :init (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+(use-package consult-yasnippet
+  :after (consult yasnippet)
+  :bind ("C-c y" . consult-yasnippet))
+
+(use-package yasnippet-capf
+  :after (cape yasnippet)
+  :init (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 ;; -- 8.4 Eglot (built-in LSP client) --
 (defun my/c-c++-eglot-ensure ()

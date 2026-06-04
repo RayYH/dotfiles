@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Fenced Code Block
+# key: code
+# --
+\`\`\`${1:lang}
+$0
+\`\`\`
