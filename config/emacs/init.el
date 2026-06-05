@@ -915,6 +915,15 @@
 ;; ============================================================
 ;; (See `my/run-current-lua-file' in section 9.8 and helpers in section 12.)
 
+(defun my/back-to-indentation-if-any ()
+  "Jump to the first non-blank character of the current line.
+Do nothing when the line contains only whitespace."
+  (interactive)
+  (let ((origin (point)))
+    (back-to-indentation)
+    (when (eolp)
+      (goto-char origin))))
+
 
 ;; ============================================================
 ;; 15. Global Keybindings
@@ -924,6 +933,7 @@
 (global-set-key (kbd "C-x r")   #'undo-redo)
 (global-set-key (kbd "C-c j t") #'beginning-of-buffer)
 (global-set-key (kbd "C-c j b") #'end-of-buffer)
+(global-set-key (kbd "C-c 0")   #'my/back-to-indentation-if-any)
 
 ;; Org global commands (note: org-store-link moved off C-c l to avoid
 ;; collision with eglot keymap prefix)
