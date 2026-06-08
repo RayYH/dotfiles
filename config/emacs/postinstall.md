@@ -7,6 +7,9 @@ Manual setup required after installing this config on a new machine.
 Start Emacs once with network access. `use-package` installs missing packages
 from GNU ELPA and MELPA automatically.
 
+After the first successful package refresh, startup should use the local package
+archive cache instead of contacting MELPA every time.
+
 If package icons render as boxes, run this inside Emacs:
 
 ```text

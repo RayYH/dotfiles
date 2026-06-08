@@ -35,13 +35,28 @@
 ;; -- 1.2 Package archives --
 ;; Emacs has already run `package-activate-all' (from early-init's
 ;; `package-quickstart' setting) by the time init.el loads, so we just
-;; configure archives and refresh the index if it's empty.
+;; configure archives and load the cached archive index.  The cache lives on
+;; disk, while `package-archive-contents' is only an in-memory table for the
+;; current Emacs process; checking that variable directly would refresh MELPA
+;; every startup.
 (require 'package)
 (setq package-archives
       '(("gnu"   . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")))
-(unless package-archive-contents
-  (package-refresh-contents))
+
+(defun my/package-archive-cache-missing-p ()
+  "Return non-nil when a configured package archive has no local cache."
+  (seq-some
+   (lambda (archive)
+     (not (file-exists-p
+           (expand-file-name
+            (format "archives/%s/archive-contents" (car archive))
+            package-user-dir))))
+   package-archives))
+
+(if (my/package-archive-cache-missing-p)
+    (package-refresh-contents)
+  (package-read-all-archive-contents))
 
 ;; -- 1.3 use-package (built-in since Emacs 29) --
 (require 'use-package)
