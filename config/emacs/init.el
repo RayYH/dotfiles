@@ -712,6 +712,13 @@
   :mode (("\\.bat\\'" . bat-mode)
          ("\\.cmd\\'" . bat-mode)))
 
+;; -- 9.14 JSON --
+;; `json-pretty-print-buffer' is built-in (json.el); no external dep needed.
+(use-package json-ts-mode
+  :ensure nil
+  :bind (:map json-ts-mode-map
+              ("C-c l f" . json-pretty-print-buffer)))
+
 
 ;; ============================================================
 ;; 10. Shell & Terminal
