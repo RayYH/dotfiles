@@ -253,6 +253,18 @@ function __formulas() {
 }
 __formulas
 
+function __ai_code_tools() {
+    __echo "Step $step: install AI coding tools"
+    if ! __command_exists codex; then
+        curl -fsSL https://chatgpt.com/codex/install.sh | sh
+    fi
+    if ! __command_exists claude; then
+        curl -fsSL https://claude.ai/install.sh | bash
+    fi
+    __done "$((step++))"
+}
+__ai_code_tools
+
 function __casks() {
     __echo "Step $step: install casks"
     declare -a guis=(

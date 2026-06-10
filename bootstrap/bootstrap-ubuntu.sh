@@ -213,6 +213,34 @@ __install_shell_tools() {
 __install_shell_tools
 
 # ============================================================
+# Containers: Docker
+# ============================================================
+
+__install_docker() {
+    __echo "Step $step: Installing Docker..."
+    if ! __command_exists "docker"; then
+        curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+        $SUDO sh /tmp/get-docker.sh
+        rm -f /tmp/get-docker.sh
+    fi
+
+    $SUDO systemctl enable --now docker
+    getent group docker >/dev/null || $SUDO groupadd docker
+
+    local docker_user
+    docker_user="${S_DOCKER_USER:-${SUDO_USER:-${USER:-}}}"
+    if [[ -n "$docker_user" && "$docker_user" != "root" ]]; then
+        $SUDO usermod -aG docker "$docker_user"
+        __echo "Added %s to the docker group. Log out and back in before running Docker without sudo." "$docker_user"
+    else
+        __echo "Skipping docker group membership update for root"
+    fi
+
+    __next_step
+}
+__install_docker
+
+# ============================================================
 # Go dev
 # ============================================================
 
@@ -296,6 +324,91 @@ __install_web_dev() {
     __next_step
 }
 __install_web_dev
+
+# ============================================================
+# AI coding tools: Codex + Claude Code
+# ============================================================
+
+__install_ai_code_tools() {
+    __echo "Step $step: Installing AI coding tools (Codex + Claude Code)..."
+
+    if ! __command_exists "codex"; then
+        curl -fsSL https://chatgpt.com/codex/install.sh | sh
+    fi
+
+    if ! __command_exists "claude"; then
+        curl -fsSL https://claude.ai/install.sh | bash
+    fi
+
+    __next_step
+}
+__install_ai_code_tools
+
+# ============================================================
+# Java dev: SDKMAN + latest LTS Java
+# ============================================================
+
+__sdkman_latest_lts_java() {
+    __sdkman_sdk list java \
+        | awk -F'|' '
+            NF >= 6 {
+                id = $NF
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "", id)
+                if (id ~ /^[0-9]/) print id
+            }
+        ' \
+        | awk -F'[.-]' '
+            {
+                major = $1 + 0
+                if (major == 8 || (major >= 11 && (major - 1) % 4 == 0)) print
+            }
+        ' \
+        | sort -V \
+        | awk '
+            /-tem$/ { tem = $0 }
+            { latest = $0 }
+            END {
+                if (tem != "") print tem
+                else print latest
+            }
+        '
+}
+
+__sdkman_sdk() {
+    set +eu
+    sdk "$@"
+    local status=$?
+    set -eu
+    return "$status"
+}
+
+__install_java() {
+    __echo "Step $step: Installing Java (SDKMAN + latest LTS)..."
+
+    if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        curl -s "https://get.sdkman.io" | bash
+    fi
+
+    export SDKMAN_DIR="${SDKMAN_DIR:-$HOME/.sdkman}"
+    export PAGER="${PAGER:-cat}"
+    [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] || __error "SDKMAN init script was not found"
+    # shellcheck disable=SC1091
+    set +eu
+    . "$SDKMAN_DIR/bin/sdkman-init.sh"
+    local sdkman_status=$?
+    set -eu
+    [[ $sdkman_status -eq 0 ]] || __error "Could not initialize SDKMAN"
+
+    local java_version
+    java_version="${JAVA_VERSION:-$(__sdkman_latest_lts_java)}"
+    [[ -n "$java_version" ]] || __error "Could not determine the latest LTS Java version from SDKMAN"
+
+    __sdkman_sdk install java "$java_version"
+    __sdkman_sdk default java "$java_version"
+
+    __next_step
+}
+__install_java
 
 # ============================================================
 # PHP dev: php8.5 + Composer

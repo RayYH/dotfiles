@@ -378,6 +378,25 @@ __install_web_dev() {
 __install_web_dev
 
 # ============================================================
+# AI coding tools: Codex + Claude Code
+# ============================================================
+
+__install_ai_code_tools() {
+    __echo "Step $step: Installing AI coding tools (Codex + Claude Code)..."
+
+    if ! __command_exists "codex"; then
+        curl -fsSL https://chatgpt.com/codex/install.sh | sh
+    fi
+
+    if ! __command_exists "claude"; then
+        curl -fsSL https://claude.ai/install.sh | bash
+    fi
+
+    __next_step
+}
+__install_ai_code_tools
+
+# ============================================================
 # Java dev: SDKMAN + latest LTS Java
 # ============================================================
 
