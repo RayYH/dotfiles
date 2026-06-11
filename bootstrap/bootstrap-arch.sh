@@ -510,6 +510,18 @@ __install_lua_dev() {
 __install_lua_dev
 
 # ============================================================
+# Neovim
+# ============================================================
+
+__install_neovim() {
+    __echo "Step $step: Installing Neovim + dependencies..."
+    # shellcheck disable=SC2086
+    $PKG neovim ripgrep tree-sitter-cli
+    __next_step
+}
+__install_neovim
+
+# ============================================================
 # TeX  (opt-in: S_TEX=1)
 # ============================================================
 
