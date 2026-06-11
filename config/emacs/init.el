@@ -752,7 +752,10 @@
         org-log-done                      'time
         org-highest-priority              ?A
         org-default-priority              ?B
-        org-lowest-priority               ?C)
+        org-lowest-priority               ?C
+        org-ellipsis                      " ▾"
+        org-pretty-entities               t
+        org-hide-leading-stars            t)
   (setq org-format-latex-options
         (plist-put org-format-latex-options :scale 1.5))
   (setq org-todo-keywords
@@ -885,9 +888,41 @@
         org-download-display-inline-images t)
   :bind (:map org-mode-map ("C-c i" . org-download-clipboard)))
 
+;; Document-style heading sizes
+(with-eval-after-load 'org
+  (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold)
+  (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold)
+  (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'semi-bold)
+  (set-face-attribute 'org-level-4 nil :height 1.05))
+
 (use-package org-modern
   :hook (org-mode . org-modern-mode)
-  :config (setq org-modern-table-vertical nil))
+  :custom
+  (org-modern-star           '("◉" "○" "◈" "◇" "▷"))
+  (org-modern-todo           t)
+  (org-modern-todo-faces
+   '(("TODO"      :background "#2d4f67" :foreground "#7dcfff" :weight bold)
+     ("NEXT"      :background "#1a472a" :foreground "#9ece6a" :weight bold)
+     ("DOING"     :background "#3d2b4b" :foreground "#bb9af7" :weight bold)
+     ("WAIT"      :background "#4a3728" :foreground "#e0af68" :weight bold)
+     ("MEETING"   :background "#1a3a4a" :foreground "#73daca" :weight bold)
+     ("DONE"      :background "#1c2535" :foreground "#565f89" :weight bold)
+     ("CANCELLED" :background "#1c2535" :foreground "#565f89" :strike-through t)))
+  (org-modern-priority       t)
+  (org-modern-priority-faces
+   '((?A :background "#4a1942" :foreground "#f7768e" :weight bold)
+     (?B :background "#2d4f67" :foreground "#7dcfff" :weight bold)
+     (?C :background "#1a472a" :foreground "#9ece6a" :weight bold)))
+  (org-modern-tag            t)
+  (org-modern-statistics     t)
+  (org-modern-timestamp      t)
+  (org-modern-checkbox       '((?\s . "□") (?- . "◫") (?X . "☑")))
+  (org-modern-block-name     t)
+  (org-modern-keyword        t)
+  (org-modern-table          t)
+  (org-modern-table-vertical   1)
+  (org-modern-table-horizontal 0.1)
+  (org-modern-horizontal-rule  t))
 
 
 ;; ============================================================
@@ -952,7 +987,7 @@ Do nothing when the line contains only whitespace."
 ;; ============================================================
 
 (global-set-key (kbd "C-x ,")   #'duplicate-dwim)      ; built-in (Emacs 29+)
-(global-set-key (kbd "C-x r")   #'undo-redo)
+(global-set-key (kbd "C-?")     #'undo-redo)
 (global-set-key (kbd "C-c j t") #'beginning-of-buffer)
 (global-set-key (kbd "C-c j b") #'end-of-buffer)
 (global-set-key (kbd "C-c 0")   #'my/back-to-indentation-if-any)
