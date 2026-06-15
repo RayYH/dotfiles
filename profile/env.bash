@@ -52,6 +52,7 @@ export PATH=$VCPKG_ROOT:$PATH
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # miniforge
+[ -d "$HOME/miniforge3/bin" ] && PATH="$HOME/miniforge3/bin:$PATH"
 [ -x "$HOME/miniforge3/bin/conda" ] && eval "$("$HOME/miniforge3/bin/conda" shell.bash hook)"
 
 # Nix
