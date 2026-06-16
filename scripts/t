@@ -8,7 +8,7 @@ else
     selected=$(
         {
             # Find project directories
-            find "${HOME}/Code/repos" -maxdepth 3 -mindepth 1 -type d 2>/dev/null
+            find "${HOME}/Code" -maxdepth 3 -mindepth 1 -type d 2>/dev/null
             # Also offer /tmp explicitly
             printf '%s\n' /tmp
         } | fzf
