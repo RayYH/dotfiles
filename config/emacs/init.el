@@ -681,6 +681,50 @@
 
 ;; -- 9.9 Python  (requires: pip install pyright  or  python-lsp-server[all]) --
 ;;       Eglot-ensure is registered on python-ts-mode above.
+(defun my/python-venv-root ()
+  "Return path to a `.venv' or `venv' directory under the project root, or nil."
+  (when-let* ((proj (project-current))
+              (root (project-root proj)))
+    (seq-some (lambda (name)
+                (let ((dir (expand-file-name name root)))
+                  (and (file-directory-p dir) dir)))
+              '(".venv" "venv"))))
+
+(defun my/python-venv-interpreter ()
+  "Return the python executable inside the project's venv, or nil."
+  (when-let* ((venv (my/python-venv-root))
+              (rel  (if (eq system-type 'windows-nt)
+                        "Scripts/python.exe" "bin/python"))
+              (py   (expand-file-name rel venv)))
+    (and (file-executable-p py) py)))
+
+(defun my/python-setup-venv ()
+  "Point the shell, `exec-path', subprocess env, and Eglot/Pyright at the venv."
+  (when-let* ((venv (my/python-venv-root))
+              (bin  (expand-file-name
+                     (if (eq system-type 'windows-nt) "Scripts" "bin") venv))
+              (py   (my/python-venv-interpreter)))
+    (setq-local python-shell-interpreter py)
+    (setq-local exec-path (cons bin exec-path))
+    ;; Pyright auto-detects the interpreter via VIRTUAL_ENV + PATH at launch.
+    (setq-local process-environment
+                (append (list (concat "VIRTUAL_ENV=" venv)
+                              (concat "PATH=" bin path-separator
+                                      (getenv "PATH")))
+                        process-environment))
+    (setq-local eglot-workspace-configuration
+                `(:python       (:pythonPath ,py
+                                 :defaultInterpreterPath ,py
+                                 :venvPath ,(file-name-directory
+                                             (directory-file-name venv))
+                                 :venv ,(file-name-nondirectory
+                                         (directory-file-name venv)))
+                  :basedpyright (:pythonPath ,py)
+                  :pyright      (:pythonPath ,py)))))
+
+;; Depth -50 so the venv is configured before `eglot-ensure' runs.
+(add-hook 'python-ts-mode-hook #'my/python-setup-venv -50)
+(add-hook 'python-mode-hook    #'my/python-setup-venv -50)
 
 ;; -- 9.10 TypeScript / JavaScript (web dev) --
 ;;        requires: npm i -g typescript typescript-language-server
