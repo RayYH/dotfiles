@@ -1,15 +1,26 @@
 # Emacs Keymap Quick Reference
 
 Keys defined in `init.el`. Default Emacs bindings not listed unless overridden.
-Run `M-x which-key-mode` is already on — press any prefix and wait 0.5s to see
-the live menu.
+`which-key` is already on — press any prefix and wait 0.5s to see the live
+menu.
+
+This config supports **both Emacs-native keys and Vim (evil) keys**. Evil is
+on by default:
+
+- `C-c t v` (or `SPC t v`) toggles evil-mode globally.
+- `C-z` drops just the current buffer into emacs-state (one-off escape hatch).
+- All `C-c …` / `C-x …` bindings below work in *every* evil state.
+- A `SPC` leader (normal/visual/motion state) mirrors the most-used `C-c`
+  commands — see [SPC Leader Map](#spc-leader-map-evil-normalvisualmotion).
 
 ## Prefix Map
+
+### Emacs-side (always active)
 
 | Prefix    | Domain                              |
 |-----------|-------------------------------------|
 | `C-c b`   | Buffer navigation                   |
-| `C-c h`   | Helm-style search (now consult)     |
+| `C-c h`   | Consult helpers (org agenda/heading) |
 | `C-c !`   | Diagnostics (flymake)               |
 | `C-c j`   | Jump (top/bottom of buffer)         |
 | `C-c l`   | LSP (eglot) — active in code buffers |
@@ -18,9 +29,225 @@ the live menu.
 | `C-c o`   | Org global commands                 |
 | `C-c p`   | Project (`project.el`)              |
 | `C-c r`   | Recent files                        |
+| `C-c t`   | Toggles (`C-c t v` = evil-mode)     |
 | `C-c z`   | Code folding (hideshow)             |
 | `C-c 4`   | Perforce                            |
 | `C-c C-`  | Multiple cursors / mode-local       |
+
+### Evil-side (`SPC` in normal/visual/motion state)
+
+| Prefix    | Domain                              |
+|-----------|-------------------------------------|
+| `SPC f`   | Files                               |
+| `SPC b`   | Buffers                             |
+| `SPC w`   | Windows                             |
+| `SPC p`   | Project                             |
+| `SPC s`   | Search / jump                       |
+| `SPC g`   | Git / VCS (magit)                   |
+| `SPC l`   | LSP (eglot)                         |
+| `SPC e`   | Errors (flymake)                    |
+| `SPC o`   | Org                                 |
+| `SPC n`   | Notes (org-roam)                    |
+| `SPC t`   | Toggles                             |
+| `SPC h`   | Help                                |
+| `SPC q`   | Quit                                |
+
+---
+
+## Evil (Vim emulation)
+
+Evil is enabled at startup. Terminals/REPLs open in **insert state**
+(`vterm`, `eshell`, `shell`, `term`, `comint`, `inferior-python`,
+`inferior-emacs-lisp`); help/info/messages buffers open in **normal state**.
+The minibuffer is left as-is so vertico/consult bindings (`C-n`, `M-RET`,
+etc.) keep working.
+
+### Tweaks vs. stock evil
+
+| Setting                          | Effect                                                                 |
+|----------------------------------|------------------------------------------------------------------------|
+| `evil-want-C-u-scroll`           | `C-u` = vim half-page up (use `C-M-u` for `universal-argument`)        |
+| `evil-want-C-i-jump nil`         | TAB keeps its Emacs meaning (org cycle, magit section, etc.)           |
+| `evil-want-Y-yank-to-eol`        | `Y` yanks to end of line (Vim default, not legacy vi)                  |
+| `evil-undo-system 'undo-redo`    | `u` / `C-r` use Emacs 28+ built-in undo-redo; plays well with `vundo`  |
+| `evil-symbol-word-search`        | `*` / `#` match symbols (foo-bar) not just words                       |
+| `evil-respect-visual-line-mode`  | `j`/`k` walk visual lines when `visual-line-mode` is on                |
+
+### Plugins
+
+| Plugin            | Sample                       | What it does                                  |
+|-------------------|------------------------------|-----------------------------------------------|
+| `evil-collection` | (passive)                    | Vim bindings for magit, dired, ibuffer, …     |
+| `evil-surround`   | `ysiw"` / `cs"'` / `ds(`     | Add / change / delete surrounding pairs       |
+| `evil-commentary` | `gcc` / `gcip` / `gc<motion>`| Toggle comments via Emacs comment commands    |
+| `evil-snipe`      | `s ab` / `S ab` / `;` / `,`  | Two-character `f`/`t` jump with highlight     |
+
+### Toggling
+
+| Key             | Effect                                                       |
+|-----------------|--------------------------------------------------------------|
+| `C-c t v`       | Toggle `evil-mode` globally                                  |
+| `SPC t v`       | Same, from normal state                                      |
+| `C-z`           | Flip current buffer into emacs-state (still inside evil)     |
+| `ESC`           | Exit insert/visual → normal state                            |
+| `C-M-u`         | `universal-argument` (since `C-u` is taken by vim scroll)    |
+
+---
+
+## SPC Leader Map (evil normal/visual/motion)
+
+### Top-level
+
+| Key       | Command                       |
+|-----------|-------------------------------|
+| `SPC SPC` | `execute-extended-command`    |
+| `SPC x`   | `execute-extended-command`    |
+| `SPC .`   | `find-file`                   |
+| `SPC ,`   | `consult-buffer`              |
+| `SPC ;`   | `eval-expression`             |
+| `SPC TAB` | `mode-line-other-buffer` (alternate buffer) |
+| `SPC /`   | `consult-ripgrep` (project search)          |
+| `SPC u`   | `universal-argument`          |
+
+### `SPC f` — files
+
+| Key       | Command                       |
+|-----------|-------------------------------|
+| `SPC f f` | `find-file`                   |
+| `SPC f s` | `save-buffer`                 |
+| `SPC f S` | `write-file` (save as)        |
+| `SPC f r` | `consult-recent-file`         |
+| `SPC f d` | `consult-dir`                 |
+| `SPC f y` | Copy current file path to kill-ring |
+
+### `SPC b` — buffers
+
+| Key       | Command                |
+|-----------|------------------------|
+| `SPC b b` | `consult-buffer`       |
+| `SPC b k` | `kill-current-buffer`  |
+| `SPC b K` | `kill-buffer` (prompt) |
+| `SPC b n` | `next-buffer`          |
+| `SPC b p` | `previous-buffer`      |
+| `SPC b r` | `revert-buffer`        |
+| `SPC b i` | `ibuffer`              |
+| `SPC b s` | `scratch-buffer`       |
+
+### `SPC w` — windows
+
+| Key       | Command                |
+|-----------|------------------------|
+| `SPC w h` | `windmove-left`        |
+| `SPC w j` | `windmove-down`        |
+| `SPC w k` | `windmove-up`          |
+| `SPC w l` | `windmove-right`       |
+| `SPC w s` | `split-window-below`   |
+| `SPC w v` | `split-window-right`   |
+| `SPC w d` | `delete-window`        |
+| `SPC w o` | `delete-other-windows` |
+| `SPC w =` | `balance-windows`      |
+| `SPC w m` | `maximize-window`      |
+
+### `SPC p` — project
+
+| Key       | Command                 |
+|-----------|-------------------------|
+| `SPC p p` | `project-switch-project`|
+| `SPC p f` | `project-find-file`     |
+| `SPC p d` | `project-find-dir`      |
+| `SPC p b` | `consult-project-buffer`|
+| `SPC p k` | `project-kill-buffers`  |
+| `SPC p s` | `consult-ripgrep`       |
+| `SPC p c` | `project-compile`       |
+| `SPC p !` | `project-shell-command` |
+
+### `SPC s` — search / jump
+
+| Key       | Command                |
+|-----------|------------------------|
+| `SPC s s` | `consult-line`         |
+| `SPC s S` | `consult-line-multi`   |
+| `SPC s i` | `consult-imenu`        |
+| `SPC s I` | `consult-imenu-multi`  |
+| `SPC s g` | `consult-ripgrep`      |
+| `SPC s f` | `consult-fd`           |
+| `SPC s j` | `avy-goto-char-2`      |
+| `SPC s l` | `avy-goto-line`        |
+
+### `SPC g` — git
+
+| Key       | Command                  |
+|-----------|--------------------------|
+| `SPC g g` | `magit-status`           |
+| `SPC g b` | `magit-blame`            |
+| `SPC g l` | `magit-log-buffer-file`  |
+| `SPC g d` | `magit-diff-buffer-file` |
+| `SPC g B` | `magit-branch-checkout`  |
+
+### `SPC l` — LSP (eglot)
+
+| Key       | Command                       |
+|-----------|-------------------------------|
+| `SPC l a` | `eglot-code-actions`          |
+| `SPC l r` | `eglot-rename`                |
+| `SPC l f` | `eglot-format-buffer`         |
+| `SPC l d` | `eldoc`                       |
+| `SPC l i` | `eglot-find-implementation`   |
+| `SPC l t` | `eglot-find-typeDefinition`   |
+| `SPC l s` | `consult-eglot-symbols`       |
+
+### `SPC e` — errors (flymake)
+
+| Key       | Command                            |
+|-----------|------------------------------------|
+| `SPC e l` | `flymake-show-buffer-diagnostics`  |
+| `SPC e n` | `flymake-goto-next-error`          |
+| `SPC e p` | `flymake-goto-prev-error`          |
+
+### `SPC o` — org
+
+| Key       | Command          |
+|-----------|------------------|
+| `SPC o a` | `org-agenda`     |
+| `SPC o c` | `org-capture`    |
+| `SPC o l` | `org-store-link` |
+| `SPC o t` | `org-todo-list`  |
+
+### `SPC n` — notes (org-roam)
+
+| Key       | Command                  |
+|-----------|--------------------------|
+| `SPC n l` | `org-roam-buffer-toggle` |
+| `SPC n f` | `org-roam-node-find`     |
+| `SPC n i` | `org-roam-node-insert`   |
+| `SPC n s` | `my/org-roam-search-text`|
+
+### `SPC t` — toggles
+
+| Key       | Command                    |
+|-----------|----------------------------|
+| `SPC t v` | `evil-mode`                |
+| `SPC t l` | `display-line-numbers-mode`|
+| `SPC t w` | `visual-line-mode`         |
+| `SPC t s` | `flyspell-mode`            |
+| `SPC t t` | `consult-theme`            |
+
+### `SPC h` — help
+
+| Key       | Command            |
+|-----------|--------------------|
+| `SPC h f` | `helpful-callable` |
+| `SPC h v` | `helpful-variable` |
+| `SPC h k` | `helpful-key`      |
+| `SPC h m` | `describe-mode`    |
+| `SPC h b` | `embark-bindings`  |
+
+### `SPC q` — quit
+
+| Key       | Command                       |
+|-----------|-------------------------------|
+| `SPC q q` | `save-buffers-kill-terminal`  |
+| `SPC q r` | `restart-emacs` (requires the `restart-emacs` package) |
 
 ---
 
