@@ -994,7 +994,42 @@
 (use-package markdown-mode
   :mode (("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :hook (markdown-mode . my/markdown-setup))
+  :hook (markdown-mode . my/markdown-setup)
+  :custom
+  ;; pandoc with --mathjax wraps $$…$$ / \(…\) so MathJax can render them.
+  (markdown-command "pandoc --from=markdown --to=html5 --standalone --mathjax"))
+
+;; In-Emacs preview via xwidget-webkit (renders MathJax, Mermaid, code blocks).
+;; `C-c C-c x' in a markdown buffer toggles the live preview side window.
+;; Not on MELPA — installed from GitHub via use-package :vc (Emacs 30+).
+(use-package markdown-xwidget
+  :if (featurep 'xwidget-internal)
+  :vc (:url "https://github.com/cfclrk/markdown-xwidget" :rev :newest)
+  :after markdown-mode
+  :bind (:map markdown-mode-command-map
+              ("x" . markdown-xwidget-preview-mode)))
+
+;; Keep live-preview HTML out of the source folder. Redirect only the preview
+;; export path; manual `C-c C-c e' (markdown-export) still writes next to the
+;; source. md5 prefix avoids collisions between same-named files in different
+;; directories.
+(defun my/markdown-preview-tempdir (orig-fn &rest args)
+  "Run ORIG-FN with `markdown-export-file-name' redirected into a temp dir."
+  (let ((cache (expand-file-name "markdown-preview/" temporary-file-directory)))
+    (make-directory cache t)
+    (cl-letf* ((real (symbol-function 'markdown-export-file-name))
+               ((symbol-function 'markdown-export-file-name)
+                (lambda (&rest fn-args)
+                  (let* ((default (apply real fn-args))
+                         (name    (file-name-nondirectory default))
+                         (key     (substring
+                                   (md5 (or buffer-file-name name)) 0 8)))
+                    (expand-file-name (concat key "-" name) cache)))))
+      (apply orig-fn args))))
+
+(with-eval-after-load 'markdown-mode
+  (advice-add 'markdown-live-preview-export
+              :around #'my/markdown-preview-tempdir))
 
 
 ;; ============================================================

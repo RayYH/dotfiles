@@ -241,6 +241,16 @@ Standard `project.el` bindings under the prefix, e.g.
 |-------|------------------------|
 | `RET` | `newline-and-indent`   |
 
+### Markdown
+
+Renderer is `pandoc --mathjax`, so `$$…$$` and `\(…\)` work.
+
+| Key         | Command                          |
+|-------------|----------------------------------|
+| `C-c C-c p` | `markdown-preview` (browser, one-shot)            |
+| `C-c C-c l` | `markdown-live-preview-mode` (eww, no JS / no math) |
+| `C-c C-c x` | `markdown-xwidget-preview-mode` (in-Emacs, with MathJax) |
+
 ---
 
 ## Discoverability
