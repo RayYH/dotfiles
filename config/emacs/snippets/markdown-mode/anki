@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Anki
+# key: anki
+# --
+---
+deck: Anki
+model: m2a-basic
+---
