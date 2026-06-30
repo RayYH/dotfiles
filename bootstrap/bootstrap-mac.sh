@@ -179,7 +179,7 @@ __bash_and_curl
 
 function __taps() {
     __echo "Step $step: add 3rd repos via brew tap"
-    for t in "shivammathur/php" "rayyh/neovim-nightly"; do brew tap "$t"; done
+    for t in "shivammathur/php" "rayyh/neovim-nightly"; do brew tap "$t" && brew trust "$t"; done
     __done "$((step++))"
 }
 __taps
@@ -270,7 +270,6 @@ function __casks() {
     declare -a guis=(
         "anki"
         "chromedriver"
-        "obsidian"
         "the-unarchiver"
         "keycastr"
         "kitty"
