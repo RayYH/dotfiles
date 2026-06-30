@@ -214,6 +214,8 @@ function __formulas() {
         "imagemagick"
         "jq"
         "julia"
+        "jesseduffield/lazydocker/lazydocker"
+        "lazygit"
         "lua"
         "luajit"
         "kubectx"
