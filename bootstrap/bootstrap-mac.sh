@@ -194,6 +194,7 @@ function __formulas() {
         "coreutils"
         "composer"
         "dive"
+        "fastfetch"
         "ffmpeg"
         "findutils"
         "fzf"

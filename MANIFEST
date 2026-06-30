@@ -22,6 +22,7 @@ config/conda/.condarc             -> ~/.condarc
 config/vim/.vimrc                 -> ~/.vimrc
 config/vim/.vimrc                 -> ~/.ideavimrc
 config/vim/colors                 -> ~/.vim/colors
+config/fastfetch                  -> ~/.config/fastfetch
 config/git/.gitignore             -> ~/.gitignore
 config/git/.gitconfig             -> ~/.gitconfig copy
 scripts/t                         -> ~/.local/bin/t

@@ -213,6 +213,34 @@ __install_shell_tools() {
 __install_shell_tools
 
 # ============================================================
+# System info: fastfetch
+# ============================================================
+
+__install_fastfetch() {
+    __echo "Step $step: Installing fastfetch..."
+    if ! __command_exists "fastfetch"; then
+        if apt-cache show fastfetch >/dev/null 2>&1; then
+            $SUDO apt-get install -y fastfetch
+        else
+            local arch deb_arch ver
+            arch="$(uname -m)"
+            case "$arch" in
+                x86_64)  deb_arch="amd64" ;;
+                aarch64) deb_arch="arm64" ;;
+                *) __error "Unsupported architecture for fastfetch: $arch" ;;
+            esac
+            ver="$(__gh_latest fastfetch-cli/fastfetch)"
+            curl -fsSL "https://github.com/fastfetch-cli/fastfetch/releases/download/${ver}/fastfetch-linux-${deb_arch}.deb" \
+                -o /tmp/fastfetch.deb
+            $SUDO dpkg -i /tmp/fastfetch.deb
+            rm -f /tmp/fastfetch.deb
+        fi
+    fi
+    __next_step
+}
+__install_fastfetch
+
+# ============================================================
 # Containers: Docker
 # ============================================================
 

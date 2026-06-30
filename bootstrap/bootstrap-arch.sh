@@ -230,6 +230,18 @@ __install_shell_tools() {
 __install_shell_tools
 
 # ============================================================
+# System info: fastfetch
+# ============================================================
+
+__install_fastfetch() {
+    __echo "Step $step: Installing fastfetch..."
+    # shellcheck disable=SC2086
+    $PKG fastfetch
+    __next_step
+}
+__install_fastfetch
+
+# ============================================================
 # Fonts: Intel One Mono
 # ============================================================
 
