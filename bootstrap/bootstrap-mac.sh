@@ -301,6 +301,7 @@ function __emacs() {
     __echo "Step $step: install Emacs (emacs-plus)"
     if ! brew tap | grep -q "d12frosted/emacs-plus"; then
         brew tap d12frosted/emacs-plus
+        brew trust d12frosted/emacs-plus
     fi
     __install_cask emacs-plus-app
     __done "$((step++))"
