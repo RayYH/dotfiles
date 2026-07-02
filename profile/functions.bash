@@ -334,7 +334,7 @@ function transform-git-ro() {
 
 # Show top input commands
 function rh() {
-  history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head
+  history | sed -E 's/^ *[0-9]+ +//' | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2} +[0-9]{2}:[0-9]{2}:[0-9]{2} +//' | awk '{a[$1]++} END {for (i in a) print a[i], i}' | sort -rn | head
 }
 
 # quick look file via default Preview program provided by macos
