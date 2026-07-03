@@ -179,7 +179,7 @@ __bash_and_curl
 
 function __taps() {
     __echo "Step $step: add 3rd repos via brew tap"
-    for t in "shivammathur/php" "rayyh/neovim-nightly"; do brew tap "$t" && brew trust "$t"; done
+    for t in "shivammathur/php" "rayyh/neovim-nightly" "bufbuild/buf"; do brew tap "$t" && brew trust "$t"; done
     __done "$((step++))"
 }
 __taps
@@ -246,6 +246,8 @@ function __formulas() {
         "zenith"
         "zoxide"
         "protobuf"
+        "sqlc"
+        "bufbuild/buf/buf"
     )
     for f in "${frs[@]}"; do __install_formula "$f"; done
     unset frs

@@ -332,6 +332,18 @@ __install_go_dev() {
 __install_go_dev
 
 # ============================================================
+# Go tools: sqlc + buf
+# ============================================================
+
+__install_go_tools() {
+    __echo "Step $step: Installing Go tools (sqlc, buf)..."
+    # shellcheck disable=SC2086
+    $PKG sqlc buf
+    __next_step
+}
+__install_go_tools
+
+# ============================================================
 # Python: Miniforge + uv
 # ============================================================
 

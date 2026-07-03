@@ -225,8 +225,8 @@ __install_fastfetch() {
             local arch deb_arch ver
             arch="$(uname -m)"
             case "$arch" in
-                x86_64)  deb_arch="amd64" ;;
-                aarch64) deb_arch="arm64" ;;
+                x86_64)  deb_arch="amd64"   ;;
+                aarch64) deb_arch="aarch64" ;;
                 *) __error "Unsupported architecture for fastfetch: $arch" ;;
             esac
             ver="$(__gh_latest fastfetch-cli/fastfetch)"
@@ -252,7 +252,11 @@ __install_docker() {
         rm -f /tmp/get-docker.sh
     fi
 
-    $SUDO systemctl enable --now docker
+    if [[ "$(cat /proc/1/comm 2>/dev/null)" == "systemd" ]]; then
+        $SUDO systemctl enable --now docker
+    else
+        __echo "systemd not running — skipping Docker service enablement"
+    fi
     getent group docker >/dev/null || $SUDO groupadd docker
 
     local docker_user
@@ -294,6 +298,45 @@ __install_go_dev() {
     __next_step
 }
 __install_go_dev
+
+# ============================================================
+# Go tools: sqlc + buf
+# ============================================================
+
+__install_go_tools() {
+    __echo "Step $step: Installing Go tools (sqlc, buf)..."
+
+    # sqlc
+    if ! __command_exists "sqlc"; then
+        local arch go_arch sqlc_ver sqlc_ver_plain
+        arch="$(uname -m)"
+        case "$arch" in
+            x86_64)  go_arch="amd64" ;;
+            aarch64) go_arch="arm64" ;;
+            *) __error "Unsupported architecture for sqlc: $arch" ;;
+        esac
+        sqlc_ver="$(__gh_latest sqlc-dev/sqlc)"
+        sqlc_ver_plain="${sqlc_ver#v}"
+        curl -fsSL "https://github.com/sqlc-dev/sqlc/releases/download/${sqlc_ver}/sqlc_${sqlc_ver_plain}_linux_${go_arch}.tar.gz" \
+            -o /tmp/sqlc.tar.gz
+        tar -xzf /tmp/sqlc.tar.gz -C /tmp/ sqlc
+        __install_bin /tmp/sqlc
+        rm -f /tmp/sqlc.tar.gz /tmp/sqlc
+    fi
+
+    # buf (official pattern: buf-$(uname -s)-$(uname -m))
+    if ! __command_exists "buf"; then
+        local buf_ver
+        buf_ver="$(__gh_latest bufbuild/buf)"
+        curl -fsSL "https://github.com/bufbuild/buf/releases/download/${buf_ver}/buf-$(uname -s)-$(uname -m)" \
+            -o /tmp/buf
+        __install_bin /tmp/buf
+        rm -f /tmp/buf
+    fi
+
+    __next_step
+}
+__install_go_tools
 
 # ============================================================
 # Python: Miniforge + uv

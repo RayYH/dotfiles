@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 LABEL org.opencontainers.image.title="rayyounghong/dev-ubuntu" \
       org.opencontainers.image.source="https://github.com/rayyh/dotfiles"
