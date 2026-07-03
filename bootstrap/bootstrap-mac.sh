@@ -267,7 +267,7 @@ function __ai_code_tools() {
     fi
     __done "$((step++))"
 }
-__ai_code_tools
+[ -z ${S_AI_TOOLS+x} ] || __ai_code_tools
 
 function __casks() {
     __echo "Step $step: install casks"

@@ -413,7 +413,7 @@ __install_ai_code_tools() {
 
     __next_step
 }
-__install_ai_code_tools
+[ -z ${S_AI_TOOLS+x} ] || __install_ai_code_tools
 
 # ============================================================
 # Java dev: SDKMAN + latest LTS Java

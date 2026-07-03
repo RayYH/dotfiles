@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Remove untrusted pre-installed taps
+        run: brew untap aws/tap 2>/dev/null || true
+
       - name: Run bootstrap
         run: echo "y" | bash bootstrap/bootstrap-mac.sh
         env:
