@@ -1,0 +1,47 @@
+name: Bootstrap Linux
+
+on:
+  push:
+    paths:
+      - 'bootstrap/bootstrap-ubuntu.sh'
+      - 'bootstrap/bootstrap-arch.sh'
+      - '.github/workflows/bootstrap-linux.yml'
+  pull_request:
+    paths:
+      - 'bootstrap/bootstrap-ubuntu.sh'
+      - 'bootstrap/bootstrap-arch.sh'
+      - '.github/workflows/bootstrap-linux.yml'
+  workflow_dispatch:
+
+jobs:
+  ubuntu:
+    name: Ubuntu 24.04
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bootstrap
+        run: echo "y" | bash bootstrap/bootstrap-ubuntu.sh
+        env:
+          DEBIAN_FRONTEND: noninteractive
+
+  arch:
+    name: Arch Linux
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Install git and sudo
+        run: pacman -Sy --noconfirm git sudo
+
+      - uses: actions/checkout@v4
+
+      - name: Create non-root user
+        run: |
+          useradd -m -s /bin/bash tester
+          echo "tester ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/tester
+          cp -r "$GITHUB_WORKSPACE" /home/tester/dotfiles
+          chown -R tester:tester /home/tester/dotfiles
+
+      - name: Run bootstrap
+        run: su - tester -c 'echo "y" | bash /home/tester/dotfiles/bootstrap/bootstrap-arch.sh'

@@ -274,11 +274,18 @@ __install_docker() {
     # shellcheck disable=SC2086
     $PKG docker docker-compose
 
+    if [[ "$(cat /proc/1/comm 2>/dev/null)" == "systemd" ]]; then
+        if [[ $EUID -eq 0 ]]; then
+            systemctl enable --now docker
+        else
+            sudo systemctl enable --now docker
+        fi
+    else
+        __echo "systemd not running — skipping Docker service enablement"
+    fi
     if [[ $EUID -eq 0 ]]; then
-        systemctl enable --now docker
         getent group docker >/dev/null || groupadd docker
     else
-        sudo systemctl enable --now docker
         getent group docker >/dev/null || sudo groupadd docker
     fi
 

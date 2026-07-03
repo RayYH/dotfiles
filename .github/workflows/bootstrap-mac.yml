@@ -1,0 +1,23 @@
+name: Bootstrap macOS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bootstrap/bootstrap-mac.sh'
+      - '.github/workflows/bootstrap-mac.yml'
+  workflow_dispatch:
+
+jobs:
+  mac:
+    name: macOS
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bootstrap
+        run: echo "y" | bash bootstrap/bootstrap-mac.sh
+        env:
+          S_UPGRADE: 0
+          S_CLEANUP: 0
