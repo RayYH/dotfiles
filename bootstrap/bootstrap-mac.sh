@@ -125,13 +125,12 @@ function __set_computer_name() {
 [ -z ${S_SET_COMPUTER_NAME+x} ] || __set_computer_name
 
 function __install_apple_command_line_tools() {
-    if command -v xcode-select >&- && xpath=$(xcode-select --print-path) &&
-        test -d "${xpath}" && test -x "${xpath}"; then
+    if xcode-select -p >/dev/null 2>&1; then
         __echo "Step $step: Apple's command line tools are already installed."
     else
         __echo "Step $step: Installing Apple's command line tools"
         xcode-select --install
-        while ! command -v xcode-select >&-; do sleep 60; done
+        while ! xcode-select -p >/dev/null 2>&1; do sleep 60; done
     fi
     __done "$((step++))"
 }
