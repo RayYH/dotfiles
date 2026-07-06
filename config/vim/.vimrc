@@ -46,6 +46,8 @@ silent! set listchars=tab:▸\ ,trail:·,nbsp:␣
 silent! set signcolumn=yes
 silent! set termguicolors
 silent! set undofile
+silent! set undodir=$HOME/.vim/undo//
+silent! call mkdir($HOME . '/.vim/undo', 'p')
 
 " Colorscheme — matches kitty/nvim/emacs. IdeaVim ignores :colorscheme.
 silent! colorscheme tokyonight-night

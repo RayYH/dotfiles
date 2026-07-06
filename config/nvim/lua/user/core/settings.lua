@@ -91,6 +91,8 @@ opt.spell = true
 opt.backup = true
 opt.backupdir:remove(".")  -- don’t pollute cwd
 opt.undofile = true
+opt.undodir = { fn.stdpath("data") .. "/undo" }
+vim.fn.mkdir(fn.stdpath("data") .. "/undo", "p")
 
 -- Clipboard ---------------------------------------------------
 
