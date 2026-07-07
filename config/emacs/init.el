@@ -1075,6 +1075,7 @@ Do nothing when the line contains only whitespace."
 ;; collision with eglot keymap prefix)
 (global-set-key (kbd "C-c a")   #'org-agenda)
 (global-set-key (kbd "C-c c")   #'org-capture)
+(global-set-key (kbd "C-c o")   #'browse-url-at-point)
 (global-set-key (kbd "C-c o l") #'org-store-link)
 (global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
 
