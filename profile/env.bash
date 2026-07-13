@@ -34,6 +34,7 @@ PATH=$(getconf PATH)
 [ -d "/Library/TeX/texbin" ] && PATH="/Library/TeX/texbin:$PATH"                                                     # latex
 [ -d "$HOME/.deno/bin" ] && PATH="$HOME/.deno/bin:$PATH"                                                             # deno
 [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
+[ -d "$GOPATH/bin" ] && PATH="$GOPATH/bin:$PATH"                                                                     # go
 
 # Ubuntu path
 [ -d "/sbin" ] && PATH="/sbin:$PATH"
