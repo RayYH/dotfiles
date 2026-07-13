@@ -225,6 +225,7 @@ function __formulas() {
         "neovim-nightly"
         "nmap"
         "ninja"
+        "p4"
         "php"
         "pinentry-mac"
         "pngpaste"
