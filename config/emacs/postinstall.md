@@ -71,6 +71,9 @@ npm install -g typescript typescript-language-server
 # Dockerfile
 npm install -g dockerfile-language-server-nodejs
 
+# CMake
+pip install cmake-language-server
+
 # PHP
 composer global require intelephense
 # or install phpactor

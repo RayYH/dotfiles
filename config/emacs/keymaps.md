@@ -199,6 +199,7 @@ Standard `project.el` bindings under the prefix, e.g.
 |-----------|--------------------------------|
 | `C-c a`   | `org-agenda`                   |
 | `C-c c`   | `org-capture`                  |
+| `C-c o b` | `browse-url-at-point`          |
 | `C-c o l` | `org-store-link`               |
 
 ### Org-Roam

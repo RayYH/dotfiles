@@ -539,7 +539,8 @@
          (web-mode           . eglot-ensure)
          (dockerfile-mode    . eglot-ensure)
          (lua-mode           . eglot-ensure)
-         (php-mode           . eglot-ensure))
+         (php-mode           . eglot-ensure)
+         (cmake-ts-mode      . my/cmake-eglot-ensure))
   :bind (:map eglot-mode-map
               ("C-c l a" . eglot-code-actions)
               ("C-c l r" . eglot-rename)
@@ -579,6 +580,7 @@
         (c          "https://github.com/tree-sitter/tree-sitter-c")
         (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
         (c-sharp    "https://github.com/tree-sitter/tree-sitter-c-sharp")
+        (cmake      "https://github.com/uyha/tree-sitter-cmake")
         (css        "https://github.com/tree-sitter/tree-sitter-css")
         (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
         (go         "https://github.com/tree-sitter/tree-sitter-go")
@@ -622,24 +624,39 @@
 (setq c-ts-mode-indent-style 'k&r)
 (add-hook 'c-ts-base-mode-hook #'my/c-ts-mode-setup)
 
-;; -- 9.3 Rust  (requires: rustup component add rust-analyzer) --
+;; -- 9.3 CMake  (requires: cmake-language-server) --
+;;       `cmake-ts-mode' is built into Emacs 29+ and handles both
+;;       CMakeLists.txt and *.cmake files.  Install its grammar with
+;;       `my/install-treesit-grammars' for syntax-aware highlighting.
+(defun my/cmake-eglot-ensure ()
+  "Start Eglot for CMake when `cmake-language-server' is available."
+  (if (executable-find "cmake-language-server")
+      (eglot-ensure)
+    (message "CMake LSP disabled: install cmake-language-server and reopen this buffer.")))
+
+(use-package cmake-ts-mode
+  :ensure nil
+  :mode (("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'" . cmake-ts-mode))
+  :custom (cmake-ts-mode-indent-offset 2))
+
+;; -- 9.4 Rust  (requires: rustup component add rust-analyzer) --
 (use-package rust-mode)
 
-;; -- 9.4 Java  (requires: install eclipse-jdt-ls; eglot auto-detects it) --
+;; -- 9.5 Java  (requires: install eclipse-jdt-ls; eglot auto-detects it) --
 ;;       Eglot drives jdtls directly; lsp-java is no longer needed.
 
-;; -- 9.5 Go  (requires: go install golang.org/x/tools/gopls@latest) --
+;; -- 9.6 Go  (requires: go install golang.org/x/tools/gopls@latest) --
 (use-package go-mode
   :hook (go-mode . (lambda ()
                      (add-hook 'before-save-hook #'gofmt-before-save nil t))))
 
-;; -- 9.6 PHP  (requires: composer global require intelephense, or phpactor) --
+;; -- 9.7 PHP  (requires: composer global require intelephense, or phpactor) --
 (use-package php-mode)
 
-;; -- 9.7 C#  (requires: dotnet tool install -g csharp-ls) --
+;; -- 9.8 C#  (requires: dotnet tool install -g csharp-ls) --
 ;;       csharp-mode + csharp-ts-mode are built-in in Emacs 29+.
 
-;; -- 9.8 Lua  (requires: brew install lua-language-server) --
+;; -- 9.9 Lua  (requires: brew install lua-language-server) --
 (defun my/run-current-lua-file ()
   "Run the current Lua file with `lua'."
   (interactive)
@@ -679,7 +696,7 @@
           (lambda ()
             (local-set-key (kbd "RET") #'my/lua-newline-and-close)))
 
-;; -- 9.9 Python  (requires: pip install pyright  or  python-lsp-server[all]) --
+;; -- 9.10 Python  (requires: pip install pyright  or  python-lsp-server[all]) --
 ;;       Eglot-ensure is registered on python-ts-mode above.
 (defun my/python-venv-root ()
   "Return path to a `.venv' or `venv' directory under the project root, or nil."
@@ -726,7 +743,7 @@
 (add-hook 'python-ts-mode-hook #'my/python-setup-venv -50)
 (add-hook 'python-mode-hook    #'my/python-setup-venv -50)
 
-;; -- 9.10 TypeScript / JavaScript (web dev) --
+;; -- 9.11 TypeScript / JavaScript (web dev) --
 ;;        requires: npm i -g typescript typescript-language-server
 (add-to-list 'auto-mode-alist '("\\.ts\\'"  . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -741,22 +758,22 @@
         web-mode-css-indent-offset    2
         web-mode-code-indent-offset   2))
 
-;; -- 9.11 Emacs Lisp --
+;; -- 9.12 Emacs Lisp --
 (with-eval-after-load 'elisp-mode
   (define-key lisp-interaction-mode-map (kbd "C-c C-j")
               #'eval-print-last-sexp))
 
-;; -- 9.12 Dockerfile  (requires: npm i -g dockerfile-language-server-nodejs) --
+;; -- 9.13 Dockerfile  (requires: npm i -g dockerfile-language-server-nodejs) --
 (use-package dockerfile-mode)
 
-;; -- 9.13 PowerShell / Batch --
+;; -- 9.14 PowerShell / Batch --
 (use-package powershell)
 (use-package bat-mode
   :ensure nil
   :mode (("\\.bat\\'" . bat-mode)
          ("\\.cmd\\'" . bat-mode)))
 
-;; -- 9.14 JSON --
+;; -- 9.15 JSON --
 ;; `json-pretty-print-buffer' is built-in (json.el); no external dep needed.
 (use-package json-ts-mode
   :ensure nil
@@ -1075,8 +1092,10 @@ Do nothing when the line contains only whitespace."
 ;; collision with eglot keymap prefix)
 (global-set-key (kbd "C-c a")   #'org-agenda)
 (global-set-key (kbd "C-c c")   #'org-capture)
-(global-set-key (kbd "C-c o")   #'browse-url-at-point)
-(global-set-key (kbd "C-c o l") #'org-store-link)
+(define-prefix-command 'my/org-prefix)
+(global-set-key (kbd "C-c o") #'my/org-prefix)
+(define-key my/org-prefix (kbd "b") #'browse-url-at-point)
+(define-key my/org-prefix (kbd "l") #'org-store-link)
 (global-set-key (kbd "C-c n s") #'my/org-roam-search-text)
 
 
