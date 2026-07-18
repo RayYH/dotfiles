@@ -29,3 +29,8 @@
       package-quickstart      t
       ;; LSP perf: allow large reads from subprocesses (eglot/lsp).
       read-process-output-max (* 4 1024 1024))
+
+;; Native compilation: keep building in the background, but don't let async
+;; warnings/errors pop the *Warnings* buffer on every package build.
+(when (native-comp-available-p)
+  (setq native-comp-async-report-warnings-errors 'silent))

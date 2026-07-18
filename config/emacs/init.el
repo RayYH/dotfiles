@@ -60,11 +60,11 @@
 
 ;; -- 1.3 use-package (built-in since Emacs 29) --
 (require 'use-package)
-(setq use-package-always-ensure  t
-      ;; When `use-package' tries to install a package whose dated tar URL is
-      ;; stale (HTTP 404 from MELPA), automatically refresh the index once
-      ;; and retry instead of erroring out.
-      use-package-always-defer    nil)
+;; `always-defer' stays nil: many blocks here activate a global mode in
+;; `:config' (themes, vertico, corfu, …) that has no autoload trigger, so
+;; eager loading is intentional. Startup is kept fast via package-quickstart.
+(setq use-package-always-ensure t
+      use-package-always-defer  nil)
 
 (defun my/use-package-refresh-on-404 (orig-fn package &rest args)
   "Advice around `package-install': refresh contents once on a 404, then retry."
@@ -275,6 +275,16 @@
 ;; 4. Completion & Search (vertico stack)
 ;; ============================================================
 
+;; -- 4.0 Behavior shared across the stack --
+(setq completion-ignore-case                 t
+      read-file-name-completion-ignore-case  t
+      read-buffer-completion-ignore-case     t
+      ;; embark and consult prompts open minibuffers recursively.
+      enable-recursive-minibuffers           t
+      ;; TAB indents, then hands off to corfu when already indented.
+      tab-always-indent                      'complete)
+(minibuffer-depth-indicate-mode 1)
+
 (use-package vertico
   :init (vertico-mode)
   :custom (vertico-cycle t))
@@ -309,7 +319,11 @@
          ("C-c r"   . consult-recent-file)
          ("C-c h a" . consult-org-agenda)
          ("C-c h h" . consult-org-heading))
-  :config (setq consult-narrow-key "<"))
+  :config
+  (setq consult-narrow-key "<")
+  ;; Show xref results (references, apropos, …) through the consult UI.
+  (setq xref-show-xrefs-function       #'consult-xref
+        xref-show-definitions-function #'consult-xref))
 
 (use-package consult-dir
   :bind (("C-x C-d" . consult-dir)
@@ -338,7 +352,12 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; -- Built-ins --
-(use-package savehist  :ensure nil :init (savehist-mode))
+(use-package savehist
+  :ensure nil
+  :init (savehist-mode)
+  :custom
+  (savehist-additional-variables
+   '(search-ring regexp-search-ring kill-ring)))
 (use-package saveplace :ensure nil :init (save-place-mode))
 (use-package which-key
   :ensure nil
@@ -372,6 +391,9 @@
 (recentf-mode 1)
 (setq recentf-max-menu-items 25
       recentf-max-saved-items 100
+      ;; Never auto-clean: cleanup stats every file and can hang on remote
+      ;; or unmounted paths. consult-recent-file filters dead entries anyway.
+      recentf-auto-cleanup 'never
       recentf-exclude '("/tmp/" "/.emacs.d/elpa/" "\\.gz$"))
 
 ;; -- 5.2 Dired --
@@ -439,7 +461,10 @@
   (diff-hl-flydiff-mode 1))
 
 ;; -- 7.3 wgrep (edit grep results in place; C-c C-p in a grep buffer) --
+;; Deferred: wgrep's autoloads add `wgrep-setup' to `grep-setup-hook', so it
+;; loads the first time a grep/ripgrep buffer appears.
 (use-package wgrep
+  :defer t
   :custom (wgrep-auto-save-buffer t))
 
 ;; -- 7.4 Perforce --
@@ -640,7 +665,9 @@
   :custom (cmake-ts-mode-indent-offset 2))
 
 ;; -- 9.4 Rust  (requires: rustup component add rust-analyzer) --
-(use-package rust-mode)
+;; `:defer t' — the package's own autoloads register `.rs' → rust-mode, so
+;; it loads only when a Rust file is opened, not at startup.
+(use-package rust-mode :defer t)
 
 ;; -- 9.5 Java  (requires: install eclipse-jdt-ls; eglot auto-detects it) --
 ;;       Eglot drives jdtls directly; lsp-java is no longer needed.
@@ -651,7 +678,8 @@
                      (add-hook 'before-save-hook #'gofmt-before-save nil t))))
 
 ;; -- 9.7 PHP  (requires: composer global require intelephense, or phpactor) --
-(use-package php-mode)
+;; Deferred: php-mode's autoloads register .php/.phtml/interpreter lines.
+(use-package php-mode :defer t)
 
 ;; -- 9.8 C#  (requires: dotnet tool install -g csharp-ls) --
 ;;       csharp-mode + csharp-ts-mode are built-in in Emacs 29+.
@@ -764,10 +792,12 @@
               #'eval-print-last-sexp))
 
 ;; -- 9.13 Dockerfile  (requires: npm i -g dockerfile-language-server-nodejs) --
-(use-package dockerfile-mode)
+;; Deferred: autoloads register Dockerfile/Containerfile/*.dockerfile.
+(use-package dockerfile-mode :defer t)
 
 ;; -- 9.14 PowerShell / Batch --
-(use-package powershell)
+;; Deferred: autoloads register .ps1/.psd1/.psm1 → powershell-mode.
+(use-package powershell :defer t)
 (use-package bat-mode
   :ensure nil
   :mode (("\\.bat\\'" . bat-mode)
@@ -777,6 +807,7 @@
 ;; `json-pretty-print-buffer' is built-in (json.el); no external dep needed.
 (use-package json-ts-mode
   :ensure nil
+  :mode "\\.json\\'"
   :bind (:map json-ts-mode-map
               ("C-c l f" . json-pretty-print-buffer)))
 

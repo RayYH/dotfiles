@@ -54,7 +54,16 @@ export PATH=$VCPKG_ROOT:$PATH
 
 # miniforge
 [ -d "$HOME/miniforge3/bin" ] && PATH="$HOME/miniforge3/bin:$PATH"
-[ -x "$HOME/miniforge3/bin/conda" ] && eval "$("$HOME/miniforge3/bin/conda" shell.bash hook)"
+# conda (lazy): the base binaries (conda/python/mamba) are already on PATH from
+# the line above, so defer the ~0.8s `conda shell.bash hook` — which only
+# installs the `conda activate` shell function — until the first `conda` call.
+if [ -x "$HOME/miniforge3/bin/conda" ]; then
+  conda() {
+    unset -f conda
+    eval "$("$HOME/miniforge3/bin/conda" shell.bash hook)"
+    conda "$@"
+  }
+fi
 
 # Nix
 # if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
