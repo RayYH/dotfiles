@@ -40,6 +40,7 @@
 ;; current Emacs process; checking that variable directly would refresh MELPA
 ;; every startup.
 (require 'package)
+(require 'seq)
 (setq package-archives
       '(("gnu"   . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")))
@@ -60,11 +61,11 @@
 
 ;; -- 1.3 use-package (built-in since Emacs 29) --
 (require 'use-package)
-;; `always-defer' stays nil: many blocks here activate a global mode in
-;; `:config' (themes, vertico, corfu, …) that has no autoload trigger, so
-;; eager loading is intentional. Startup is kept fast via package-quickstart.
+;; Defer packages by default.  Packages that enable global infrastructure
+;; below opt back into eager loading with `:demand', while language modes,
+;; Org extras, terminals, and optional commands load on first use.
 (setq use-package-always-ensure t
-      use-package-always-defer  nil)
+      use-package-always-defer  t)
 
 (defun my/use-package-refresh-on-404 (orig-fn package &rest args)
   "Advice around `package-install': refresh contents once on a 404, then retry."
@@ -101,6 +102,7 @@
 
 ;; -- 1.4 PATH from shell (GUI frames on macOS/Linux) --
 (use-package exec-path-from-shell
+  :demand t
   :if (memq window-system '(mac ns x))
   :config
   (exec-path-from-shell-initialize))
@@ -122,11 +124,14 @@
 
 ;; -- 2.2 Theme --
 (use-package doom-themes
+  :demand t
   :config (load-theme 'doom-tokyo-night t))
 
 ;; -- 2.3 Icons + modeline (run `M-x nerd-icons-install-fonts' once) --
-(use-package nerd-icons)
+(use-package nerd-icons
+  :demand t)
 (use-package doom-modeline
+  :demand t
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-height 30)
@@ -169,6 +174,7 @@
 (window-divider-mode 1)
 
 (use-package spacious-padding
+  :demand t
   :if (display-graphic-p)
   :init (spacious-padding-mode 1)
   :custom
@@ -181,9 +187,11 @@
       :scroll-bar-width 8)))
 
 (use-package solaire-mode
+  :demand t
   :init (solaire-global-mode 1))
 
 (use-package pulsar
+  :demand t
   :init (pulsar-global-mode 1)
   :custom
   (pulsar-pulse t)
@@ -286,19 +294,23 @@
 (minibuffer-depth-indicate-mode 1)
 
 (use-package vertico
+  :demand t
   :init (vertico-mode)
   :custom (vertico-cycle t))
 
 (use-package orderless
+  :demand t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides
    '((file (styles basic partial-completion)))))
 
 (use-package marginalia
+  :demand t
   :init (marginalia-mode))
 
 (use-package nerd-icons-completion
+  :demand t
   :after (marginalia nerd-icons)
   :config
   (nerd-icons-completion-mode)
@@ -332,6 +344,7 @@
          ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package vertico-posframe
+  :demand t
   :if (display-graphic-p)
   :after vertico
   :init (vertico-posframe-mode 1)
@@ -354,25 +367,30 @@
 ;; -- Built-ins --
 (use-package savehist
   :ensure nil
+  :demand t
   :init (savehist-mode)
   :custom
   (savehist-additional-variables
    '(search-ring regexp-search-ring kill-ring)))
-(use-package saveplace :ensure nil :init (save-place-mode))
+(use-package saveplace :ensure nil :demand t :init (save-place-mode))
 (use-package which-key
   :ensure nil
+  :demand t
   :init (which-key-mode)
   :custom (which-key-idle-delay 0.5))
 (use-package autorevert
   :ensure nil
+  :demand t
   :init (global-auto-revert-mode)
   :custom (global-auto-revert-non-file-buffers t))
-(use-package repeat :ensure nil :init (repeat-mode))
+(use-package repeat :ensure nil :demand t :init (repeat-mode))
 (use-package windmove
   :ensure nil
+  :demand t
   :init (windmove-default-keybindings 'shift))
 (use-package winner
   :ensure nil
+  :demand t
   :init (winner-mode 1))
 
 (use-package helpful
@@ -489,6 +507,7 @@
 
 ;; -- 8.1 In-buffer completion popup --
 (use-package corfu
+  :demand t
   :init (global-corfu-mode)
   :custom
   (corfu-auto              t)
@@ -520,6 +539,7 @@
 ;; snippets for every configured language. yasnippet-capf surfaces snippet
 ;; keys inside the corfu popup so you don't need to remember triggers.
 (use-package yasnippet
+  :demand t
   :init (yas-global-mode 1))
 
 (use-package yasnippet-snippets
@@ -1086,6 +1106,7 @@
 
 (use-package flyspell
   :ensure nil
+  :demand t
   :hook ((org-mode  . flyspell-mode)
          (text-mode . flyspell-mode)
          (prog-mode . flyspell-prog-mode))
