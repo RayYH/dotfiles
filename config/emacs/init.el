@@ -4,9 +4,9 @@
 ;;
 ;;  1. Bootstrap                  package archives, use-package, PATH
 ;;  2. UI & Appearance            chrome, theme, fonts, modeline, icons,
-;;                                line numbers, visual polish
+;;                                tabs, line numbers, visual polish
 ;;  3. Editing                    pairs, multi-cursor, paredit, folding,
-;;                                rainbow-delimiters, expand-region, avy, vundo
+;;                                expand-region, avy, vundo
 ;;  4. Completion & Search        vertico, orderless, marginalia, consult,
 ;;                                embark, savehist, save-place, which-key
 ;;  5. File & Buffer Management   recentf, dired, ibuffer, backups, auto-revert
@@ -30,7 +30,7 @@
 ;; ============================================================
 
 ;; -- 1.1 Custom file --
-(setq custom-file "~/.emacs.d/custom.el")
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 ;; -- 1.2 Package archives --
 ;; Emacs has already run `package-activate-all' (from early-init's
@@ -65,7 +65,8 @@
 ;; below opt back into eager loading with `:demand', while language modes,
 ;; Org extras, terminals, and optional commands load on first use.
 (setq use-package-always-ensure t
-      use-package-always-defer  t)
+      use-package-always-defer  t
+      use-short-answers         t)
 
 (defun my/use-package-refresh-on-404 (orig-fn package &rest args)
   "Advice around `package-install': refresh contents once on a 404, then retry."
@@ -120,12 +121,21 @@
       frame-title-format '("%b  ·  Emacs")
       ring-bell-function #'ignore
       use-dialog-box nil
-      use-file-dialog nil)
+      use-file-dialog nil
+      frame-resize-pixelwise t
+      scroll-conservatively 101
+      scroll-margin 3
+      fast-but-imprecise-scrolling t)
 
 ;; -- 2.2 Theme --
-(use-package doom-themes
-  :demand t
-  :config (load-theme 'doom-tokyo-night t))
+;; Modus is built into Emacs 30, accessibility-tested, and looks excellent
+;; in both GUI and terminal frames.  `modus-themes-toggle' switches variants.
+(setq modus-themes-italic-constructs t
+      modus-themes-bold-constructs t
+      modus-themes-mixed-fonts t
+      modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+(load-theme 'modus-vivendi-tinted t)
+(global-set-key (kbd "C-c T") #'modus-themes-toggle)
 
 ;; -- 2.3 Icons + modeline (run `M-x nerd-icons-install-fonts' once) --
 (use-package nerd-icons
@@ -150,28 +160,41 @@
   (set-face-attribute 'fixed-pitch nil :family "IntelOne Mono")
   (set-face-attribute 'variable-pitch nil :family "Inter" :height 1.0))
 
-;; -- 2.5 Line numbers (prog + text modes only) --
+;; -- 2.5 Line numbers (code only) --
+;; Line numbers are useful for code review and diagnostics, but visual noise
+;; in prose and Org is avoided by not enabling them in `text-mode'.
 (setq display-line-numbers-type 'relative)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
-(add-hook 'text-mode-hook #'display-line-numbers-mode)
-;; Opt out of text-mode subtypes that read better without numbers.
-(dolist (mode '(org-mode-hook markdown-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; -- 2.6 Pixel-precision scrolling (Emacs 29+) --
 (when (fboundp 'pixel-scroll-precision-mode)
   (pixel-scroll-precision-mode 1))
 
 ;; -- 2.7 Visual polish --
-(global-hl-line-mode 1)
+;; Highlight the active line while programming, where it helps orientation;
+;; avoid painting every prose and minibuffer buffer.
+(add-hook 'prog-mode-hook #'hl-line-mode)
 (column-number-mode 1)
 (blink-cursor-mode 0)
 (setq-default cursor-type 'bar)
 (setq-default indicate-buffer-boundaries 'left)
-(setq-default indicate-empty-lines t)
 (setq window-divider-default-right-width 1
       window-divider-default-bottom-width 1)
 (window-divider-mode 1)
+(context-menu-mode 1)
+
+;; Tabs are a lightweight workspace layer for related buffers.  `winner-mode'
+;; below still handles layout history inside each tab.
+(setq tab-bar-show 1
+      tab-bar-close-button-show nil
+      tab-bar-new-tab-choice "*scratch*"
+      tab-bar-tab-hints t)
+(tab-bar-mode 1)
+(tab-bar-history-mode 1)
+
+(use-package breadcrumb
+  :demand t
+  :init (breadcrumb-mode 1))
 
 (use-package spacious-padding
   :demand t
@@ -248,26 +271,22 @@
          (scheme-mode      . paredit-mode)
          (racket-mode      . paredit-mode)))
 
-;; -- 3.4 Rainbow delimiters --
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-;; -- 3.5 Expand region --
+;; -- 3.4 Expand region --
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
-;; -- 3.6 Avy (jump to char / line / word) --
+;; -- 3.5 Avy (jump to char / line / word) --
 (use-package avy
   :bind (("C-:"   . avy-goto-char)
          ("C-'"   . avy-goto-char-2)
          ("M-g f" . avy-goto-line)
          ("M-g w" . avy-goto-word-1)))
 
-;; -- 3.7 Visual undo --
+;; -- 3.6 Visual undo --
 (use-package vundo
   :bind ("C-x u" . vundo))
 
-;; -- 3.8 Code folding (vim-style za/zc/zo/zm/zr) --
+;; -- 3.7 Code folding (vim-style za/zc/zo/zm/zr) --
 (use-package hideshow
   :ensure nil
   :hook (prog-mode . hs-minor-mode)
@@ -406,19 +425,20 @@
 ;; ============================================================
 
 ;; -- 5.1 Recentf --
-(recentf-mode 1)
 (setq recentf-max-menu-items 25
       recentf-max-saved-items 100
       ;; Never auto-clean: cleanup stats every file and can hang on remote
       ;; or unmounted paths. consult-recent-file filters dead entries anyway.
       recentf-auto-cleanup 'never
-      recentf-exclude '("/tmp/" "/.emacs.d/elpa/" "\\.gz$"))
+      recentf-exclude '("/tmp/" "\\.emacs\\.d/elpa/" "\\.gz$"))
+(recentf-mode 1)
 
 ;; -- 5.2 Dired --
 (require 'dired-x)
 (setq dired-omit-files "^\\.[^.]\\|^\\.\\.$"
       dired-dwim-target t)
 (add-hook 'dired-mode-hook #'dired-omit-mode)
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
 (use-package nerd-icons-dired
   :hook (dired-mode . nerd-icons-dired-mode))
 (with-eval-after-load 'dired
@@ -521,6 +541,11 @@
   :ensure nil
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode))
+
+(use-package corfu-history
+  :ensure nil
+  :after corfu
+  :init (corfu-history-mode 1))
 
 (use-package nerd-icons-corfu
   :after (corfu nerd-icons)
