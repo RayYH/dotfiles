@@ -685,10 +685,9 @@
 
 ;; -- 9.2 C / C++  (requires: clangd) --
 (defun my/c-ts-mode-setup ()
-  "Indent, RET, and format-on-save tweaks shared by c-ts-mode/c++-ts-mode."
+  "Indent and format-on-save tweaks shared by c-ts-mode/c++-ts-mode."
   (setq-local indent-tabs-mode      nil
-              c-ts-mode-indent-offset 4)
-  (local-set-key (kbd "RET") #'newline-and-indent)
+              c-ts-mode-indent-offset 2)
   (add-hook 'before-save-hook #'my/eglot-format-buffer-when-managed nil t))
 
 (setq c-ts-mode-indent-style 'k&r)
