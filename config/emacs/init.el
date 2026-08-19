@@ -610,7 +610,8 @@
          (dockerfile-mode    . eglot-ensure)
          (lua-mode           . eglot-ensure)
          (php-mode           . eglot-ensure)
-         (cmake-ts-mode      . my/cmake-eglot-ensure))
+         (cmake-ts-mode      . my/cmake-eglot-ensure)
+         (protobuf-mode      . my/protobuf-eglot-ensure))
   :bind (:map eglot-mode-map
               ("C-c l a" . eglot-code-actions)
               ("C-c l r" . eglot-rename)
@@ -623,6 +624,7 @@
         eglot-autoshutdown   t
         eglot-sync-connect   0
         eglot-extend-to-xref t)
+  (add-to-list 'eglot-server-programs '(protobuf-mode . ("protols")))
   ;; Disable jsonrpc event logging — large perf win for chatty servers.
   (fset #'jsonrpc--log-event #'ignore))
 
@@ -854,6 +856,16 @@
   :mode "\\.json\\'"
   :bind (:map json-ts-mode-map
               ("C-c l f" . json-pretty-print-buffer)))
+
+;; -- 9.16 Protocol Buffers  (requires: cargo install protols) --
+(defun my/protobuf-eglot-ensure ()
+  "Start Eglot for Protocol Buffers when `protols' is available."
+  (if (executable-find "protols")
+      (eglot-ensure)
+    (message "Protobuf LSP disabled: install protols and reopen this buffer.")))
+
+(use-package protobuf-mode
+  :mode "\\.proto\\'")
 
 
 ;; ============================================================

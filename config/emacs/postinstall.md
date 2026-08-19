@@ -83,6 +83,9 @@ dotnet tool install -g csharp-ls
 
 # Lua
 brew install lua-language-server
+
+# Protocol Buffers
+cargo install protols
 ```
 
 For Java, install Eclipse JDT LS and make sure it is discoverable by Eglot.
