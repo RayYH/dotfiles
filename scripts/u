@@ -84,7 +84,7 @@ upgrade_flutter() {
     fi
 
     log "Upgrading Flutter..."
-    flutter upgrade
+    flutter upgrade --force
 }
 
 upgrade_vineflower
