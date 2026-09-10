@@ -427,8 +427,18 @@ __install_ai_code_tools() {
 __sdkman_latest_lts_java() {
     __sdkman_sdk list java \
         | awk -F'|' '
-            NF >= 4 {
-                id = $NF
+            # Find the "Identifier" column by its header name so the parse
+            # survives SDKMAN adding or removing other columns.
+            !hdr {
+                for (i = 1; i <= NF; i++) {
+                    c = $i
+                    gsub(/^[[:space:]]+|[[:space:]]+$/, "", c)
+                    if (c == "Identifier") { col = i; hdr = 1; break }
+                }
+                next
+            }
+            col && NF >= col {
+                id = $col
                 gsub(/^[[:space:]]+|[[:space:]]+$/, "", id)
                 if (id ~ /^[0-9]/) print id
             }
