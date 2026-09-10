@@ -273,8 +273,19 @@ function __ai_code_tools() {
 function __direnv() {
     __echo "Step $step: install direnv"
     mkdir -p "${HOME}/.local/bin"
+    # Download directly (not install.sh): the installer queries api.github.com,
+    # which 403s once the unauthenticated rate limit is exhausted on shared CI IPs.
     if ! __command_exists direnv; then
-        curl -sfL https://direnv.net/install.sh | bin_path="${HOME}/.local/bin" bash
+        local direnv_os direnv_arch
+        direnv_os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+        case "$(uname -m)" in
+            x86_64 | amd64)  direnv_arch="amd64" ;;
+            aarch64 | arm64) direnv_arch="arm64" ;;
+            *) __error "Unsupported architecture for direnv: $(uname -m)" ;;
+        esac
+        curl -fsSL "https://github.com/direnv/direnv/releases/latest/download/direnv.${direnv_os}-${direnv_arch}" \
+            -o "${HOME}/.local/bin/direnv"
+        chmod +x "${HOME}/.local/bin/direnv"
     fi
     __done "$((step++))"
 }

@@ -176,9 +176,19 @@ __install_shell_tools() {
         curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
     fi
 
-    # direnv
+    # direnv — downloaded directly (not install.sh) to avoid api.github.com's
+    # unauthenticated rate limit (403) on shared CI runner IPs.
     if ! __command_exists "direnv"; then
-        curl -sfL https://direnv.net/install.sh | bin_path="${HOME}/.local/bin" bash
+        local direnv_os direnv_arch
+        direnv_os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+        case "$(uname -m)" in
+            x86_64 | amd64)  direnv_arch="amd64" ;;
+            aarch64 | arm64) direnv_arch="arm64" ;;
+            *) __error "Unsupported architecture for direnv: $(uname -m)" ;;
+        esac
+        curl -fsSL "https://github.com/direnv/direnv/releases/latest/download/direnv.${direnv_os}-${direnv_arch}" \
+            -o "${HOME}/.local/bin/direnv"
+        chmod +x "${HOME}/.local/bin/direnv"
     fi
 
     local arch
