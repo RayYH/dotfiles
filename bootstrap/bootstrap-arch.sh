@@ -439,7 +439,7 @@ __install_ai_code_tools
 __sdkman_latest_lts_java() {
     __sdkman_sdk list java \
         | awk -F'|' '
-            NF >= 6 {
+            NF >= 4 {
                 id = $NF
                 gsub(/^[[:space:]]+|[[:space:]]+$/, "", id)
                 if (id ~ /^[0-9]/) print id
