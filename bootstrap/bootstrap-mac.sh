@@ -270,6 +270,15 @@ function __ai_code_tools() {
 }
 [ -z ${S_AI_TOOLS+x} ] || __ai_code_tools
 
+function __direnv() {
+    __echo "Step $step: install direnv"
+    if ! __command_exists direnv; then
+        curl -sfL https://direnv.net/install.sh | bash
+    fi
+    __done "$((step++))"
+}
+__direnv
+
 function __casks() {
     __echo "Step $step: install casks"
     declare -a guis=(

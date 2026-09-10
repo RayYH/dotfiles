@@ -162,7 +162,7 @@ __install_shell
 # ============================================================
 
 __install_shell_tools() {
-    __echo "Step $step: Installing shell tools (starship, zoxide, yazi, bat)..."
+    __echo "Step $step: Installing shell tools (starship, zoxide, yazi, bat, direnv)..."
 
     mkdir -p "${HOME}/.local/bin"
 
@@ -174,6 +174,11 @@ __install_shell_tools() {
     # zoxide
     if ! __command_exists "zoxide"; then
         curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+    fi
+
+    # direnv
+    if ! __command_exists "direnv"; then
+        curl -sfL https://direnv.net/install.sh | bash
     fi
 
     local arch

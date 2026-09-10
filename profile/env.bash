@@ -65,6 +65,11 @@ if [ -x "$HOME/miniforge3/bin/conda" ]; then
   }
 fi
 
+# direnv
+if command -v direnv &>/dev/null; then
+  eval "$(direnv hook bash)"
+fi
+
 # Nix
 # if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
 #  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
