@@ -272,8 +272,9 @@ function __ai_code_tools() {
 
 function __direnv() {
     __echo "Step $step: install direnv"
+    mkdir -p "${HOME}/.local/bin"
     if ! __command_exists direnv; then
-        curl -sfL https://direnv.net/install.sh | bash
+        curl -sfL https://direnv.net/install.sh | bin_path="${HOME}/.local/bin" bash
     fi
     __done "$((step++))"
 }

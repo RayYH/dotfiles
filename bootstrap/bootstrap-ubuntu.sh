@@ -178,7 +178,7 @@ __install_shell_tools() {
 
     # direnv
     if ! __command_exists "direnv"; then
-        curl -sfL https://direnv.net/install.sh | bash
+        curl -sfL https://direnv.net/install.sh | bin_path="${HOME}/.local/bin" bash
     fi
 
     local arch
