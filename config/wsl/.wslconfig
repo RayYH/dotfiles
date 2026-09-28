@@ -1,0 +1,6 @@
+[wsl2]
+# Limit WSL 2 VM memory to 24GB
+memory=24GB
+# Give the WSL 2 VM 8 virtual processors
+processors=8
+guiApplications=false

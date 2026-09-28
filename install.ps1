@@ -108,4 +108,7 @@ Get-Content (Join-Path $DOTFILES 'MANIFEST') | ForEach-Object {
     Install-Entry -Src $srcResolved -Dest $destResolved -Op $op
 }
 
+# Windows-only entries (not in MANIFEST)
+Install-Entry -Src (Join-Path $DOTFILES 'config\wsl\.wslconfig') -Dest (Join-Path $HOME '.wslconfig')
+
 Write-Host "`nDone. Restart your terminal."
