@@ -3,7 +3,7 @@ return {
     ft = { "markdown" },
     cmd = { "RenderMarkdown" },
     dependencies = {
-        "neovim-treesitter/nvim-treesitter",
+        "nvim-treesitter/nvim-treesitter",
         "echasnovski/mini.nvim",
     },
     opts = {

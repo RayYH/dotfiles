@@ -1,7 +1,7 @@
 return {
     "windwp/nvim-ts-autotag",
     event = { "BufReadPre", "BufNewFile" },
-    dependencies = { "neovim-treesitter/nvim-treesitter" },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
 
     -- Configure via opts so you can tweak later
     opts = {

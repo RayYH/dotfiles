@@ -2,7 +2,7 @@
 
 ## Treesitter
 
-The maintained `neovim-treesitter/nvim-treesitter` rewrite needs the
+The maintained `nvim-treesitter/nvim-treesitter` rewrite needs the
 `tree-sitter` CLI to build parsers that are not available as prebuilt shared
 objects.
 

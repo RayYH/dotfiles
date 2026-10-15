@@ -38,19 +38,14 @@ local languages = {
 local filetypes = vim.list_extend(vim.deepcopy(languages), { "jsonc" })
 
 return {
-    "neovim-treesitter/nvim-treesitter",
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
 
-    -- The maintained rewrite manages parsers/queries through a registry and
-    -- explicitly does not support lazy-loading.
+    -- The main-branch rewrite explicitly does not support lazy-loading.
     lazy = false,
-    build = function()
-        if vim.fn.executable("tree-sitter") == 1 then
-            vim.cmd.TSUpdate()
-        end
-    end,
+    build = ":TSUpdate",
 
     dependencies = {
-        "neovim-treesitter/treesitter-parser-registry",
         {
             "JoosepAlviste/nvim-ts-context-commentstring",
             main = "ts_context_commentstring",
