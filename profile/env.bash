@@ -135,3 +135,6 @@ export MNT="$HOME/.mnt"
 
 # php-cs-fixer lint
 export PHP_CS_FIXER_IGNORE_ENV=1
+
+# homebrew
+export HOMEBREW_NO_ENV_HINTS=1
