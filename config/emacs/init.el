@@ -883,7 +883,7 @@
 ;; ============================================================
 
 (setq org-directory             "~/Zettelkasten/Org"
-      my/org-agenda-directory   (expand-file-name "agenda" "~/Zettelkasten/Org"))
+      my/org-agenda-directory   (expand-file-name "agenda" "~/.config"))
 
 (unless (file-directory-p my/org-agenda-directory)
   (make-directory my/org-agenda-directory t))
