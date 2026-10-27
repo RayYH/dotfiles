@@ -74,3 +74,6 @@ export CHROME_EXECUTABLE="/Applications/Brave Browser.app/Contents/MacOS/Brave B
 function cdf() {
   cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')" || return
 }
+
+# https://emudhra.we-have-a-problem.com/#check
+export CURL_CA_BUNDLE=/etc/ssl/cert.pem
