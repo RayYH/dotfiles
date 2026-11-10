@@ -882,11 +882,15 @@
 ;; 11. Org Mode
 ;; ============================================================
 
-(setq org-directory             "~/Zettelkasten/Org"
-      my/org-agenda-directory   (expand-file-name "agenda" "~/.config"))
+;; `~/org' is Org's own default; roam notes and agenda files live in
+;; subdirectories so they stay separate from loose Org files.
+(setq org-directory             (expand-file-name "~/org")
+      my/org-roam-directory     (expand-file-name "roam" org-directory)
+      my/org-agenda-directory   (expand-file-name "agenda" org-directory))
 
-(unless (file-directory-p my/org-agenda-directory)
-  (make-directory my/org-agenda-directory t))
+(dolist (dir (list org-directory my/org-roam-directory my/org-agenda-directory))
+  (unless (file-directory-p dir)
+    (make-directory dir t)))
 
 ;; -- 11.1 Core --
 (use-package org
@@ -1013,7 +1017,7 @@
 
 ;; -- 11.4 Roam --
 (use-package org-roam
-  :custom (org-roam-directory "~/Zettelkasten/Org")
+  :custom (org-roam-directory my/org-roam-directory)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
