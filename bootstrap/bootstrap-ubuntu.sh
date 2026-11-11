@@ -431,7 +431,7 @@ __install_ai_code_tools() {
 [ -z ${S_AI_TOOLS+x} ] || __install_ai_code_tools
 
 # ============================================================
-# Java dev: SDKMAN + latest LTS Java
+# Java dev: SDKMAN + latest LTS Java + Gradle
 # ============================================================
 
 __sdkman_latest_lts_java() {
@@ -479,7 +479,7 @@ __sdkman_sdk() {
 }
 
 __install_java() {
-    __echo "Step $step: Installing Java (SDKMAN + latest LTS)..."
+    __echo "Step $step: Installing Java (SDKMAN + latest LTS) and Gradle..."
 
     if [[ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
         curl -s "https://get.sdkman.io" | bash
@@ -501,6 +501,13 @@ __install_java() {
 
     __sdkman_sdk install java "$java_version"
     __sdkman_sdk default java "$java_version"
+
+    if [[ -n "${GRADLE_VERSION:-}" ]]; then
+        __sdkman_sdk install gradle "$GRADLE_VERSION"
+        __sdkman_sdk default gradle "$GRADLE_VERSION"
+    else
+        __sdkman_sdk install gradle
+    fi
 
     __next_step
 }
